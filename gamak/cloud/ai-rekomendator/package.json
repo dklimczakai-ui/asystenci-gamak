@@ -1,0 +1,18 @@
+{
+  "name": "ai-rekomendator",
+  "version": "0.2.0",
+  "private": true,
+  "description": "AI Rekomendator — web app rekomendujaca 3 narzedzia dla problemu biznesowego. v0.2: Claude Haiku 4.5 na Bedrock.",
+  "author": "Daniel Klimczak",
+  "license": "UNLICENSED",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "deploy:web": "bash scripts/upload-web.sh",
+    "remove": "serverless remove",
+    "logs": "serverless logs -f recommend --tail",
+    "info": "serverless info"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1034.0"
+  }
+}

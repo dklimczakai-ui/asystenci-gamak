@@ -1,0 +1,4 @@
+# Lambda pure-python deps (bez pandas/numpy/requests — te z Klayers).
+# serverless-python-requirements bundle te bez Dockera (bo pure python).
+ccxt==4.5.49
+python-dotenv==1.0.1

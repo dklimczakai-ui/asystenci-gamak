@@ -1,0 +1,54 @@
+# @mail v0.1 LOCAL — TEMPLATE (idzie do repo, BEZ sekretów)
+# Skopiuj jako config.local.yaml i wypełnij swoimi wartościami.
+# config.local.yaml jest w .gitignore — nigdy nie trafi do repo.
+
+# Wybór backendu: gmail | graph | imap
+provider: gmail
+
+# Twój adres email (pojawi się w nagłówku From)
+email: ty@firma.pl
+
+# Twoje imię i nazwisko (wyświetlane w From)
+display_name: Imię Nazwisko
+
+# Multi-line stopka pod treścią draftu. Pre-send checklist weryfikuje zgodność.
+# UNIKAJ "Z poważaniem", "Z wyrazami szacunku" — lista zakazanych fraz w mail.md CZĘŚĆ V.
+signature: |
+  Imię Nazwisko
+  Firma Sp. z o.o.
+  +48 XXX XXX XXX
+  www.firma.pl
+
+# Folder na tokeny i App Passwordy (chmod 600 / ACL owner-only, gitignored)
+credentials_path: .credentials/
+
+# === Sekcja per provider — odkomentuj WŁAŚCIWĄ ===
+
+gmail:
+  oauth_keys: .credentials/gmail_oauth_keys_<konto>.json   # Desktop OAuth Client z GCP Console
+  token: .credentials/gmail_token_<konto>.json             # Refresh token z pierwszej autoryzacji
+  scopes:
+    - https://www.googleapis.com/auth/gmail.modify
+    - https://www.googleapis.com/auth/gmail.send
+
+# graph:
+#   tenant_id: 00000000-0000-0000-0000-000000000000
+#   client_id: 00000000-0000-0000-0000-000000000000
+#   client_secret_file: .credentials/graph_client_secret.txt
+#   scopes:
+#     - Mail.Read
+#     - Mail.Send
+
+# imap:
+#   imap_host: imap.firma.pl
+#   imap_port: 993
+#   smtp_host: smtp.firma.pl
+#   smtp_port: 465
+#   username: ty@firma.pl
+#   app_password_file: .credentials/imap_app_password.txt
+#   archive_folder: Archive
+
+archive:
+  # gmail: remove_label INBOX | graph: move_to "Archive" | imap: move_to <archive_folder>
+  method: remove_label
+  label: INBOX

@@ -1,0 +1,21 @@
+[x-cloak] { display: none !important; }
+
+/* Smooth scroll */
+html { scroll-behavior: smooth; }
+
+/* Kanban scrollbar */
+.overflow-x-auto::-webkit-scrollbar { height: 10px; }
+.overflow-x-auto::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 5px; }
+.overflow-x-auto::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 5px; }
+.overflow-x-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Drag-over visual feedback */
+.kanban-drag-over { background: #bfdbfe !important; }
+
+/* Modal animations handled by alpine x-transition */
+
+/* Print */
+@media print {
+  header, footer, button, .no-print { display: none !important; }
+  body { background: white; }
+}

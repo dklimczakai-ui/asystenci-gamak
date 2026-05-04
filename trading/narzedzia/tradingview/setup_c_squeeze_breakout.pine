@@ -1,0 +1,100 @@
+//@version=5
+// ============================================================
+// SETUP C — SQUEEZE BREAKOUT (Daniel's trading system)
+// ============================================================
+// Długa kompresja (BB wewnątrz KC) + release + BOS + volume spike.
+// ============================================================
+
+indicator("SETUP C — Squeeze Breakout [Daniel]", overlay=true)
+
+grp = "Parametry"
+bb_len  = input.int(20,  "BB length", group=grp)
+bb_mult = input.float(2.0, "BB mult", group=grp)
+kc_len  = input.int(20,  "KC length", group=grp)
+kc_mult = input.float(1.5, "KC mult", group=grp)
+min_compress = input.int(10, "Min bar kompresji", minval=5, group=grp)
+vol_mult = input.float(1.3, "Volume spike mult", step=0.1, group=grp)
+rr_target = input.float(2.5, "R/R target", minval=1.5, group=grp)
+sl_buffer = input.float(0.5, "SL buffer %", step=0.1, group=grp)
+min_confluences = input.int(3, "Min konfluencji (z 4)", minval=2, maxval=4, group=grp)
+
+// Bollinger Bands
+bb_basis = ta.sma(close, bb_len)
+bb_dev = bb_mult * ta.stdev(close, bb_len)
+bb_upper = bb_basis + bb_dev
+bb_lower = bb_basis - bb_dev
+
+// Keltner Channels
+kc_ma = ta.sma(close, kc_len)
+kc_rng = ta.sma(ta.tr, kc_len)
+kc_upper = kc_ma + kc_rng * kc_mult
+kc_lower = kc_ma - kc_rng * kc_mult
+
+// Squeeze states
+sqz_on  = bb_lower > kc_lower and bb_upper < kc_upper
+sqz_off = bb_lower < kc_lower and bb_upper > kc_upper
+
+// Momentum (LazyBear style)
+mom_val = ta.linreg(close - math.avg(math.avg(ta.highest(high, kc_len), ta.lowest(low, kc_len)), ta.sma(close, kc_len)), kc_len, 0)
+
+// Long compression detection
+var int compress_count = 0
+if sqz_on
+    compress_count := compress_count + 1
+else
+    compress_count := 0
+
+release_now = sqz_off and sqz_on[1] and compress_count[1] >= min_compress
+
+// BOS (Break of Structure) — proste podejście
+bos_up   = close > ta.highest(high[1], 10)
+bos_down = close < ta.lowest(low[1], 10)
+
+// Volume spike
+vol_spike = volume > ta.sma(volume, 20) * vol_mult
+
+// MA50 retest (confirmation)
+ma50 = ta.sma(close, 50)
+above_ma50 = close > ma50
+below_ma50 = close < ma50
+
+// Konfluencje LONG
+c1_long = release_now ? 1 : 0
+c2_long = bos_up and mom_val > 0 ? 1 : 0
+c3_long = vol_spike ? 1 : 0
+c4_long = above_ma50 ? 1 : 0
+long_score = c1_long + c2_long + c3_long + c4_long
+
+// Konfluencje SHORT
+c1_short = release_now ? 1 : 0
+c2_short = bos_down and mom_val < 0 ? 1 : 0
+c3_short = vol_spike ? 1 : 0
+c4_short = below_ma50 ? 1 : 0
+short_score = c1_short + c2_short + c3_short + c4_short
+
+long_signal  = long_score  >= min_confluences and long_score  > short_score
+short_signal = short_score >= min_confluences and short_score > long_score
+
+// Levels
+pre_range_mid = ta.sma(close, min_compress)
+long_sl  = pre_range_mid * (1 - sl_buffer/100)
+long_tp  = close + (close - long_sl) * rr_target
+short_sl = pre_range_mid * (1 + sl_buffer/100)
+short_tp = close - (short_sl - close) * rr_target
+
+// Visuals
+plotshape(long_signal,  "LONG C",  shape.labelup,   location.belowbar, color.new(color.lime, 0), text="C↑", textcolor=color.black, size=size.small)
+plotshape(short_signal, "SHORT C", shape.labeldown, location.abovebar, color.new(color.red, 0),  text="C↓", textcolor=color.white, size=size.small)
+
+plot(ma50, "MA50", color.new(color.yellow, 0), 2)
+bgcolor(sqz_on ? color.new(color.purple, 85) : na)
+
+// Alerts
+if long_signal
+    alert('{"secret":"DANIEL_TRADING_2026","setup":"C","direction":"LONG","ticker":"{{ticker}}","exchange":"{{exchange}}","timeframe":"{{interval}}","time":"{{time}}","price":' + str.tostring(close) + ',"entry":' + str.tostring(close) + ',"sl":' + str.tostring(long_sl) + ',"tp":' + str.tostring(long_tp) + ',"rr":' + str.tostring(rr_target) + ',"confluences":' + str.tostring(long_score) + ',"max_confluences":4,"details":{"release":' + str.tostring(c1_long) + ',"bos":' + str.tostring(c2_long) + ',"volume":' + str.tostring(c3_long) + ',"ma50":' + str.tostring(c4_long) + '}}', alert.freq_once_per_bar_close)
+
+if short_signal
+    alert('{"secret":"DANIEL_TRADING_2026","setup":"C","direction":"SHORT","ticker":"{{ticker}}","exchange":"{{exchange}}","timeframe":"{{interval}}","time":"{{time}}","price":' + str.tostring(close) + ',"entry":' + str.tostring(close) + ',"sl":' + str.tostring(short_sl) + ',"tp":' + str.tostring(short_tp) + ',"rr":' + str.tostring(rr_target) + ',"confluences":' + str.tostring(short_score) + ',"max_confluences":4,"details":{"release":' + str.tostring(c1_short) + ',"bos":' + str.tostring(c2_short) + ',"volume":' + str.tostring(c3_short) + ',"ma50":' + str.tostring(c4_short) + '}}', alert.freq_once_per_bar_close)
+
+alertcondition(long_signal,  "Setup C LONG",  "C LONG")
+alertcondition(short_signal, "Setup C SHORT", "C SHORT")

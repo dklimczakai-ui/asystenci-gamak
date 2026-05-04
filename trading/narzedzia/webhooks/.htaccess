@@ -1,0 +1,21 @@
+# Bezpieczeństwo katalogu webhook
+
+# Blokuj dostęp do plików logów i alertów
+<FilesMatch "\.(log|jsonl|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Blokuj listowanie katalogu
+Options -Indexes
+
+# Force HTTPS (CyberFolks)
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Zabroń dostępu do katalogów logs/ i alerts/
+<DirectoryMatch "(logs|alerts)">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>

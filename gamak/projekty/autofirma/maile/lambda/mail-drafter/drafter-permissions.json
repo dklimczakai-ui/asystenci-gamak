@@ -1,0 +1,67 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Logs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:eu-central-1:098456445101:log-group:/aws/lambda/mail-drafter*"
+        },
+        {
+            "Sid": "ReadAllGmailSecrets",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:eu-central-1:098456445101:secret:gmail-oauth-*"
+        },
+        {
+            "Sid": "ReadEmailsTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:GetItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-emails"
+        },
+        {
+            "Sid": "WriteDraftsTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-drafts",
+                "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-drafts/index/*"
+            ]
+        },
+        {
+            "Sid": "BedrockInvokeSonnet46",
+            "Effect": "Allow",
+            "Action": "bedrock:InvokeModel",
+            "Resource": [
+                "arn:aws:bedrock:eu-central-1:098456445101:inference-profile/eu.anthropic.claude-sonnet-4-6",
+                "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-sonnet-4-6"
+            ]
+        },
+        {
+            "Sid": "ReadS3Context",
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::gamak-mail-context-098456445101-eu-central-1/context/*"
+        },
+        {
+            "Sid": "ReadSentSamples",
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::gamak-mail-archive-098456445101-eu-central-1/extracted-context/*"
+        }
+    ]
+}

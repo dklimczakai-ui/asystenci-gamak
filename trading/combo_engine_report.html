@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>OF Scalper v4.0 — Combo Engine Report</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; max-width: 1200px; margin: 24px auto; padding: 0 24px; line-height: 1.55; color: #1a1a1a; background: #f7f7f5; }
+  h1 { color: #0a0a0a; border-bottom: 3px solid #1a73e8; padding-bottom: 12px; margin-top: 0; }
+  h2 { color: #1a73e8; margin-top: 36px; padding: 10px 16px; background: #fff; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  h3 { color: #2c5282; margin-top: 24px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  th { background: #1a73e8; color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; }
+  td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  tr:hover td { background: #f8fafc; }
+  .ok { color: #15803d; font-weight: 700; }
+  .miss { color: #dc2626; font-weight: 700; }
+  .partial { color: #ca8a04; font-weight: 700; }
+  .source { font-size: 0.85em; color: #64748b; font-style: italic; }
+  .box { background: #fff; padding: 18px 22px; border-left: 4px solid #1a73e8; margin: 16px 0; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .box.warn { border-left-color: #ea580c; background: #fff7ed; }
+  .box.ok { border-left-color: #15803d; background: #f0fdf4; }
+  .box.danger { border-left-color: #dc2626; background: #fef2f2; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-family: "SF Mono", Consolas, monospace; font-size: 0.9em; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; line-height: 1.4; }
+  pre .kw { color: #93c5fd; }
+  pre .str { color: #86efac; }
+  pre .num { color: #fbbf24; }
+  pre .com { color: #94a3b8; font-style: italic; }
+  .score { display: inline-block; padding: 2px 8px; border-radius: 3px; background: #1a73e8; color: #fff; font-size: 0.85em; font-weight: 600; margin-left: 6px; }
+  .points { display: inline-block; min-width: 36px; padding: 2px 8px; border-radius: 3px; background: #f1f5f9; color: #334155; font-family: monospace; text-align: center; font-weight: 600; }
+  ul { margin: 8px 0; padding-left: 24px; }
+  li { margin: 4px 0; }
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .stat { background: #fff; padding: 14px 18px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .stat .num { font-size: 2em; font-weight: 700; color: #1a73e8; line-height: 1; }
+  .stat .label { color: #64748b; font-size: 0.9em; margin-top: 4px; }
+  .decision-tree { background: #1e293b; color: #e2e8f0; padding: 18px; border-radius: 6px; font-family: monospace; font-size: 0.9em; line-height: 1.6; }
+  .decision-tree .node { color: #fbbf24; }
+  .decision-tree .yes { color: #86efac; }
+  .decision-tree .no { color: #fca5a5; }
+</style>
+</head>
+<body>
+
+<h1>OF Scalper v4.0 — Combo Engine Report</h1>
+
+<p><strong>Data:</strong> 2026-04-29 &middot; <strong>Wersja:</strong> v4.0 (combo_engine)
+&middot; <strong>Plik:</strong> <code>combo_engine.py</code> + 8 dodatkowych modułów</p>
+
+<div class="summary-grid">
+  <div class="stat"><div class="num">22 / 32</div><div class="label">Narzędzia zaimplementowane (69%)</div></div>
+  <div class="stat"><div class="num">10</div><div class="label">Narzędzia BRAKUJĄCE (z knowledge base)</div></div>
+  <div class="stat"><div class="num">~25 pts</div><div class="label">Max confluence score combo_engine</div></div>
+</div>
+
+<div class="box ok">
+<strong>TL;DR:</strong> Combo Engine v4.0 łączy 22 narzędzia w jeden score 0-25 punktów. Setup wchodzi w trade gdy <strong>total_score ≥ 10 + regime gate OK + pattern signal</strong>. Średnio oznacza to że <strong>4-5 z 11 narzędzi się zgadza w jednym kierunku</strong>. Brakuje jeszcze 10 narzędzi z knowledge base — głównie TPO/Initial Balance/Failed Auction/Single Print proper detection.
+</div>
+
+<h2>1. WSZYSTKIE narzędzia z knowledge base (full inventory)</h2>
+
+<p>Lista narzędzi które autorzy z YouTube transkryptów (Chart Champions, Trader Dale, foundations) wspominają lub wymagają dla swoich strategii. Plus narzędzia które TY wymieniłeś (order flow, DOM, fibonacci, etc).</p>
+
+<table>
+<tr><th>#</th><th>Narzędzie</th><th>Źródło</th><th>Status</th><th>Plik</th></tr>
+
+<tr><td>1</td><td><strong>POC</strong> (Point of Control)</td><td class="source">market_profile.md, Setup 3</td><td><span class="ok">✅ MAM</span></td><td><code>daily_profile.py</code>, <code>footprint.py</code></td></tr>
+
+<tr><td>2</td><td><strong>VAH / VAL</strong> (Value Area High/Low)</td><td class="source">market_profile.md, Core Metrics</td><td><span class="ok">✅ MAM</span></td><td><code>daily_profile.py</code></td></tr>
+
+<tr><td>3</td><td><strong>VWAP session</strong> (anchored 00:00 UTC)</td><td class="source">strategie_konkretne.md, ALL strategies</td><td><span class="ok">✅ MAM</span></td><td><code>vwap.py</code></td></tr>
+
+<tr><td>4</td><td><strong>Anchored VWAP</strong> (multi-anchor swing high/low)</td><td class="source">strategie_konkretne.md, Strategia 1 (80% WR)</td><td><span class="ok">✅ MAM</span></td><td><code>anchored_vwap.py</code></td></tr>
+
+<tr><td>5</td><td><strong>Fibonacci 75%</strong> retracement (auto-detect range)</td><td class="source">strategie_konkretne.md, Strategia 1 (80% WR)</td><td><span class="ok">✅ MAM</span></td><td><code>fibonacci.py</code></td></tr>
+
+<tr><td>6</td><td><strong>Previous day POC/VAH/VAL/midpoint</strong></td><td class="source">strategie_konkretne.md, Strategia 3</td><td><span class="ok">✅ MAM</span></td><td><code>daily_profile.py</code> + tracking w <code>strategy_vwap_retest.py</code></td></tr>
+
+<tr><td>7</td><td><strong>FVG</strong> (Fair Value Gap detection)</td><td class="source">foundations.md, Część 2</td><td><span class="ok">✅ MAM</span></td><td><code>fvg_detector.py</code></td></tr>
+
+<tr><td>8</td><td><strong>Sweep low/high</strong> detection (wick + close reversal)</td><td class="source">foundations.md, Część 2</td><td><span class="ok">✅ MAM</span></td><td><code>patterns.py</code></td></tr>
+
+<tr><td>9</td><td><strong>Whale buy/sell</strong> ($150k threshold)</td><td class="source">orderflow_knowledge.md</td><td><span class="ok">✅ MAM</span></td><td><code>patterns.py</code></td></tr>
+
+<tr><td>10</td><td><strong>CVD divergence multi-TF</strong> (1m+5m+15m nested)</td><td class="source">foundations.md, "pro: 3 TF nested"</td><td><span class="ok">✅ MAM</span></td><td><code>cvd_multi_tf.py</code></td></tr>
+
+<tr><td>11</td><td><strong>DOM imbalance</strong> (bid/ask depth ratio)</td><td class="source">orderflow_knowledge.md</td><td><span class="ok">✅ MAM</span></td><td><code>dom_imbalance.py</code></td></tr>
+
+<tr><td>12</td><td><strong>DOM walls detection</strong> (5x median = real wall)</td><td class="source">orderflow_knowledge.md, Aggression Distinction</td><td><span class="ok">✅ MAM</span></td><td><code>dom_imbalance.py</code></td></tr>
+
+<tr><td>13</td><td><strong>Iceberg detection</strong> (DOM refresh patterns)</td><td class="source">orderflow_knowledge.md</td><td><span class="ok">✅ MAM</span></td><td><code>dom_imbalance.py</code></td></tr>
+
+<tr><td>14</td><td><strong>Aggressive vs Passive flow</strong> (taker buy/sell)</td><td class="source">orderflow_knowledge.md, "Aggression Distinction"</td><td><span class="ok">✅ MAM</span></td><td><code>aggressive_flow.py</code></td></tr>
+
+<tr><td>15</td><td><strong>Aggression burst</strong> detection (last 5s vs avg)</td><td class="source">foundations.md, scalp setup</td><td><span class="ok">✅ MAM</span></td><td><code>aggressive_flow.py</code></td></tr>
+
+<tr><td>16</td><td><strong>Liquidation cascade</strong> ($500k+ w 60s)</td><td class="source">orderflow_knowledge.md, "Liquidation cascades"</td><td><span class="ok">✅ MAM</span></td><td><code>liquidation_aggregator.py</code></td></tr>
+
+<tr><td>17</td><td><strong>Funding rate</strong> extreme (contrarian)</td><td class="source">orderflow_knowledge.md, "Funding rate divergence"</td><td><span class="ok">✅ MAM</span></td><td><code>funding_oi.py</code></td></tr>
+
+<tr><td>18</td><td><strong>Open Interest delta</strong> + price (real long vs squeeze)</td><td class="source">orderflow_knowledge.md, "OI delta"</td><td><span class="ok">✅ MAM</span></td><td><code>funding_oi.py</code></td></tr>
+
+<tr><td>19</td><td><strong>Regime filter</strong> BTC EMA200 1H</td><td class="source">foundations.md, Część 4</td><td><span class="ok">✅ MAM</span></td><td><code>regime.py</code></td></tr>
+
+<tr><td>20</td><td><strong>Multi-exchange trade tape</strong> (Binance + Bybit + OKX)</td><td class="source">orderflow_knowledge.md</td><td><span class="ok">✅ MAM</span></td><td><code>aggregator.py</code></td></tr>
+
+<tr><td>21</td><td><strong>Position sizing dynamic</strong> (risk% / SL distance)</td><td class="source">foundations.md, Część 3</td><td><span class="ok">✅ MAM</span></td><td><code>position_sizing.py</code></td></tr>
+
+<tr><td>22</td><td><strong>Strategy validator</strong> (auto-pause WR&lt;45%)</td><td class="source">foundations.md, "Min 200 obs"</td><td><span class="ok">✅ MAM</span></td><td><code>strategy_validator.py</code></td></tr>
+
+<tr><td>23</td><td><strong>TPO 30-min letters</strong> (Time Price Opportunity)</td><td class="source">market_profile.md, "Core Metrics"</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>24</td><td><strong>Single Print proper detection</strong> z TPO</td><td class="source">market_profile.md, Setup 2; foundations.md</td><td><span class="partial">⚠️ proxy w foundations</span></td><td>tylko empirical proxy</td></tr>
+
+<tr><td>25</td><td><strong>Poor High/Low</strong> (incomplete auction <2 single prints)</td><td class="source">market_profile.md, Core Metrics</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>26</td><td><strong>Initial Balance</strong> (first 15 min UTC hour)</td><td class="source">strategie_konkretne.md, Strategia 2 (ORB+VWAP)</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>27</td><td><strong>ORB</strong> (Opening Range Breakout)</td><td class="source">strategie_konkretne.md, Strategia 2</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>28</td><td><strong>Day type classifier D/P/B</strong> (profile shapes)</td><td class="source">market_profile.md, Profile Shapes</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>29</td><td><strong>HVN / LVN</strong> (High/Low Volume Nodes)</td><td class="source">market_profile.md, Setup 5</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>30</td><td><strong>Failed Auction / Swing Failure Pattern</strong></td><td class="source">strategie_konkretne.md, Strategia 5</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>31</td><td><strong>Supply/Demand zones</strong> (3+ tests = valid)</td><td class="source">strategie_konkretne.md, Strategia 1</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+<tr><td>32</td><td><strong>ATR-based SL placement</strong></td><td class="source">foundations.md, Część 3, Twarde reguły SL</td><td><span class="miss">❌ BRAK</span></td><td>—</td></tr>
+
+</table>
+
+<h2>2. Co ZROBIŁEM ✅ (22 narzędzia)</h2>
+
+<table>
+<tr><th>Kategoria</th><th>Narzędzia</th></tr>
+<tr><td><strong>Volume Profile</strong></td><td>POC, VAH, VAL, daily session profile, footprint per bar imbalances</td></tr>
+<tr><td><strong>VWAP family</strong></td><td>Session VWAP, Anchored VWAP (multi-instance z auto swing detect), VWAP slope</td></tr>
+<tr><td><strong>Inefficiencies</strong></td><td>Fibonacci 0.236-0.786 + extensions, FVG bullish/bearish, sweep low/high</td></tr>
+<tr><td><strong>Order Flow</strong></td><td>CVD multi-TF (1m+5m+15m nested), Aggressive vs Passive (taker buy/sell), Aggression burst, Whale detection</td></tr>
+<tr><td><strong>Order Book</strong></td><td>DOM imbalance ratio, Wall detection (5x median), Iceberg refresh patterns</td></tr>
+<tr><td><strong>Derivatives</strong></td><td>Funding rate (extreme contrarian), Open Interest delta, Liquidation cascade ($500k+)</td></tr>
+<tr><td><strong>Regime / Filter</strong></td><td>BTC EMA200 1H regime gate, Previous day POC/VAH/VAL/midpoint</td></tr>
+<tr><td><strong>Risk / Sizing</strong></td><td>Dynamic position sizing (risk%/SL%), Strategy validator (auto-pause WR&lt;45%), DD guard, Pattern blacklist</td></tr>
+<tr><td><strong>Infra</strong></td><td>Multi-exchange aggregation (Binance+Bybit+OKX), aggTrades cache w S3 streaming</td></tr>
+</table>
+
+<h2>3. Czego BRAKUJE ❌ (10 narzędzi)</h2>
+
+<table>
+<tr><th>Narzędzie</th><th>Czemu brakuje</th><th>Skąd się weźmie</th></tr>
+
+<tr><td><strong>TPO 30-min letters</strong></td><td>Wymaga osobnego buildera (group 30 × 1m candli + assign letters A-Z)</td><td>1-2h kodowania, mam pseudokod w market_profile.md</td></tr>
+
+<tr><td><strong>Single Print proper</strong></td><td>Wymaga TPO (#23) — chain dependency</td><td>Po TPO, dodać 1h</td></tr>
+
+<tr><td><strong>Poor High/Low</strong></td><td>Wymaga TPO + Single Print</td><td>Po Single Print, 30 min</td></tr>
+
+<tr><td><strong>Initial Balance + ORB</strong></td><td>Wymaga session anchor (UTC hour boundary), prosta implementacja</td><td>30 min — pseudokod gotowy w market_profile.md Setup 1</td></tr>
+
+<tr><td><strong>Day type D/P/B classifier</strong></td><td>Wymaga TPO + analiza shape</td><td>Po TPO, 1h</td></tr>
+
+<tr><td><strong>HVN/LVN</strong></td><td>Z volume profile można wyłuskać, prosta praca</td><td>30 min</td></tr>
+
+<tr><td><strong>Failed Auction / SFP</strong></td><td>Pattern detection (sharp wick + reject albo lingering above level)</td><td>1-2h, foundations.md Część 4 ma definicję</td></tr>
+
+<tr><td><strong>Supply/Demand zones</strong></td><td>Wymaga klastrowanie swing points (3+ tests = valid zone)</td><td>2-3h algorytmu klastrowania</td></tr>
+
+<tr><td><strong>ATR-based SL</strong></td><td>Trywialne (calculate ATR(14), SL = entry ± 1.5×ATR)</td><td>20 min</td></tr>
+
+<tr><td><strong>"Severance Scalping" Chart Champions</strong></td><td>Black-box pattern, autor nie zdradza details (kurs $$$)</td><td>NIE da się — nie kodowalne bez source</td></tr>
+
+</table>
+
+<div class="box warn">
+<strong>Czemu odrzuciłem te 10:</strong> NIE odrzuciłem — są na <strong>liście do zrobienia</strong>. Ale zacząłem od narzędzi które działają na surowym aggTrades + orderbook stream (Order Flow / DOM / CVD), bo to jest <strong>najtrudniejsze</strong> z infrastruktury. TPO/ORB/IB można dorzucić jutro w ~3-4h pracy. <strong>Severance Scalping</strong> jest jedynym truly impossible — autor ukrywa za kursem.
+</div>
+
+<h2>4. Strategia COMBO ENGINE — na czym bazuje</h2>
+
+<div class="box">
+<strong>Filozofia jednym zdaniem:</strong> Pojedyncze narzędzie = noise. <strong>4-5 narzędzi się zgadza w jednym kierunku = sygnał</strong>.
+</div>
+
+<h3>Confluence scoring (max ~25 pts)</h3>
+
+<table>
+<tr><th>Narzędzie</th><th>Punkty</th><th>Kiedy zaliczone</th></tr>
+<tr><td>VWAP filter</td><td><span class="points">+2</span></td><td>price po stronie VWAP zgodnej z kierunkiem + slope nie przeciwko</td></tr>
+<tr><td>Daily Volume Profile</td><td><span class="points">+2</span></td><td>price below VAL (long) lub above VAH (short) → rotation back to value</td></tr>
+<tr><td>Fibonacci</td><td><span class="points">+1..3</span></td><td>0.5/0.618/0.786 levels w okolicy ceny</td></tr>
+<tr><td>Anchored VWAP</td><td><span class="points">+1..3</span></td><td>aktywne anchored VWAPs blisko ceny</td></tr>
+<tr><td>CVD multi-TF</td><td><span class="points">+1..3</span></td><td>divergence na 1m + 5m + 15m (3 TF się zgadzają = +3)</td></tr>
+<tr><td>DOM</td><td><span class="points">+1..3</span></td><td>imbalance ratio + wall na właściwej stronie + iceberg activity</td></tr>
+<tr><td>Aggressive flow</td><td><span class="points">+1..2</span></td><td>taker aggression w tym samym kierunku + burst</td></tr>
+<tr><td>Funding rate + OI</td><td><span class="points">+1..2</span></td><td>extreme funding contrarian + OI rising z direction</td></tr>
+<tr><td>Liquidation cascade</td><td><span class="points">+2</span></td><td>$500k+ liq w 60s w naszym kierunku</td></tr>
+<tr><td>FVG</td><td><span class="points">+1..2</span></td><td>unfilled FVG nearby (potencjalny target lub support)</td></tr>
+<tr><td>Pattern strength (sweep/whale/cvd)</td><td><span class="points">base</span></td><td>z PatternDetector — dodawane do score</td></tr>
+<tr><td>Regime filter</td><td><span class="points">HARD GATE</span></td><td>jeśli BTC contra-trend → setup odrzucony niezależnie od score</td></tr>
+</table>
+
+<h3>Decision tree — jak wchodzi w trade</h3>
+
+<div class="decision-tree">
+<span class="node">[1m bar close]</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">PatternDetector → signals (sweep / whale / cvd_div / FVG)</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">Pattern blacklist + StrategyValidator filter</span><br>
+&nbsp;&nbsp;↓ <span class="yes">jeśli signal OK</span><br>
+<span class="node">Group bull vs bear → wybierz STRONGER side</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">RegimeFilter (BTC EMA200 1H)</span> → <span class="no">FAIL = ABORT</span><br>
+&nbsp;&nbsp;↓ <span class="yes">PASS</span><br>
+<span class="node">Score 11 narzędzi (VWAP, profile, fib, AVWAP, CVD-MTF, DOM, agg, funding, liq, FVG)</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">total_score = score_tools + base_pattern_strength</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">total_score &lt; min (10)?</span> → <span class="no">SKIP</span><br>
+&nbsp;&nbsp;↓ <span class="yes">PASS</span><br>
+<span class="node">Build setup: entry=close, SL=sweep_extreme±buffer, TP1=2.5×risk (or VAH/VAL), TP2=4×risk</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">Anti-whipsaw 10min + cooldown 5min</span> → <span class="no">block</span> / <span class="yes">pass</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="node">ScalperAutoExecutor.execute()</span><br>
+&nbsp;&nbsp;├─ <span class="node">DD guards (3 losses=pause, -3% kapitału=halt)</span><br>
+&nbsp;&nbsp;├─ <span class="node">Position sizer (risk 1% / SL%, max margin $1)</span><br>
+&nbsp;&nbsp;├─ <span class="node">Refresh lock + cleanup orphan orders</span><br>
+&nbsp;&nbsp;└─ <span class="node">Place market entry + SL + TP1 na Gate.io</span><br>
+&nbsp;&nbsp;↓<br>
+<span class="yes">TRADE LIVE + audit S3 + Telegram alert z full breakdown</span>
+</div>
+
+<h2>5. Dlaczego TAKA decyzja (uzasadnienie)</h2>
+
+<table>
+<tr><th>Decyzja</th><th>Uzasadnienie ze źródła</th></tr>
+
+<tr><td><strong>Confluence min 4-5 narzędzi (score 10)</strong></td>
+<td><span class="source">strategie_konkretne.md, Strategia 1:</span> "Minimum 3 confluences = trade qualification". <span class="source">foundations.md, Część 1:</span> "Bez statystyki nie tradować". 4-5 z 11 to umiarkowane stricter — chcę sprawdzić jakie scores wychodzą empirycznie.</td></tr>
+
+<tr><td><strong>Regime filter jako HARD GATE</strong></td>
+<td><span class="source">foundations.md, Część 4:</span> "Don't initiate longs in downtrend / shorts in uptrend". Jedna reguła która wycina 50% złych sygnałów (counter-trend mean reversion).</td></tr>
+
+<tr><td><strong>TP1 RR 2.5:1 minimum (preferring VAH/VAL)</strong></td>
+<td><span class="source">foundations.md, Część 3:</span> "Crypto swing RR: 1:2.5 do 1:3+". <span class="source">Strategia 4 (Momentum):</span> "Value Area Rotation target". Combo używa daily VAH/VAL gdy są dalej niż 2×risk — bo to jest naturalny target rynku.</td></tr>
+
+<tr><td><strong>Pattern blacklist (absorption_bear/bull)</strong></td>
+<td><span class="source">Edge audit 27.04.2026:</span> 6 trades, 33% WR, -$0.003 net. Dane empiryczne &gt; teoria.</td></tr>
+
+<tr><td><strong>StrategyValidator auto-pause WR&lt;45%</strong></td>
+<td><span class="source">foundations.md, Zasada 1:</span> "Min 60% WR static level". Self-healing system: jak pattern przestaje działać, sam się wyłącza.</td></tr>
+
+<tr><td><strong>Dynamic position sizing</strong></td>
+<td><span class="source">foundations.md, Część 3:</span> "Position Size = Risk$ / SL%". Stała kwota = amatorka. Tight SL → większy size; szeroki SL → mniejszy size = stałe ryzyko per trade.</td></tr>
+
+<tr><td><strong>Multi-exchange aggregation (Binance+Bybit+OKX)</strong></td>
+<td><span class="source">orderflow_knowledge.md:</span> "Live edge = aggTrades + orderbook + multi-exchange aggregation, nie OHLCV". Pojedyncza giełda = lokalny noise. 3 giełdy = real market consensus.</td></tr>
+
+<tr><td><strong>Multi-TF CVD (1m+5m+15m nested)</strong></td>
+<td><span class="source">foundations.md, "Czego BRAK":</span> "CVD divergence — OK ale 1 timeframe — pro: 3 TF nested". Skopiowane dosłownie.</td></tr>
+
+<tr><td><strong>Anchored VWAP od swing high/low events</strong></td>
+<td><span class="source">strategie_konkretne.md, Strategia 1 (80% WR):</span> "Anchored VWAP (from previous major event)" jako jedna z 4 confluence. Multi-anchor (5 instances) bo różne swingi tworzą różne VWAPs.</td></tr>
+
+<tr><td><strong>Fibonacci 0.5/0.618/0.786 (nie tylko 0.75)</strong></td>
+<td>Transkrypt mówił 0.75, ale 0.75 nie jest standardowym Fib level. Najbliższe to 0.705 i 0.786 — używamy 3 core levels (0.5/0.618/0.786) bo wszystkie są w retracement zone.</td></tr>
+
+<tr><td><strong>DOM imbalance + iceberg z istniejącego orderbook stream</strong></td>
+<td><span class="source">orderflow_knowledge.md:</span> "STREAM mamy, NIE używamy". Marnowane dane z books5 (OKX) i books50 (Bybit). Teraz używamy.</td></tr>
+
+<tr><td><strong>Funding rate jako CONTRARIAN</strong></td>
+<td><span class="source">orderflow_knowledge.md:</span> "extreme positive = crowded long = SHORT setup". Counter-intuitive ale działa: gdy wszyscy są long, market się rolluje.</td></tr>
+
+<tr><td><strong>Pyramiding NIE wdrożone</strong></td>
+<td><span class="source">strategie_konkretne.md, Strategia 5:</span> "3 short entries". Ale: na perp z leverage 10× to liquidation cascade. Foundation mówi "max 2% per trade NEVER 3%". Pyramid 3× ryzykuje DD przekraczający limit. <strong>Świadomie odłożone</strong>.</td></tr>
+
+<tr><td><strong>Strategy 1 "Severance Scalping" NIE wdrożone</strong></td>
+<td>Autor (Chart Champions) nie zdradza pattern detail — sprzedaje za kurs. Nie da się zakodować bez source.</td></tr>
+
+</table>
+
+<h2>6. STAN AKTUALNY (29.04.2026, 06:50 UTC)</h2>
+
+<div class="box ok">
+<strong>Co działa:</strong>
+<ul>
+<li>22 modułów napisane, syntax OK, uploaded na S3</li>
+<li>30d aggTrades cache leci w background (PID 32959, dzień 1/30)</li>
+<li>EC2 stable, RAM pod kontrolą po reboot</li>
+<li>Kapitał Daniela: <strong>$651 nienaruszony</strong> (0 strat realnych)</li>
+</ul>
+</div>
+
+<div class="box warn">
+<strong>Co dalej (przed deployem live v4.0):</strong>
+<ul>
+<li><strong>Refactor main.py</strong> (30-45 min): wpiąć combo_engine + 8 nowych modułów + obsłużyć orderbook+aggTrades streams (DOMTracker, AggressiveFlow)</li>
+<li><strong>Backtest combo_engine na 3d danych</strong> (1h): zobaczyć co wychodzi przy różnych score thresholds</li>
+<li><strong>Czekać na 30d cache</strong> (10-30h): pełny backtest + walidacja edge</li>
+<li><strong>Live test mikro</strong>: confluence_min ~12, $1 margin cap, 30 trades, max ryzyko $15</li>
+</ul>
+</div>
+
+<div class="box danger">
+<strong>BRUTALNA PRAWDA z poprzednich backtestów:</strong>
+<ul>
+<li>Ostatnie 20+ backtestów wszystkie FAIL (WR 0-35%, expectancy zawsze ujemna)</li>
+<li>To NIE oznacza że combo_engine też zfaili — wcześniejsze testy używały tylko 4-5 z 22 narzędzi</li>
+<li>Combo_engine używa <strong>11 narzędzi naraz</strong> = inny profil ryzyka, inny edge</li>
+<li>Decyzja "PASS / FAIL" zostanie podjęta DOPIERO PO backtescie 30d combo_engine, nie wcześniej</li>
+</ul>
+</div>
+
+<h2>7. Brakujące 10 narzędzi — plan dorobienia</h2>
+
+<p>Jeśli combo_engine v4.0 backtest = FAIL, kolejny krok to dodanie brakujących 10. Estimated total: <strong>~10-15h pracy</strong>.</p>
+
+<table>
+<tr><th>Tier</th><th>Narzędzia</th><th>Czas</th><th>Priorytet</th></tr>
+<tr><td>1</td><td>Initial Balance + ORB, ATR-based SL</td><td>~1h</td><td>WYSOKI (mechaniczne)</td></tr>
+<tr><td>2</td><td>TPO 30-min letters builder</td><td>~2h</td><td>WYSOKI (unblockuje #3-#5)</td></tr>
+<tr><td>3</td><td>Single Print proper, Poor High/Low, Day type D/P/B</td><td>~3h</td><td>ŚREDNI (po TPO)</td></tr>
+<tr><td>4</td><td>HVN/LVN detection</td><td>~30 min</td><td>ŚREDNI</td></tr>
+<tr><td>5</td><td>Failed Auction / SFP pattern</td><td>~2h</td><td>WYSOKI (dedicated swing strategy)</td></tr>
+<tr><td>6</td><td>Supply/Demand zones (cluster swing points)</td><td>~3h</td><td>NISKI (subjective autorsko, trudno automate)</td></tr>
+<tr><td>—</td><td>Severance Scalping (Chart Champions proprietary)</td><td>NIE DA SIĘ</td><td>—</td></tr>
+</table>
+
+<h2>8. Następna decyzja — Twoja</h2>
+
+<div class="box">
+<strong>Trzy ścieżki:</strong>
+<ol>
+<li><strong>A) Refactor main.py + backtest combo na 3d teraz</strong> (1h) → szybki sanity check czy 11 narzędzi razem dają sensowne scoring</li>
+<li><strong>B) Czekaj na 30d cache</strong> (jutro) + dorób brakujące 10 narzędzi w międzyczasie (~10-15h pracy) → pełen arsenał przed pierwszym backtest</li>
+<li><strong>C) Stop, przejrzyj report, daj feedback</strong> co dodać/zmienić zanim cokolwiek dalej</li>
+</ol>
+</div>
+
+<hr>
+<p style="text-align: center; color: #64748b; font-size: 0.85em; margin-top: 40px;">
+Wygenerowane: 2026-04-29 06:50 UTC &middot; Plik: <code>trading/combo_engine_report.html</code><br>
+22/32 narzędzi (69%) &middot; aggTrades cache 30d w toku &middot; Kapitał: $651 cały
+</p>
+
+</body>
+</html>

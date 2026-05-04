@@ -1,0 +1,40 @@
+# NS Pro - Static HTML site
+# Disable WordPress and PHP processing for static pages
+
+# Force index.html as default document
+DirectoryIndex index.html
+
+# Disable LiteSpeed cache
+CacheLookup off
+
+# Cache static assets
+<IfModule mod_headers.c>
+    <FilesMatch "\.(webp|png|jpg|jpeg|gif|svg|css|js|woff2|woff)$">
+        Header set Cache-Control "max-age=604800, public"
+    </FilesMatch>
+</IfModule>
+
+# GZIP compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript
+</IfModule>
+
+# Prevent WordPress from intercepting requests
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # If the request is for an existing file, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # If the request is for an existing directory with index.html, serve it
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_FILENAME}/index.html -f
+    RewriteRule ^ - [L]
+
+    # Redirect trailing slash requests to directory
+    RewriteCond %{REQUEST_URI} !/$
+    RewriteCond %{REQUEST_URI} !\.
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
+    RewriteRule ^(.*)$ /$1/ [R=301,L]
+</IfModule>

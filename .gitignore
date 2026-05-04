@@ -1,0 +1,287 @@
+# =============================================================================
+# .gitignore — Asystenci/ (root)
+# =============================================================================
+# REGUŁA NACZELNA (R1, .claude/rules/credential-protection.md):
+# Sekrety NIGDY nie wchodzą do repo. .gitignore jest pierwszą linią obrony.
+#
+# Strategia repo: pushujemy KOD (cloud/, crm/, projekty/, website/, narzedzia/,
+# marki/*/website/) — NIE pushujemy: dane biznesowe (dane/, materialy/, backup/),
+# sekrety, decyzje strategiczne, plików profilowych klientów/leadów.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1) SEKRETY I CREDENTIALS (R1 — ABSOLUTNY ZAKAZ)
+# -----------------------------------------------------------------------------
+
+# .env files (zawierają klucze API, hasła)
+.env
+.env.*
+!.env.example
+!*.env.example
+
+# OAuth client secrets (GCP, GitHub, Facebook, etc.)
+client_secret*.json
+client_secret*.txt
+*-client-secret*
+
+# Service Account JSONs (GCP, AWS service keys)
+service-account*.json
+service_account*.json
+credentials*.json
+*-credentials*.json
+gcp-oauth*.json
+
+# AWS
+.aws/credentials
+.aws/config
+*-aws-credentials*
+
+# SSH / TLS keys
+*.pem
+*.key
+!*.key.example
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+*.pfx
+*.p12
+
+# GPG / cert keys
+*.gpg
+*.asc
+secring.*
+pubring.*
+
+# Lokalne settings z hasłami
+local.settings.json
+*.local.yml
+*.local.yaml
+config.local.*
+secrets/
+secrets.json
+secrets.yaml
+secrets.yml
+
+# IDE secrets
+.vscode/settings.json
+.idea/workspace.xml
+.idea/*.local.*
+
+# -----------------------------------------------------------------------------
+# 2) DANE BIZNESOWE (NIE pushujemy do publicznego repo)
+# -----------------------------------------------------------------------------
+# Pliki kontekstowe asystentów - mają sekrety + dane strategiczne + profile klientów
+# Jeśli kiedyś ZAUFANE prywatne repo - rozważyć wyjątek
+
+# Inventory kluczy i konfiguracji
+**/api-inventory.md
+**/aws-inventory.md
+**/aws-setup-status.md
+
+# Pliki kontekstowe / strategie / decyzje
+**/dane/
+decyzje.md
+**/decyzje.md
+
+# Materiały (oferty, raporty, klienci, przetargi)
+**/materialy/
+
+# Backupy (mogą zawierać snapshoty z sekretami)
+**/backup/
+backup_*/
+*.backup
+
+# CRM dane (kontakty klientów, GDPR)
+**/crm/dane/
+**/crm/kontakty*.csv
+**/crm/kontakty*.json
+**/crm/*.db
+**/crm/*.sqlite*
+
+# -----------------------------------------------------------------------------
+# 3) DEPENDENCIES & BUILD ARTIFACTS
+# -----------------------------------------------------------------------------
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+venv/
+env/
+.venv/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Lambda packages (mogą być duże + zawierać klucze przez przypadek)
+**/lambda/package/
+**/lambda/*.zip
+**/lambda-deployment-*.zip
+
+# Lambda _build/ folders (Python deps installed for Lambda deployment)
+# Te są ODTWARZALNE z requirements.txt (`pip install -t _build/`)
+# Zawierają .so / .exe / .dist-info — niepotrzebne w repo, generowane per OS/arch
+**/_build/
+**/lambda/*/_build/
+**/layer_build/
+**/lambda/*/layer_build/
+**/lambda_layer/
+
+# Lambda deployment ZIPs (25MB każdy, generowane przez build_lambda.sh)
+**/lambda/*/deploy.zip
+**/lambda/*/deploy_*.zip
+**/lambda/*/*.zip
+*.zip
+!*.zip.example
+
+# Python distribution artifacts
+*.dist-info/
+*.egg-info/
+*.so
+*.pyd
+
+# Compiled binaries (cross-platform pollution)
+*.exe
+!website/upload.exe.example
+
+# Backtest / market data (odtwarzalne z exchange API)
+**/backtest/data/
+*.parquet
+*.feather
+
+# Duże media które są w stronach — można przewidywać optymalizację WebP w przyszłości
+# (na razie zostają — bez nich strony nie działają)
+# Decyzja CTO: zoptymalizować w przyszłości:
+# - okaytaxi/zdj/ok taki.png (26 MB) → WebP
+# - gamak/marki/padel-raze/website/zdjecia/Model 3d Pełna panorama.png (9.5 MB) → WebP
+
+# Build outputs
+dist/
+build/
+out/
+*.egg
+*.whl
+
+# -----------------------------------------------------------------------------
+# 4) IDE / EDITOR / OS
+# -----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# IDE
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.swn
+.netrwhist
+
+# -----------------------------------------------------------------------------
+# 5) LOGS & RUNTIME
+# -----------------------------------------------------------------------------
+
+# Logs
+logs/
+*.log
+log/
+*.log.*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# -----------------------------------------------------------------------------
+# 6) TEMPORARY / TRASH
+# -----------------------------------------------------------------------------
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+
+# Test artifacts
+tmp-sls-test/
+.serverless/
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# -----------------------------------------------------------------------------
+# 7) SPECYFICZNE PLIKI W TYM REPO
+# -----------------------------------------------------------------------------
+
+# Pliki które wykrył skan jako wrażliwe (21.04 i 04.05.2026)
+client_secret_2_74379878705-1ib0cgkddcjlbdo94v3ij65u464lir7j.apps.googleusercontent.com.json
+trading/skaner/lambda/.env
+trading/skaner/.env
+trading/narzedzia/webhooks/.env
+beauty/.env
+
+# Apps z launcherów (binarki / settings z tokenami)
+*.app/
+launchers/
+
+# Skrypty z hasłami w plain text
+**/upload.py
+**/deploy.sh
+!**/deploy.sh.example
+
+# -----------------------------------------------------------------------------
+# 8) DOKUMENTACJA WEWNĘTRZNA Z KONTEKSTEM BIZNESOWYM
+# -----------------------------------------------------------------------------
+
+# CLAUDE.md ma dane firmowe + układ projektu - rozważyć
+# Jeśli pushujemy tylko kod, można zostawić. Jeśli też strategie - blokuj.
+# DECYZJA: na razie zostawiamy, bo opisuje strukturę projektu (przydatne dla collaboration).
+# CLAUDE.md
+
+# Memory systemu Claude Code (auto-memory user)
+.claude/projects/
+.claude/settings.local.json
+
+# =============================================================================
+# WERYFIKACJA PRZED PIERWSZYM COMMITEM:
+#   git check-ignore -v dane/api-inventory.md   # powinno wskazać tę regułę
+#   git check-ignore -v .env                     # powinno blokować
+#   git check-ignore -v client_secret*.json      # powinno blokować
+#
+# Jeśli któreś NIE jest ignorowane → STOP, popraw .gitignore PRZED commitem.
+# =============================================================================

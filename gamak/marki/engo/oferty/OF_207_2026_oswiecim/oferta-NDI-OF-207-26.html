@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Oferta handlowa — Engo IcePanther — NDI Oddział Południe</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm 20mm 18mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; color: #1f1f1f; background: #fff; line-height: 1.45; font-size: 10.5pt; }
+  body { max-width: 210mm; margin: 0 auto; padding: 0; }
+
+  .page { page-break-after: always; min-height: 257mm; padding: 8mm 0; position: relative; }
+  .page:last-child { page-break-after: auto; }
+
+  h1 { font-size: 28pt; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; color: #1a1a1a; }
+  h2 { font-size: 14pt; font-weight: 700; color: #C8102E; text-transform: uppercase; letter-spacing: 1px; margin: 22px 0 10px; border-bottom: 2px solid #C8102E; padding-bottom: 4px; }
+  h3 { font-size: 11pt; font-weight: 700; color: #1a1a1a; margin: 14px 0 6px; }
+  p { margin-bottom: 8px; }
+  strong { color: #1a1a1a; font-weight: 600; }
+
+  /* COVER */
+  .cover { display: flex; flex-direction: column; justify-content: space-between; min-height: 257mm; padding: 12mm 0; }
+  .cover-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cover-header .brand { font-size: 22pt; font-weight: 800; color: #C8102E; letter-spacing: 1px; }
+  .cover-header .brand-sub { font-size: 9pt; color: #666; font-weight: 500; letter-spacing: 0.5px; margin-top: 2px; }
+  .cover-header .meta { text-align: right; font-size: 9.5pt; color: #666; }
+  .cover-header .meta .label { text-transform: uppercase; letter-spacing: 1px; font-size: 8pt; color: #999; }
+  .cover-header .meta .value { color: #1a1a1a; font-weight: 600; font-size: 11pt; margin-bottom: 6px; }
+
+  .cover-title { margin: 40px 0 20px; }
+  .cover-title .eyebrow { font-size: 10pt; color: #C8102E; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .cover-title h1 { font-size: 42pt; line-height: 1.05; font-weight: 800; }
+  .cover-title .subtitle { font-size: 15pt; color: #555; font-weight: 400; margin-top: 12px; }
+
+  .cover-hero { margin: 20px 0; text-align: center; }
+  .cover-hero img { max-width: 100%; max-height: 300px; object-fit: contain; }
+
+  .cover-footer { display: flex; justify-content: space-between; align-items: flex-end; font-size: 9.5pt; color: #444; border-top: 3px solid #C8102E; padding-top: 12px; margin-top: 20px; }
+  .cover-footer .block { max-width: 48%; }
+  .cover-footer .block .label { font-size: 8pt; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .cover-footer .block .name { font-weight: 700; font-size: 11pt; color: #1a1a1a; margin-bottom: 2px; }
+
+  /* PARTIES */
+  .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 10px; }
+  .party-box { padding: 14px 16px; background: #fafafa; border-left: 3px solid #C8102E; }
+  .party-box .label { font-size: 8pt; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .party-box .name { font-weight: 700; font-size: 11pt; color: #1a1a1a; margin-bottom: 3px; }
+  .party-box .line { font-size: 9.5pt; color: #333; line-height: 1.55; }
+
+  /* LETTER */
+  .letter { margin-top: 20px; }
+  .letter p { text-align: justify; margin-bottom: 10px; }
+  .letter .greeting { font-weight: 600; margin-bottom: 14px; }
+
+  /* TECH TABLE */
+  .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; margin-top: 10px; }
+  .tech-grid .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #ddd; font-size: 10pt; }
+  .tech-grid .row .k { color: #666; font-weight: 500; }
+  .tech-grid .row .v { color: #1a1a1a; font-weight: 600; text-align: right; }
+
+  .product-intro { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; align-items: flex-start; }
+  .product-intro img { width: 100%; border-radius: 4px; }
+
+  /* EQUIPMENT */
+  .equip-group { margin-top: 16px; page-break-inside: avoid; }
+  .equip-group .group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .equip-group .group-head .num { background: #C8102E; color: #fff; font-weight: 700; font-size: 9pt; padding: 3px 8px; border-radius: 2px; min-width: 26px; text-align: center; }
+  .equip-group .group-head .title { font-weight: 700; font-size: 11pt; color: #1a1a1a; text-transform: uppercase; letter-spacing: 0.5px; }
+  .equip-group ul { list-style: none; padding-left: 38px; }
+  .equip-group ul li { padding: 3px 0; font-size: 9.5pt; line-height: 1.4; color: #333; position: relative; }
+  .equip-group ul li::before { content: "—"; position: absolute; left: -16px; color: #C8102E; font-weight: 700; }
+
+  /* COMMERCIAL */
+  .price-box { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: #fff; padding: 26px 30px; border-radius: 6px; margin: 18px 0; position: relative; overflow: hidden; }
+  .price-box::after { content: ""; position: absolute; top: 0; right: 0; width: 140px; height: 100%; background: #C8102E; clip-path: polygon(40% 0, 100% 0, 100% 100%, 0% 100%); opacity: 0.85; }
+  .price-box .label { font-size: 9pt; text-transform: uppercase; letter-spacing: 2px; color: #C8102E; font-weight: 700; margin-bottom: 10px; position: relative; z-index: 2; }
+  .price-box .price-eur { font-size: 36pt; font-weight: 800; line-height: 1; letter-spacing: -1px; position: relative; z-index: 2; }
+  .price-box .price-pln { font-size: 18pt; font-weight: 600; color: #f0f0f0; margin-top: 8px; position: relative; z-index: 2; }
+  .price-box .price-sub { font-size: 9pt; color: #aaa; margin-top: 10px; position: relative; z-index: 2; }
+
+  .terms-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .terms-table tr td { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 10pt; vertical-align: top; }
+  .terms-table tr td:first-child { color: #666; font-weight: 500; width: 40%; }
+  .terms-table tr td:last-child { color: #1a1a1a; font-weight: 600; }
+
+  .fine-print { font-size: 8.5pt; color: #777; line-height: 1.5; margin-top: 14px; font-style: italic; }
+
+  /* SIGNATURE */
+  .signature { margin-top: 40px; }
+  .signature .intro { font-size: 10pt; margin-bottom: 40px; }
+  .signature .line { border-bottom: 1px solid #333; width: 240px; margin-bottom: 8px; }
+  .signature .name { font-weight: 700; font-size: 11pt; }
+  .signature .position { font-size: 9.5pt; color: #666; }
+  .signature .company { margin-top: 14px; font-size: 9pt; color: #555; }
+
+  .page-footer { position: absolute; bottom: 8mm; left: 0; right: 0; display: flex; justify-content: space-between; font-size: 7.5pt; color: #aaa; border-top: 1px solid #eee; padding-top: 6px; letter-spacing: 0.5px; }
+
+  .note-producer { font-size: 8.5pt; color: #888; border-top: 1px solid #eee; padding-top: 10px; margin-top: 30px; }
+
+  @media print {
+    .page { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= STRONA 1: OKŁADKA ======================= -->
+<section class="page cover">
+  <div class="cover-header">
+    <div>
+      <div class="brand">GAMAK</div>
+      <div class="brand-sub">INFRASTRUKTURA SPORTOWA · www.gamak.eu</div>
+    </div>
+    <div class="meta">
+      <div class="label">Numer oferty</div>
+      <div class="value">OF/207/26</div>
+      <div class="label">Data wystawienia</div>
+      <div class="value">21.04.2026</div>
+      <div class="label">Ważność</div>
+      <div class="value">60 dni (do 20.06.2026)</div>
+    </div>
+  </div>
+
+  <div class="cover-title">
+    <div class="eyebrow">Oferta handlowa</div>
+    <h1>Engo IcePanther</h1>
+    <div class="subtitle">Elektryczna rolba do pielęgnacji lodu — nowa generacja</div>
+  </div>
+
+  <div class="cover-hero">
+    <img src="images/image5.png" alt="Engo IcePanther — elektryczna rolba">
+  </div>
+
+  <div class="cover-footer">
+    <div class="block">
+      <div class="label">Oferta dla</div>
+      <div class="name">NDI Oddział Południe</div>
+      <div>Grupa NDI · Sz. P. Kinga Radzik</div>
+      <div>ul. Powstańców Warszawy 19, 81-718 Sopot</div>
+    </div>
+    <div class="block" style="text-align: right;">
+      <div class="label">Wystawca</div>
+      <div class="name">Gamak Sp. z o.o.</div>
+      <div>Wiesław Klimczak · Dyrektor Generalny</div>
+      <div>Jastrzębie-Zdrój · www.gamak.eu</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= STRONA 2: STRONY I LIST PRZEWODNI ======================= -->
+<section class="page">
+  <h2>Strony oferty</h2>
+  <div class="parties">
+    <div class="party-box">
+      <div class="label">Oferta dla — Odbiorca</div>
+      <div class="name">NDI Oddział Południe</div>
+      <div class="line">
+        Grupa NDI<br>
+        ul. Powstańców Warszawy 19<br>
+        81-718 Sopot<br><br>
+        Sz. P. <strong>Kinga Radzik</strong><br>
+        Inżynier Budowy<br>
+        tel. +48 510 435 824<br>
+        kradzik@ndi.com.pl
+      </div>
+    </div>
+    <div class="party-box">
+      <div class="label">Wystawca — Oferent</div>
+      <div class="name">Gamak Sp. z o.o.</div>
+      <div class="line">
+        ul. Towarowa 9<br>
+        44-337 Jastrzębie-Zdrój<br>
+        www.gamak.eu<br><br>
+        <strong>Wiesław Klimczak</strong><br>
+        Dyrektor Generalny<br>
+        tel. +48 662 073 590<br>
+        wklimczak.sportmanager@gmail.com
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:22px; color:#666; font-weight:500; font-size:10pt;">Miejsce dostawy</h3>
+  <div style="padding: 10px 14px; background: #fafafa; border-left: 3px solid #1a1a1a; font-size: 10pt;">
+    <strong>Lodowisko Oświęcim</strong><br>
+    ul. Chemików 4, 32-600 Oświęcim
+  </div>
+
+  <h2>List przewodni</h2>
+  <div class="letter">
+    <p class="greeting">Szanowna Pani Kingo,</p>
+    <p>dziękujemy za zainteresowanie naszą ofertą. Z przyjemnością przedstawiamy propozycję handlową na dostawę <strong>Engo IcePanther</strong> — elektrycznej rolby do pielęgnacji lodu, zaprojektowanej dla obiektów lodowiskowych o powierzchni do 2 500 m².</p>
+    <p>IcePanther to najnowsza generacja maszyn Engo: zero emisji lokalnych, automatyczny cykl pielęgnacji lodu (AUTO MODE), zdalne zarządzanie przez system SmartConnect oraz 60-miesięczna gwarancja producenta. Dzięki w pełni elektrycznemu napędowi (6 silników asynchronicznych) maszyna jest idealna zarówno dla obiektów krytych, jak i otwartych.</p>
+    <p>Gamak Sp. z o.o. jako wyłączny dystrybutor marki Engo na rynku polskim zapewnia kompleksową obsługę przedsprzedażową i posprzedażową — dostawę (DAP Oświęcim), uruchomienie maszyny, szkolenie operatorów na miejscu oraz serwis gwarancyjny i pogwarancyjny.</p>
+    <p>W dalszej części oferty znajdą Państwo pełną specyfikację techniczną, konfigurację wyposażenia standardowego (30 pozycji), warunki handlowe oraz cenę — podaną w EUR i PLN netto.</p>
+    <p style="margin-top:18px;">Pozostajemy do Państwa dyspozycji.</p>
+    <p><strong>Wiesław Klimczak</strong> · Dyrektor Generalny, Gamak Sp. z o.o.</p>
+  </div>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 2/7</span>
+  </div>
+</section>
+
+<!-- ======================= STRONA 3: PRODUKT + DANE TECHNICZNE ======================= -->
+<section class="page">
+  <h2>Produkt · Engo IcePanther</h2>
+  <div class="product-intro">
+    <div>
+      <h3>Elektryczna rolba nowej generacji</h3>
+      <p>Rolba elektryczna Engo IcePanther łączy najnowsze rozwiązania technologiczne z wyjątkową ergonomią i intuicyjną obsługą. Jest to referencyjny produkt w segmencie maszyn do pielęgnacji lodu — wyznacza nowe standardy pod względem wzornictwa, efektywności, precyzji pracy i zrównoważonego rozwoju.</p>
+      <p>Maszyna dedykowana jest obiektom krytym oraz otwartym o powierzchni lodu do 2 500 m². Wymiary 4 160 × 2 150 × 2 175 mm, masa własna 3 900 kg. Dodatkowo oferuje wiele nowoczesnych funkcji: opcję reklamy LED, pomiar grubości lodu, siedzenie pasażera oraz technologię litową nowej generacji.</p>
+      <h3>Producent</h3>
+      <p>Engo S.r.l. (Włochy) — część grupy TechnoAlpin Holding SpA. Gamak Sp. z o.o. jest <strong>wyłącznym dystrybutorem</strong> marki Engo na rynku polskim.</p>
+    </div>
+    <div>
+      <img src="images/image3.jpg" alt="Engo IcePanther — widok produktu">
+    </div>
+  </div>
+
+  <h2>Dane techniczne</h2>
+  <div class="tech-grid">
+    <div class="row"><span class="k">Waga (pusta / załadowana)</span><span class="v">3 900 / 5 200 kg</span></div>
+    <div class="row"><span class="k">Opony</span><span class="v">245/75 R17.5</span></div>
+    <div class="row"><span class="k">Prędkość robocza</span><span class="v">0–13 km/h</span></div>
+    <div class="row"><span class="k">Napęd</span><span class="v">6 silników elektrycznych asynchronicznych</span></div>
+    <div class="row"><span class="k">Szerokość ostrza</span><span class="v">2 000–2 300 mm</span></div>
+    <div class="row"><span class="k">Zbiornik śniegu</span><span class="v">3,0 m³ (skompr. 3,8 m³)</span></div>
+    <div class="row"><span class="k">Zbiornik wody</span><span class="v">1 500 l</span></div>
+    <div class="row"><span class="k">Powierzchnia lodu</span><span class="v">do 2 500 m²</span></div>
+    <div class="row"><span class="k">Bateria</span><span class="v">Waterless 80 V / 800 Ah</span></div>
+    <div class="row"><span class="k">Ładowarka</span><span class="v">Fronius Selectiva 4.0 — 16 kW</span></div>
+    <div class="row"><span class="k">Wymiary (dł × szer × wys)</span><span class="v">4 160 × 2 150 × 2 175 mm</span></div>
+    <div class="row"><span class="k">Kolorystyka</span><span class="v">RAL 3020 Red · RAL 9016 White</span></div>
+    <div class="row"><span class="k">Emisja lokalna</span><span class="v">0 (pełna elektryka)</span></div>
+    <div class="row"><span class="k">Gwarancja</span><span class="v">60 miesięcy</span></div>
+  </div>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 3/7</span>
+  </div>
+</section>
+
+<!-- ======================= STRONA 4: WYPOSAŻENIE STANDARDOWE ======================= -->
+<section class="page">
+  <h2>Wyposażenie standardowe</h2>
+  <p style="font-size:10pt; color:#666;">Konfiguracja obejmuje 30 pozycji wyposażenia standardowego i opcjonalnego, zgodnie z ofertą producenta Engo OF/207/26 z dnia 23.02.2026.</p>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">01</span><span class="title">Engo IcePanther — systemy bezpieczeństwa</span></div>
+    <ul>
+      <li>System szybkiej wymiany ostrza (Quick-blade change, Engo 1997)</li>
+      <li>System przedmuchu augerów (Auger washout, Engo 2001)</li>
+      <li>Wyłącznik bezpieczeństwa zbiornika śniegu i conditionera</li>
+      <li>Wyłącznik awaryjny (Emergency/Off)</li>
+      <li>Sygnał akustyczny jazdy wstecz, pracy zbiornika śniegu, cofania augera</li>
+      <li>Hamulce olejowe ze wspomaganiem na 4 kołach + hamulec ręczny (negatywny)</li>
+      <li>Zaczep holowniczy</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">·</span><span class="title">Oświetlenie</span></div>
+    <ul>
+      <li>4 reflektory przednie LED + 2 tylne lampy LED</li>
+      <li>Światła LED do jazdy dziennej</li>
+      <li>Reflektory LED w zbiorniku śniegu</li>
+      <li>Kogut LED (rotating beacon)</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">·</span><span class="title">Układ hydrauliczny i napęd</span></div>
+    <ul>
+      <li>Cylindry hydrauliczne zbiornika śniegu i conditionera</li>
+      <li>Hydrauliczna regulacja głębokości ostrza</li>
+      <li>Hydraulicznie napędzana szczotka boczna</li>
+      <li>Hydrauliczna pompa awaryjna</li>
+      <li>DRIVE: bezpośredni elektromechaniczny napęd 4×4 z oponami kolczastymi</li>
+      <li>Silniki asynchroniczne bezobsługowe (napęd + augery)</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">·</span><span class="title">Kokpit i sterowanie (standard)</span></div>
+    <ul>
+      <li>Zawieszony, regulowany fotel z podłokietnikiem i pasem bezpieczeństwa</li>
+      <li>Regulowana kierownica + pedały gaz/hamulec + wspomaganie</li>
+      <li>Dźwignia kierunku D/N/R + CRUISE CONTROL</li>
+      <li>Wyświetlacz kolorowy 7,0" dotykowy + klawiatura CAN-BUS + USB</li>
+      <li>Lusterka boczne (opcja z ogrzewaniem)</li>
+      <li>Fotel pasażera z pasem bezpieczeństwa</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">·</span><span class="title">Zbiorniki i układ wodny</span></div>
+    <ul>
+      <li>Stalowy zbiornik śniegu malowany proszkowo, poj. 3,0 m³ (skompr. 3,8 m³)</li>
+      <li>Zbiornik wody PE-HD o pojemności maks. 1 500 l</li>
+      <li>Conditioner stalowy cynkowany + malowany proszkowo, szer. 2 300 mm</li>
+      <li>System napełniania wody z automatycznym stopem po obu stronach</li>
+      <li>Ręcznie regulowany spust wody + automatyczny zawór odcinający</li>
+      <li>Czujnik temperatury wody + cyfrowy wskaźnik poziomu</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 4/7</span>
+  </div>
+</section>
+
+<!-- ======================= STRONA 5: WYPOSAŻENIE OPCJONALNE ======================= -->
+<section class="page">
+  <h2>Wyposażenie zaawansowane i opcjonalne</h2>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">02</span><span class="title">Bateria Waterless 800 Ah · 80 V</span></div>
+    <ul>
+      <li>Sprawdzona bateria kwasowo-ołowiowa o minimalnych wymaganiach serwisowych</li>
+      <li>Napięcie 80 V, pojemność 800 Ah, ok. 1 400 cykli ładowania</li>
+      <li>Gotowa do natychmiastowego użycia, stabilna dostarczana energia</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">03</span><span class="title">Ładowarka Fronius Selectiva 4.0 8120 · 16 kW</span></div>
+    <ul>
+      <li>Napięcie wejściowe: 400 V AC (±10% do +30%), 50 Hz, moc 14,83 kW</li>
+      <li>Prąd ładowania: 120 A nominalny · napięcie wyjściowe: 80 V</li>
+      <li>Proces Ri charging — sprawność systemu do 84%, wydłużona żywotność baterii</li>
+      <li>Praca: -20°C do +40°C · IP20 · 32,5 kg</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">04–06</span><span class="title">System wodny rozbudowany</span></div>
+    <ul>
+      <li>Zbiornik PE-HD 1 000 l (centralne umiejscowienie) z indykatorem poziomu, przelewem, spustem</li>
+      <li>Zawór napełniający elektryczny (programowalny, automatyczne zamykanie)</li>
+      <li>Czujnik poziomu wody w zbiorniku z wyświetlaniem na ekranie</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">07</span><span class="title">Pro Cockpit — wyświetlacz 10" HD + 7" + joystick ergonomiczny</span></div>
+    <ul>
+      <li>Dodatkowy wyświetlacz 10,0" HD dotykowy (obok standardowego 7,0")</li>
+      <li>Prezentuje: RPM augera, poziom wody, głębokość side cutter, funkcje AUTO, widok kamery</li>
+      <li>Ergonomiczny joystick — wszystkie główne funkcje obsługiwane bez podnoszenia ręki</li>
+      <li>Kompletny przegląd maszyny z jednego miejsca · kokpit bez rozproszenia</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">08</span><span class="title">AUTO MODE — autonomiczny cykl pielęgnacji</span></div>
+    <ul>
+      <li>Maszyna sama zarządza cyklem: augery, zawór wody, pozycja ostrzy</li>
+      <li>Automatyczne dopasowanie głębokości cięcia i ilości wody (oparte na sensorach)</li>
+      <li>Proaktywne korekty — wykrywanie problemów zanim wpłyną na jakość lodu</li>
+      <li>Operator odpowiada tylko za kierowanie i jazdę — reszta automatycznie</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">09–11</span><span class="title">Komfort operatora</span></div>
+    <ul>
+      <li>Elektryczna szmata ścierająca (Wiping cloth electric) — sterowanie z kokpitu / AUTO MODE</li>
+      <li>Fotel COBO Comfort — zawieszenie mechaniczne, skóra syntetyczna premium, podłokietnik, pas bezpieczeństwa, regulacja pion/poziom</li>
+      <li>Lusterko boczne standard (tylne prawe)</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">12–13</span><span class="title">Side Edger · szczotka boczna zintegrowana</span></div>
+    <ul>
+      <li>ICE EDGER Ø 350 mm — precyzyjne frezowanie lodu przy bandach</li>
+      <li>Elektryczna regulacja głębokości z fotela operatora + system tłumienia drgań</li>
+      <li>Frezowanie + zamiatanie + zdrapywanie w jednym przejeździe (Cruise Control)</li>
+      <li>Światło robocze dla szczotki bocznej / edgera</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">14–17</span><span class="title">Systemy mycia wysokociśnieniowego</span></div>
+    <ul>
+      <li>Pompa wysokociśnieniowa AC dla wszystkich systemów mycia</li>
+      <li>IWS — Ice Washing System (mycie rowków w lodzie)</li>
+      <li>TWS — Tank Washing System (mycie zbiornika śniegu)</li>
+      <li>WWS — Wheel Washing System (mycie kół przed wjazdem na lód)</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 5/7</span>
+  </div>
+</section>
+
+<!-- ======================= STRONA 6: DOKOŃCZENIE WYPOSAŻENIA ======================= -->
+<section class="page">
+  <h2>Wyposażenie zaawansowane — ciąg dalszy</h2>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">18</span><span class="title">SolidICE™ — SPEEDfreeze™ · nowa era tworzenia lodu</span></div>
+    <ul>
+      <li>Najważniejszy przełom technologiczny od momentu wynalezienia rolby</li>
+      <li>Lód bezpieczniejszy, gładszy, szybszy i twardszy — zmniejszenie kolein i śniegu</li>
+      <li>System natryskowy tworzy mgłę wodną — szybkie zamarzanie i bondowanie</li>
+      <li>Oszczędności energii, mniej kontuzji operatora (brak starej "metody węża")</li>
+      <li>Sterowanie przepływem wody w czasie rzeczywistym · live data (prędkość, przepływ, temperatura)</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">19–23</span><span class="title">Sanki N200 i części robocze</span></div>
+    <ul>
+      <li>Sanki N200 Schlitten 2,15 m — stal cynkowana + malowana proszkowo</li>
+      <li>Komplet ostrzy stalowych specjalnych 2 150 mm (zestaw 2 szt.)</li>
+      <li>Frottee — 2 szt. ścierek z terry cloth (czyszczenie)</li>
+      <li>Łożyska augerów z smarowaniem (easy-access lube lines)</li>
+      <li>Zabezpieczenie anty-wywrotne conditionera z elementem gumowym</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">24–27</span><span class="title">Lakierowanie, opony, akcesoria</span></div>
+    <ul>
+      <li>Standardowe malowanie Engo — korpus RAL 3020 Pure Red · zbiornik RAL 9016 Arctic White</li>
+      <li>Komplet opon 225/75 R16 z lakierowanymi felgami</li>
+      <li>Koło zapasowe (studded) z felgą lakierowaną 8-otworową</li>
+      <li>Skrzynka narzędziowa z wyposażeniem serwisowym</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">28</span><span class="title">SmartConnect — zdalne zarządzanie (Proemion Cloud)</span></div>
+    <ul>
+      <li>Rejestracja danych maszyny w czasie rzeczywistym (bateria, cykle, parametry)</li>
+      <li>Upload do chmury co 2 minuty — historia danych, zdalna diagnostyka</li>
+      <li>Dostęp przez aplikację mobilną lub portal webowy</li>
+      <li>Zdalne zmiany ustawień (np. prędkość szczotki, menu serwisowe)</li>
+      <li>Serwery danych w UE</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">29</span><span class="title">Gwarancja rozszerzona 60 miesięcy</span></div>
+    <ul>
+      <li>Komponenty elektroniczne/elektryczne, baterie, mechanika, hydraulika</li>
+      <li>Wymaga kontraktu serwisowego (2 inspekcje rocznie + wymiana części eksploatacyjnych)</li>
+      <li>Serwis w Polsce: Gamak Sp. z o.o. — autoryzowany dystrybutor Engo</li>
+    </ul>
+  </div>
+
+  <div class="equip-group">
+    <div class="group-head"><span class="num">30</span><span class="title">Szkolenie operatorów on-site</span></div>
+    <ul>
+      <li>Szkolenie personelu obsługującego rolbę przez wyspecjalizowanych techników Engo</li>
+      <li>Realizowane na obiekcie klienta (Lodowisko Oświęcim)</li>
+      <li>Zakres: obsługa, AUTO MODE, serwis rutynowy, wymiana ostrza, BHP</li>
+    </ul>
+  </div>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 6/7</span>
+  </div>
+</section>
+
+<!-- ======================= STRONA 7: CENA + WARUNKI + PODPIS ======================= -->
+<section class="page">
+  <h2>Cena i warunki handlowe</h2>
+
+  <div class="price-box">
+    <div class="label">Cena netto — Engo IcePanther (konfiguracja 30 pozycji)</div>
+    <div class="price-eur">182 164,00 EUR</div>
+    <div class="price-pln">≈ 771 553,70 PLN netto</div>
+    <div class="price-sub">Kurs NBP Tab. A nr 074/A/NBP/2026 z 17.04.2026: 1 EUR = 4,2355 PLN · Transport DAP Oświęcim uwzględniony</div>
+  </div>
+
+  <table class="terms-table">
+    <tr><td>Waluta rozliczenia</td><td>EUR (możliwe rozliczenie w PLN wg kursu NBP z dnia wystawienia faktury)</td></tr>
+    <tr><td>Warunki dostawy</td><td>DAP Oświęcim (Incoterms 2020) — koszt transportu w cenie</td></tr>
+    <tr><td>Termin dostawy</td><td>6–8 miesięcy od daty zamówienia i kompletnej dokumentacji technicznej</td></tr>
+    <tr><td>Warunki płatności</td><td>Zgodnie z warunkami przetargu / do uzgodnienia</td></tr>
+    <tr><td>Ważność oferty</td><td>60 dni — do 20.06.2026</td></tr>
+    <tr><td>VAT</td><td>Do ceny netto doliczany jest VAT zgodnie z obowiązującą stawką</td></tr>
+    <tr><td>Podstawa specyfikacji</td><td>Oferta producenta Engo S.r.l. nr OF/207/26 z dnia 23.02.2026</td></tr>
+  </table>
+
+  <h2>Gwarancja</h2>
+  <p>Gwarancja producenta: <strong>60 miesięcy</strong> od daty uruchomienia maszyny. Warunkiem utrzymania gwarancji jest podpisanie kontraktu serwisowego z autoryzowanym serwisem (2 inspekcje rocznie z prewencyjną wymianą materiałów eksploatacyjnych). Serwis gwarancyjny i pogwarancyjny w Polsce zapewnia <strong>Gamak Sp. z o.o.</strong> jako wyłączny autoryzowany dystrybutor Engo.</p>
+
+  <div class="signature">
+    <p class="intro">Dziękujemy za rozważenie naszej oferty. Pozostajemy do Państwa dyspozycji w sprawie pytań, negocjacji warunków oraz ustaleń technicznych.</p>
+    <p>Z poważaniem,</p>
+    <div style="margin-top:48px;">
+      <div class="line"></div>
+      <div class="name">Wiesław Klimczak</div>
+      <div class="position">Dyrektor Generalny</div>
+      <div class="company">Gamak Sp. z o.o. · ul. Towarowa 9, 44-337 Jastrzębie-Zdrój<br>
+      tel. +48 662 073 590 · wklimczak.sportmanager@gmail.com · www.gamak.eu</div>
+    </div>
+  </div>
+
+  <p class="note-producer"><strong>Producent rolby:</strong> Engo S.r.l., Via Forch 9, I-39040 Varna (BZ), Włochy · www.engo-ice.com · część grupy TechnoAlpin Holding SpA. Gamak Sp. z o.o. jest wyłącznym autoryzowanym dystrybutorem marki Engo na rynku polskim. Warunki ogólne sprzedaży producenta: www.engo-ice.com.</p>
+
+  <div class="page-footer">
+    <span>Oferta OF/207/26 · Engo IcePanther · 21.04.2026</span>
+    <span>Gamak Sp. z o.o. · www.gamak.eu · 7/7</span>
+  </div>
+</section>
+
+</body>
+</html>

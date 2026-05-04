@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | PADEL RAZE — Wiedza o kortach padel, dofinansowaniach i inwestycjach</title>
+    <meta name="description" content="Blog PADEL RAZE — artykuły o budowie kortów padel, dofinansowaniach MSiT, kosztach inwestycji i rynku padel w Polsce. Wiedza dla samorządów i inwestorów.">
+    <link rel="canonical" href="https://padelraze.com/blog/">
+    <link rel="alternate" hreflang="pl" href="https://padelraze.com/blog/">
+    <meta property="og:title" content="Blog | PADEL RAZE — Wiedza o kortach padel">
+    <meta property="og:description" content="Artykuły o budowie kortów padel, dofinansowaniach MSiT, kosztach inwestycji i rynku padel w Polsce.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://padelraze.com/blog/">
+    <meta property="og:image" content="https://padelraze.com/padel-court-hero-bg.png">
+    <meta property="og:locale" content="pl_PL">
+    <meta property="og:site_name" content="PADEL RAZE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Blog | PADEL RAZE — Wiedza o kortach padel">
+    <meta name="twitter:description" content="Artykuły o budowie kortów padel, dofinansowaniach MSiT, kosztach inwestycji i rynku padel w Polsce.">
+    <link rel="icon" type="image/png" href="../padel-raze-logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Blog PADEL RAZE",
+        "description": "Wiedza o kortach padel, dofinansowaniach i inwestycjach w infrastrukturę sportową",
+        "url": "https://padelraze.com/blog/",
+        "publisher": {
+            "@type": "Organization",
+            "name": "PADEL RAZE",
+            "url": "https://padelraze.com/",
+            "logo": "https://padelraze.com/padel-raze-logo.png"
+        }
+    }
+    </script>
+</head>
+<body class="bg-dark text-white font-montserrat overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-95 border-b border-gray-800 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="flex items-center">
+                <img src="../padel-raze-logo.png" alt="PADEL RAZE" class="h-20 md:h-28 transition-transform hover:scale-105">
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="/#technologia" class="hover:text-neon-green transition-colors text-sm uppercase font-semibold tracking-widest">Technologia</a>
+                <a href="/#modele" class="hover:text-neon-green transition-colors text-sm uppercase font-semibold tracking-widest">Modele</a>
+                <a href="/#jst" class="hover:text-neon-green transition-colors text-sm uppercase font-semibold tracking-widest">Dla JST</a>
+                <a href="/blog/" class="text-neon-green transition-colors text-sm uppercase font-semibold tracking-widest">Blog</a>
+                <div class="flex items-center space-x-2 text-xs font-semibold tracking-widest">
+                    <a href="/" class="text-neon-green">PL</a>
+                    <span class="text-gray-600">·</span>
+                    <a href="/en/" class="text-gray-400 hover:text-white transition-colors">EN</a>
+                    <span class="text-gray-600">·</span>
+                    <a href="/sk/" class="text-gray-400 hover:text-white transition-colors">SK</a>
+                </div>
+                <a href="/#kontakt" class="bg-neon-green text-dark px-6 py-2 rounded-none font-bold text-sm uppercase tracking-widest hover:bg-white hover:text-dark transition-all transform hover:skew-x-12">Wycena</a>
+            </div>
+            <button class="md:hidden text-white focus:outline-none" id="mobileMenuBtn">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+        <div class="hidden md:hidden bg-black bg-opacity-95 border-t border-gray-800 px-6 py-4 space-y-3" id="mobileMenu">
+            <a href="/#technologia" class="block text-sm uppercase font-semibold tracking-widest hover:text-neon-green">Technologia</a>
+            <a href="/#modele" class="block text-sm uppercase font-semibold tracking-widest hover:text-neon-green">Modele</a>
+            <a href="/#jst" class="block text-sm uppercase font-semibold tracking-widest hover:text-neon-green">Dla JST</a>
+            <a href="/blog/" class="block text-sm uppercase font-semibold tracking-widest text-neon-green">Blog</a>
+            <a href="/#kontakt" class="block bg-neon-green text-dark px-6 py-2 font-bold text-sm uppercase tracking-widest text-center">Wycena</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="pt-40 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-4">BLOG</h1>
+            <p class="text-gray-400 text-lg max-w-2xl">Wiedza o kortach padel, dofinansowaniach, kosztach inwestycji i rynku padel w Polsce. Dla samorządów, klubów i inwestorów.</p>
+            <div class="w-20 h-1 bg-neon-green mt-6"></div>
+        </div>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="pb-20">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <!-- NEW: Co to jest padel -->
+                <a href="/blog/co-to-jest-padel" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Poradnik</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Co to jest padel? Zasady gry, sprzęt i dlaczego warto zacząć</h2>
+                        <p class="text-gray-400 text-sm mb-4">Kompletny przewodnik po najszybciej rosnącym sporcie na świecie. Zasady, sprzęt, koszty i dlaczego miliony ludzi się uzależnia.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>8 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NEW: Padel vs tenis -->
+                <a href="/blog/padel-vs-tenis-roznice" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Poradnik</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Padel vs tenis — 7 kluczowych różnic, które musisz znać</h2>
+                        <p class="text-gray-400 text-sm mb-4">Porównanie kortu, zasad, sprzętu, trudności i kosztów. Który sport jest dla Ciebie?</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>7 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NEW: Padel w gminie -->
+                <a href="/blog/padel-w-gminie-przewodnik" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Samorządy</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Padel w gminie — jak przekonać radnych i zdobyć dofinansowanie</h2>
+                        <p class="text-gray-400 text-sm mb-4">Argumenty, źródła finansowania, procedura przetargowa i harmonogram realizacji. Przewodnik dla JST.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>9 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 1 -->
+                <a href="/blog/producenci-kortow-padel-polska" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Rynek</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Producenci i dystrybutorzy kortów padel w Polsce [2026]</h2>
+                        <p class="text-gray-400 text-sm mb-4">Kompletny przegląd firm oferujących korty padel na polskim rynku. Kto produkuje, kto importuje, czym się różnią i jak wybrać dostawcę.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>10 marca 2026</span>
+                            <span>8 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 2 -->
+                <a href="/blog/ile-kosztuje-kort-padel" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Koszty</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Ile kosztuje kort padel pod klucz w 2026 roku?</h2>
+                        <p class="text-gray-400 text-sm mb-4">Realne widełki cenowe, co wpływa na koszt, różnice między modelami i ukryte koszty o których nikt nie mówi.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>10 marca 2026</span>
+                            <span>10 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 3 -->
+                <a href="/blog/dofinansowanie-kort-padel-msit" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Dofinansowanie</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Dofinansowanie na kort padel z MSiT — przewodnik 2026</h2>
+                        <p class="text-gray-400 text-sm mb-4">Jak samorząd może uzyskać do 80% dofinansowania na budowę kortu padel. Program, terminy, wymagania i dokumenty.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>11 marca 2026</span>
+                            <span>7 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 4 -->
+                <a href="/blog/budowa-kortu-padel-poradnik" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Poradnik</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Budowa kortu padel — kompletny poradnik od A do Z</h2>
+                        <p class="text-gray-400 text-sm mb-4">Fundament, konstrukcja, szkło, nawierzchnia, oświetlenie, certyfikaty. Co musisz wiedzieć przed inwestycją w kort padel.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>11 marca 2026</span>
+                            <span>12 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 5 -->
+                <a href="/blog/certyfikaty-kort-padel" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Certyfikaty</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Certyfikaty kortów padel — co musi mieć kort w przetargu?</h2>
+                        <p class="text-gray-400 text-sm mb-4">UDEM, TÜV, EN 12150, EN 10219. Jakie certyfikaty wymagają samorządy i dlaczego to kluczowe w przetargach publicznych.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>11 marca 2026</span>
+                            <span>6 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 6 -->
+                <a href="/blog/roi-kort-padel-inwestycja" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Inwestycja</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Czy kort padel się opłaca? Analiza ROI dla klubów i samorządów</h2>
+                        <p class="text-gray-400 text-sm mb-4">Przychody, koszty utrzymania, zwrot z inwestycji. Realny obraz rentowności kortu padel w polskich warunkach.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>11 marca 2026</span>
+                            <span>9 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NEW: Wymiary kortu padel -->
+                <a href="/blog/wymiary-kortu-padel" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Specyfikacja</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Wymiary kortu padel — specyfikacja techniczna i normy FIP</h2>
+                        <p class="text-gray-400 text-sm mb-4">Oficjalne wymiary 20×10m, wysokość ścian, strefy bezpieczeństwa i ile miejsca realnie potrzebujesz.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>6 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NEW: Outdoor vs indoor -->
+                <a href="/blog/kort-padel-outdoor-vs-indoor" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Poradnik</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Kort padel outdoor vs indoor — co wybrać w polskim klimacie?</h2>
+                        <p class="text-gray-400 text-sm mb-4">Porównanie kosztów, sezonu gry, wymagań technicznych i rentowności. Praktyczny poradnik dla inwestorów.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>8 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NEW: Utrzymanie kortu padel -->
+                <a href="/blog/utrzymanie-kortu-padel" class="group block bg-dark-lighter border border-gray-800 hover:border-neon-green transition-all duration-300">
+                    <div class="p-6">
+                        <div class="text-neon-green text-xs font-bold uppercase tracking-widest mb-3">Eksploatacja</div>
+                        <h2 class="text-xl font-bold mb-3 group-hover:text-neon-green transition-colors">Utrzymanie kortu padel — koszty, harmonogram i najczęstsze błędy</h2>
+                        <p class="text-gray-400 text-sm mb-4">Ile kosztuje utrzymanie rocznie? Harmonogram konserwacji i błędy które skracają żywotność kortu.</p>
+                        <div class="flex items-center justify-between text-xs text-gray-600">
+                            <span>24 marca 2026</span>
+                            <span>7 min czytania</span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">Planujesz budowę kortu padel?</h2>
+            <p class="text-gray-400 mb-8">Skontaktuj się — przygotujemy indywidualną wycenę i doradzimy najlepsze rozwiązanie.</p>
+            <a href="/#kontakt" class="bg-neon-green text-dark px-8 py-4 font-bold uppercase tracking-widest hover:bg-white transition-all inline-block">Zapytaj o wycenę</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark py-10 border-t border-gray-800">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center">
+                <img src="../padel-raze-logo.png" alt="PADEL RAZE" class="h-12 mr-4 opacity-70">
+                <div class="text-gray-500 text-xs">
+                    &copy; 2026 PADEL RAZE<br>
+                    Powered by <span class="text-white font-bold">GAMAK</span>
+                </div>
+            </div>
+            <div class="text-center text-gray-600 text-xs">
+                Realizacje: Polska · JST · Kluby Prywatne
+            </div>
+            <div class="text-right text-gray-600 text-xs">
+                <div>contact@padelraze.com</div>
+                <div class="mt-1">Inżynieria z pasji do dominacji.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

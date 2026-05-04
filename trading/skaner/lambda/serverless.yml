@@ -1,0 +1,291 @@
+# ==============================================================================
+# Serverless Framework — Trading Scanner
+# ==============================================================================
+# Infrastructure-as-Code dla AWS Lambda + EventBridge + CloudWatch + IAM
+#
+# Dzieki temu plikowi cala infra powstaje 1 komenda:
+#     serverless deploy --stage prod
+#
+# i rollback:
+#     serverless remove --stage prod
+#
+# ------------------------------------------------------------------------------
+# SETUP (jednorazowy):
+# ------------------------------------------------------------------------------
+# 1. Zainstaluj Node.js 20+ (https://nodejs.org)
+# 2. Zainstaluj Serverless Framework globalnie:
+#       npm install -g serverless
+# 3. Zainstaluj pluginy w katalogu lambda/:
+#       cd trading/skaner/lambda
+#       npm init -y
+#       npm install --save-dev serverless-python-requirements serverless-dotenv-plugin
+# 4. Skonfiguruj klucze IAM user "claude-trading-lambda" (z Faza 0.5 guide'a):
+#       serverless config credentials --provider aws --key AKIA... --secret ...
+# 5. Skopiuj .env z katalogu glownego do lambda/.env (lub ustaw env vars w shellu)
+# 6. Deploy:
+#       serverless deploy --stage prod --region eu-central-1
+# ------------------------------------------------------------------------------
+
+service: trading-scanner
+
+frameworkVersion: '4'
+
+# ==============================================================================
+# PROVIDER — konfiguracja AWS
+# ==============================================================================
+provider:
+  name: aws
+  runtime: python3.12
+  architecture: x86_64
+  region: ${opt:region, 'eu-central-1'}   # Frankfurt — domyslnie
+  stage: ${opt:stage, 'prod'}
+  memorySize: 512                          # MB — 2x memory = 2x CPU
+  timeout: 300                             # sekund (5 min)
+  logRetentionInDays: 14                   # CloudWatch retencja (cloud_safety I.1: 14d dla prod)
+
+  # Environment variables dla Lambdy (z lambda/.env dzieki serverless-dotenv-plugin)
+  environment:
+    TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
+    TELEGRAM_CHAT_ID: ${env:TELEGRAM_CHAT_ID}
+    WEBHOOK_URL: ${env:WEBHOOK_URL}
+    WEBHOOK_SECRET: ${env:WEBHOOK_SECRET}
+    CAPITAL_GATE: ${env:CAPITAL_GATE}
+    CAPITAL_WEEX: ${env:CAPITAL_WEEX}
+    STAGE: ${self:provider.stage}
+    # Risk Guard — S3 persistence (opcjonalne; pusty = local /tmp ephemeral)
+    # Aby włączyć: utwórz bucket + dodaj s3:GetObject/PutObject policy poniżej.
+    RISK_GUARD_S3_BUCKET: ${env:RISK_GUARD_S3_BUCKET, ''}
+    RISK_GUARD_S3_KEY: ${env:RISK_GUARD_S3_KEY, 'risk_guard/state.json'}
+
+  # IAM Role dla Lambdy — LEAST PRIVILEGE (tylko to co potrzebne)
+  iam:
+    role:
+      statements:
+        # CloudWatch Logs — pisanie logow
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: arn:aws:logs:${self:provider.region}:*:log-group:/aws/lambda/${self:service}-${self:provider.stage}-*
+
+        # (Opcjonalne) Secrets Manager — odkomentuj jesli uzywasz Secrets Manager
+        # zamiast env vars (Faza 2.B z guide'a)
+        # - Effect: Allow
+        #   Action:
+        #     - secretsmanager:GetSecretValue
+        #   Resource: arn:aws:secretsmanager:${self:provider.region}:*:secret:trading/telegram-*
+
+        # (Opcjonalne) S3 — risk_guard state persistence (survive cold start)
+        # Aktywuj: ustaw env RISK_GUARD_S3_BUCKET + utwórz bucket + odkomentuj poniżej.
+        # Scoped do pojedynczego klucza (cloud_safety I.6 least privilege).
+        # - Effect: Allow
+        #   Action:
+        #     - s3:GetObject
+        #     - s3:PutObject
+        #   Resource: arn:aws:s3:::${env:RISK_GUARD_S3_BUCKET, 'NONE'}/${env:RISK_GUARD_S3_KEY, 'risk_guard/state.json'}
+
+  # Tagi na wszystkich zasobach — latwiej filtrowac w Billing
+  tags:
+    Project: trading-scanner
+    Owner: daniel-klimczak
+    Environment: ${self:provider.stage}
+    CostCenter: personal
+
+# ==============================================================================
+# PACKAGE — co wrzucic do deployment.zip
+# ==============================================================================
+package:
+  individually: false
+  patterns:
+    - '!node_modules/**'
+    - '!.venv/**'
+    - '!__pycache__/**'
+    - '!*.pyc'
+    - '!tests/**'
+    - '!.env'
+    - '!.env.example'
+    - '!logs/**'
+    - '!reports/**'
+    - '!README.md'
+    - '!DEPLOYMENT_GUIDE.md'
+    - '!serverless.yml'
+    - '!package*.json'
+    - 'lambda_handler.py'
+    - 'scanner.py'
+    - 'scanner_mtf.py'        # Multi-TF confluence scanner (trader-aligned)
+    - 'multi_tf_analyzer.py'  # core logic for scanner_mtf
+    - 'risk_guard.py'         # circuit breaker (8 SL streak, daily/weekly DD)
+    - 'walk_forward.py'       # overfitting detector (dev-only, nie używane w runtime)
+    - 'indicators.py'
+    - 'setups.py'
+    - 'sizer.py'
+    - 'notifier.py'
+    - 'config.py'
+
+# ==============================================================================
+# FUNCTIONS — sama Lambda
+# ==============================================================================
+functions:
+  scanner:
+    name: ${self:service}-${self:provider.stage}
+    handler: lambda_handler.lambda_handler
+    description: "Trading scanner — ccxt + pandas-ta, Telegram notifications"
+
+    # Lambda Layers:
+    # - AWSSDKPandas (AWS managed) — pandas+numpy+boto3+pyarrow razem, zoptymalizowane (~170MB unzip)
+    # - Klayers requests (oddzielnie, mały)
+    # - ccxt + python-dotenv auto-built lokalnie przez pythonRequirements
+    layers:
+      - arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python312:20  # pandas 2.2.3, numpy, boto3, pyarrow
+      - arn:aws:lambda:eu-central-1:770693421928:layer:Klayers-p312-requests:23   # requests 2.33.1
+
+    # EventBridge trigger — co 15 minut
+    events:
+      - schedule:
+          name: ${self:service}-${self:provider.stage}-schedule
+          description: "Uruchamia skaner tradingowy co 15 minut"
+          rate: rate(15 minutes)
+          enabled: true
+          input:
+            source: eventbridge
+            trigger: scheduled
+
+    # Retry (domyslnie async invocations — ale EventBridge jest synchroniczny
+    # i tak wiec te opcje dotycza failure invocations)
+    maximumRetryAttempts: 0
+    maximumEventAge: 60
+
+    # Reserved concurrency — max 1 instancja naraz (skaner nie jest idempotent)
+    reservedConcurrency: 1
+
+# ==============================================================================
+# RESOURCES — dodatkowe zasoby AWS (CloudFormation raw)
+# ==============================================================================
+resources:
+  Resources:
+    # -----------------------------------------------------------------------
+    # CloudWatch Alarm — alarm gdy bledy > 3 w 1h
+    # -----------------------------------------------------------------------
+    ScannerErrorsAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: ${self:service}-${self:provider.stage}-errors-high
+        AlarmDescription: "Lambda errors > 3 w 1h — mail na d.klimczak.ai@gmail.com"
+        Namespace: AWS/Lambda
+        MetricName: Errors
+        Dimensions:
+          - Name: FunctionName
+            Value: ${self:service}-${self:provider.stage}
+        Statistic: Sum
+        Period: 3600              # 1h
+        EvaluationPeriods: 1
+        Threshold: 3
+        ComparisonOperator: GreaterThanThreshold
+        TreatMissingData: notBreaching
+        AlarmActions:
+          - !Ref AlertsTopic
+
+    # -----------------------------------------------------------------------
+    # SNS Topic — kanal na alarmy (email)
+    # -----------------------------------------------------------------------
+    AlertsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:provider.stage}-alerts
+        DisplayName: "Trading Scanner Alerts"
+
+    AlertsTopicEmailSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref AlertsTopic
+        Protocol: email
+        Endpoint: d.klimczak.ai@gmail.com
+        # UWAGA: po 1. deployu dostaniesz mail "Confirm subscription" — kliknij link!
+
+    # -----------------------------------------------------------------------
+    # Budget $5/mies — alert mailowy
+    # -----------------------------------------------------------------------
+    MonthlyBudget:
+      Type: AWS::Budgets::Budget
+      Properties:
+        Budget:
+          BudgetName: ${self:service}-${self:provider.stage}-budget
+          BudgetLimit:
+            Amount: 5
+            Unit: USD
+          TimeUnit: MONTHLY
+          BudgetType: COST
+          CostFilters:
+            TagKeyValue:
+              - "user:Project$trading-scanner"
+        NotificationsWithSubscribers:
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 50         # 50% = $2.50
+              ThresholdType: PERCENTAGE
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: d.klimczak.ai@gmail.com
+          - Notification:
+              NotificationType: ACTUAL
+              ComparisonOperator: GREATER_THAN
+              Threshold: 100        # 100% = $5
+              ThresholdType: PERCENTAGE
+            Subscribers:
+              - SubscriptionType: EMAIL
+                Address: d.klimczak.ai@gmail.com
+
+  # -------------------------------------------------------------------------
+  # Outputs — co pokazac po deployu (ARNy do kopiowania)
+  # -------------------------------------------------------------------------
+  Outputs:
+    ScannerFunctionArn:
+      Description: "ARN funkcji Lambda"
+      Value: !GetAtt ScannerLambdaFunction.Arn
+
+    AlertsTopicArn:
+      Description: "ARN SNS topicu z alarmami"
+      Value: !Ref AlertsTopic
+
+    LogGroup:
+      Description: "CloudWatch Log Group"
+      Value: /aws/lambda/${self:service}-${self:provider.stage}
+
+# ==============================================================================
+# PLUGINS
+# ==============================================================================
+plugins:
+  - serverless-dotenv-plugin          # zaladuj .env do env vars
+  - serverless-python-requirements    # auto-install ccxt + python-dotenv (pure python)
+
+# ==============================================================================
+# CUSTOM — konfiguracja pluginow
+# ==============================================================================
+custom:
+  dotenv:
+    path: .env
+    logging: false
+  pythonRequirements:
+    fileName: requirements-lambda.txt  # tylko pure python (ccxt, python-dotenv); pandas/numpy/requests z Klayers
+    pythonBin: 'C:\Users\klimc\AppData\Local\Programs\Python\Python312\python.exe'
+    dockerizePip: false                # ccxt jest pure python, docker niepotrzebny
+    slim: true                         # usuwa __pycache__, *.dist-info
+    noDeploy:
+      - pandas
+      - numpy
+      - requests
+      - boto3                          # już w Lambda runtime
+      - botocore
+
+# ==============================================================================
+# KOMENDY (cheat sheet)
+# ==============================================================================
+# serverless deploy --stage prod                  # pelny deploy (infra + kod)
+# serverless deploy function -f scanner           # szybki deploy samej Lambdy (bez infry)
+# serverless invoke -f scanner --log              # testowe wywolanie + logi
+# serverless logs -f scanner --tail               # live logs z CloudWatch
+# serverless info --stage prod                    # co jest zdeployowane
+# serverless remove --stage prod                  # ROLLBACK — kasuje wszystko
+# ==============================================================================

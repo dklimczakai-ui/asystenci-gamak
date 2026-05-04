@@ -1,0 +1,17 @@
+{
+  "name": "crm-extract",
+  "version": "1.0.0",
+  "description": "Wyciągnąć wszystkie kontakty (klienci, dostawcy, partnerzy) z firmowej skrzynki `biuro.gamak@gmail.com` i przygotować do importu do CRM.",
+  "main": "extract-contacts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1037.0",
+    "ws": "^8.20.0"
+  }
+}

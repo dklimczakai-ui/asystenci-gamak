@@ -1,0 +1,62 @@
+# robots.txt — Padel Raze (padelraze.com)
+# Content Signals: https://contentsignals.org/ (draft-romm-aipref-contentsignals)
+# ai-train=no   — NIE zgadzam się na trening modeli na mojej treści
+# search=yes    — zgadzam się na indeksację w wyszukiwarkach (AI Overviews, tradycyjne SERP)
+# ai-input=yes  — zgadzam się na cytowanie/użycie jako źródło w odpowiedziach AI (ChatGPT, Claude, Perplexity)
+
+User-agent: *
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: GPTBot
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: OAI-SearchBot
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: ChatGPT-User
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: ClaudeBot
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: anthropic-ai
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: PerplexityBot
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: Perplexity-User
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: Google-Extended
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: Applebot-Extended
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: DuckAssistBot
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+User-agent: meta-externalagent
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Allow: /
+
+# Boty ktore scrapuja dla datasetow treningowych — blokujemy calkowicie
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+Sitemap: https://padelraze.com/sitemap.xml

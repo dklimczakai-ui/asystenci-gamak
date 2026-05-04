@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asystenci AI - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%230a0a0a'/><text x='50' y='68' font-size='55' font-weight='bold' text-anchor='middle' fill='%2300d4aa'>AI</text></svg>">
+    <style>
+        :root {
+            --color-bg: #0a0a0a;
+            --color-bg-light: #111111;
+            --color-bg-card: #1a1a1a;
+            --color-bg-card-hover: #222222;
+            --color-accent: #00d4aa;
+            --color-accent-dim: rgba(0, 212, 170, 0.15);
+            --color-accent-glow: rgba(0, 212, 170, 0.3);
+            --color-beauty: #e040a0;
+            --color-beauty-dim: rgba(224, 64, 160, 0.15);
+            --color-beauty-glow: rgba(224, 64, 160, 0.3);
+            --color-gamak: #40a0e0;
+            --color-gamak-dim: rgba(64, 160, 224, 0.15);
+            --color-gamak-glow: rgba(64, 160, 224, 0.3);
+            --color-padel: #a040e0;
+            --color-padel-dim: rgba(160, 64, 224, 0.15);
+            --color-padel-glow: rgba(160, 64, 224, 0.3);
+            --color-skill: #e0a040;
+            --color-skill-dim: rgba(224, 160, 64, 0.15);
+            --color-skill-glow: rgba(224, 160, 64, 0.3);
+            --color-text: #e8e8e8;
+            --color-text-muted: #999999;
+            --color-text-dim: #666666;
+            --color-border: #2a2a2a;
+            --font: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--color-accent-dim) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: var(--color-accent-dim);
+            color: var(--color-accent);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 .accent { color: var(--color-accent); }
+        .hero h1 .beauty { color: var(--color-beauty); }
+        .hero h1 .gamak { color: var(--color-gamak); }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            max-width: 550px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--color-accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--color-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.3rem;
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ===== SETUP BANNER ===== */
+        .setup-banner {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-accent);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2.5rem;
+            display: none;
+        }
+
+        .setup-banner.show { display: block; }
+
+        .setup-banner h3 {
+            color: var(--color-accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .setup-banner p {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+        }
+
+        .setup-banner code {
+            background: var(--color-accent-dim);
+            color: var(--color-accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .btn-setup {
+            margin-top: 0.8rem;
+            padding: 0.5rem 1.2rem;
+            background: var(--color-accent);
+            color: var(--color-bg);
+            border: none;
+            border-radius: 50px;
+            font-family: var(--font);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-setup:hover {
+            background: #00eabb;
+            box-shadow: 0 0 20px var(--color-accent-glow);
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            margin-bottom: 3.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .section-tag.global { background: var(--color-accent-dim); color: var(--color-accent); }
+        .section-tag.beauty { background: var(--color-beauty-dim); color: var(--color-beauty); }
+        .section-tag.gamak { background: var(--color-gamak-dim); color: var(--color-gamak); }
+        .section-tag.padel { background: var(--color-padel-dim); color: var(--color-padel); }
+        .section-tag.skill { background: var(--color-skill-dim); color: var(--color-skill); }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* ===== GRID ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: var(--color-bg-card-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            transition: var(--transition);
+        }
+
+        .card.global::before { background: var(--color-accent); }
+        .card.beauty::before { background: var(--color-beauty); }
+        .card.gamak::before { background: var(--color-gamak); }
+        .card.padel::before { background: var(--color-padel); }
+        .card.skill::before { background: var(--color-skill); }
+
+        .card.global:hover { box-shadow: 0 8px 40px rgba(0, 212, 170, 0.08); }
+        .card.beauty:hover { box-shadow: 0 8px 40px rgba(224, 64, 160, 0.08); }
+        .card.gamak:hover { box-shadow: 0 8px 40px rgba(64, 160, 224, 0.08); }
+        .card.padel:hover { box-shadow: 0 8px 40px rgba(160, 64, 224, 0.08); }
+        .card.skill:hover { box-shadow: 0 8px 40px rgba(224, 160, 64, 0.08); }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            flex-shrink: 0;
+        }
+
+        .card.global .card-icon { background: var(--color-accent-dim); }
+        .card.beauty .card-icon { background: var(--color-beauty-dim); }
+        .card.gamak .card-icon { background: var(--color-gamak-dim); }
+        .card.padel .card-icon { background: var(--color-padel-dim); }
+        .card.skill .card-icon { background: var(--color-skill-dim); }
+
+        .card-info { flex: 1; }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .card-role {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card.global .card-role { color: var(--color-accent); }
+        .card.beauty .card-role { color: var(--color-beauty); }
+        .card.gamak .card-role { color: var(--color-gamak); }
+        .card.padel .card-role { color: var(--color-padel); }
+        .card.skill .card-role { color: var(--color-skill); }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .btn-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 50px;
+            font-family: var(--font);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            color: var(--color-text);
+        }
+
+        .btn-launch {
+            color: var(--color-bg);
+        }
+
+        .card.global .btn-launch { background: var(--color-accent); }
+        .card.beauty .btn-launch { background: var(--color-beauty); }
+        .card.gamak .btn-launch { background: var(--color-gamak); }
+        .card.padel .btn-launch { background: var(--color-padel); }
+        .card.skill .btn-launch { background: var(--color-skill); }
+
+        .btn-launch:hover {
+            transform: translateY(-1px);
+        }
+
+        .card.global .btn-launch:hover { box-shadow: 0 0 20px var(--color-accent-glow); }
+        .card.beauty .btn-launch:hover { box-shadow: 0 0 20px var(--color-beauty-glow); }
+        .card.gamak .btn-launch:hover { box-shadow: 0 0 20px var(--color-gamak-glow); }
+        .card.padel .btn-launch:hover { box-shadow: 0 0 20px var(--color-padel-glow); }
+        .card.skill .btn-launch:hover { box-shadow: 0 0 20px var(--color-skill-glow); }
+
+        .btn-copy {
+            background: transparent;
+            border: 1.5px solid var(--color-border);
+        }
+
+        .btn-copy:hover {
+            border-color: var(--color-text-dim);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            color: var(--color-text-dim);
+            font-size: 0.75rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--color-border);
+            letter-spacing: 0.3px;
+        }
+
+        .footer code {
+            background: var(--color-bg-card);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid var(--color-border);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            padding: 0.8rem 1.4rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 0 30px var(--color-accent-glow);
+            animation: slideIn 0.3s var(--transition);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero-stats { gap: 1.5rem; }
+            body { padding: 0; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">Dashboard Claude Code</div>
+            <h1><span class="beauty">Beauty</span> + <span class="gamak">GAMAK</span> <span class="accent">Asystenci</span></h1>
+            <p class="hero-desc">Odpal dowolnego asystenta jednym klikiem. Wszystkie sesje otwierają się w Git Bash.</p>
+            <div class="hero-stats">
+                <div>
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Asystentów</div>
+                </div>
+                <div>
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Projekty</div>
+                </div>
+                <div>
+                    <div class="stat-number" id="currentDay"></div>
+                    <div class="stat-label" id="currentMonth"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- SETUP -->
+        <div class="setup-banner show" id="setupBanner">
+            <h3>Jednorazowa konfiguracja</h3>
+            <p>Aby przyciski "Odpal" działały, uruchom jako Administrator: <code>launchers\register-protocol.bat</code></p>
+            <p>Po kliknięciu "Odpal" Brave zapyta o pozwolenie — zaznacz "Zawsze zezwalaj".</p>
+            <button class="btn-setup" onclick="hideSetup()">Gotowe, ukryj</button>
+        </div>
+
+        <!-- GLOBALNE -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag global">Globalne</span>
+                <span class="section-title">Oba projekty</span>
+            </div>
+            <div class="grid">
+                <div class="card global">
+                    <div class="card-top">
+                        <div class="card-icon">⚙️</div>
+                        <div class="card-info">
+                            <div class="card-title">COO</div>
+                            <div class="card-role">Chief Operating Officer</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Egzekucja, planowanie dnia/tygodnia, priorytety. Logan Roy style.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://coo">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@coo'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card global">
+                    <div class="card-top">
+                        <div class="card-icon">💻</div>
+                        <div class="card-info">
+                            <div class="card-title">Claude Code</div>
+                            <div class="card-role">Czysta sesja</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Nowa sesja Claude Code bez asystenta. Czyste okno terminala.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://claude-clean">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd('claude')">📋 Kopiuj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BEAUTY -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag beauty">Beauty</span>
+                <span class="section-title">AI Agency — 30%</span>
+            </div>
+            <div class="grid">
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">👑</div>
+                        <div class="card-info">
+                            <div class="card-title">CEO Beauty</div>
+                            <div class="card-role">Strategia & koordynacja</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Rozkład na zespół, decyzje, multi-perspektywa, przegląd tygodnia.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-ceo">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@beauty/dane/ceo.md'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">💰</div>
+                        <div class="card-info">
+                            <div class="card-title">CSO Beauty</div>
+                            <div class="card-role">Sprzedaż</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Lejki, odpowiedzi na maile, trening, quick wins. Jordan Belfort style.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-cso">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cso'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">📣</div>
+                        <div class="card-info">
+                            <div class="card-title">CMO Beauty</div>
+                            <div class="card-role">Marketing</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Strategia marketingowa, kampanie, branding, pozycjonowanie.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-cmo">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cmo'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">👻</div>
+                        <div class="card-info">
+                            <div class="card-title">Ghost Beauty</div>
+                            <div class="card-role">Cyfrowy bliźniak</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Pisanie w Twoim stylu, odpowiedzi za Ciebie, maile, DM.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-ghost">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@ghost'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">📝</div>
+                        <div class="card-info">
+                            <div class="card-title">Content Beauty</div>
+                            <div class="card-role">Content Machine</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Research treści, generowanie postów na 8 platform, repurpose.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-content">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@content'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card beauty">
+                    <div class="card-top">
+                        <div class="card-icon">🔧</div>
+                        <div class="card-info">
+                            <div class="card-title">CTO Beauty</div>
+                            <div class="card-role">Technologia</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Integracje, automatyzacje, API, MCP, bezpieczeństwo.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://beauty-cto">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cto'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAMAK -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag gamak">GAMAK</span>
+                <span class="section-title">Etat + Marki — 70%</span>
+            </div>
+            <div class="grid">
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">👑</div>
+                        <div class="card-info">
+                            <div class="card-title">CEO GAMAK</div>
+                            <div class="card-role">Strategia & koordynacja</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Rozkład na zespół, decyzje, multi-perspektywa, przegląd tygodnia.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-ceo">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@gamak/dane/ceo.md'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">💰</div>
+                        <div class="card-info">
+                            <div class="card-title">CSO GAMAK</div>
+                            <div class="card-role">Sprzedaż</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Lejki, odpowiedzi na maile, trening, quick wins. Jordan Belfort style.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-cso">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cso'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">📣</div>
+                        <div class="card-info">
+                            <div class="card-title">CMO GAMAK</div>
+                            <div class="card-role">Marketing</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Strategia marketingowa, kampanie, branding, pozycjonowanie.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-cmo">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cmo'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">👻</div>
+                        <div class="card-info">
+                            <div class="card-title">Ghost GAMAK</div>
+                            <div class="card-role">Cyfrowy bliźniak</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Pisanie w Twoim stylu, odpowiedzi za Ciebie, maile, DM.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-ghost">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@ghost'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">📝</div>
+                        <div class="card-info">
+                            <div class="card-title">Content GAMAK</div>
+                            <div class="card-role">Content Machine</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Research treści, generowanie postów na 8 platform, repurpose.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-content">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@content'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">🔧</div>
+                        <div class="card-info">
+                            <div class="card-title">CTO GAMAK</div>
+                            <div class="card-role">Technologia</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Integracje, automatyzacje, API, MCP, bezpieczeństwo.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://gamak-cto">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@cto'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card gamak">
+                    <div class="card-top">
+                        <div class="card-icon">📐</div>
+                        <div class="card-info">
+                            <div class="card-title">Wiesiek</div>
+                            <div class="card-role">PFU & Oferty techniczne</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Ghost writer Wiesława. PFU, oferty, kosztorysy infrastruktury sportowej.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://wiesiek">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@wiesiek'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PADEL RAZE -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag padel">Padel Raze</span>
+                <span class="section-title">Marka GAMAK</span>
+            </div>
+            <div class="grid">
+                <div class="card padel">
+                    <div class="card-top">
+                        <div class="card-icon">🎾</div>
+                        <div class="card-info">
+                            <div class="card-title">PM Padel Raze</div>
+                            <div class="card-role">Product Manager</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Dostawcy, pricing, GTM, certyfikaty EU, przetargi B2G. Marty Cagan style.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://padel-raze-pm">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '@pm'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-tag skill">Skills</span>
+                <span class="section-title">Komendy slash</span>
+            </div>
+            <div class="grid">
+                <div class="card skill">
+                    <div class="card-top">
+                        <div class="card-icon">📊</div>
+                        <div class="card-info">
+                            <div class="card-title">Daily Update</div>
+                            <div class="card-role">/dailyupdate</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Codzienny update: status, co zrobione, aktualizacja planów.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://daily-update">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '/dailyupdate'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card skill">
+                    <div class="card-top">
+                        <div class="card-icon">📋</div>
+                        <div class="card-info">
+                            <div class="card-title">Weekly Review</div>
+                            <div class="card-role">/weeklyreview</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Piątkowy przegląd tygodnia: podsumowanie + plan na nowy tydzień.</div>
+                    <div class="card-actions">
+                        <a class="btn-card btn-launch" href="claude://weekly-review">▶ Odpal</a>
+                        <button class="btn-card btn-copy" onclick="copyCmd(&quot;claude '/weeklyreview'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card skill">
+                    <div class="card-top">
+                        <div class="card-icon">🚀</div>
+                        <div class="card-info">
+                            <div class="card-title">YOLO Mode</div>
+                            <div class="card-role">/yolo</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Tryb autonomiczny: Claude działa bez pytania o potwierdzenia.</div>
+                    <div class="card-actions">
+                        <button class="btn-card btn-launch" onclick="copyCmd(&quot;claude '/yolo'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+                <div class="card skill">
+                    <div class="card-top">
+                        <div class="card-icon">✍️</div>
+                        <div class="card-info">
+                            <div class="card-title">Content Machine</div>
+                            <div class="card-role">/content [temat]</div>
+                        </div>
+                    </div>
+                    <div class="card-desc">Generowanie treści z walidacją: polski, aspect ratio, ton, styl.</div>
+                    <div class="card-actions">
+                        <button class="btn-card btn-launch" onclick="copyCmd(&quot;claude '/content'&quot;)">📋 Kopiuj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Kliknij <strong>▶ Odpal</strong> aby uruchomić asystenta w Git Bash &nbsp;·&nbsp; <strong>📋 Kopiuj</strong> kopiuje komendę do schowka<br>
+        <span style="margin-top: 0.5rem; display: inline-block;">Pliki .bat: <code>launchers\</code> &nbsp;·&nbsp; Dodaj tę stronę do zakładek w Brave</span>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const now = new Date();
+        const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
+        const days = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'];
+        document.getElementById('currentDay').textContent = now.getDate();
+        document.getElementById('currentMonth').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+
+        if (localStorage.getItem('claude-setup') === 'done') {
+            document.getElementById('setupBanner').classList.remove('show');
+        }
+
+        function hideSetup() {
+            localStorage.setItem('claude-setup', 'done');
+            document.getElementById('setupBanner').classList.remove('show');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        function copyCmd(cmd) {
+            navigator.clipboard.writeText(cmd).then(() => {
+                showToast('Skopiowano: ' + cmd);
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = cmd;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Skopiowano: ' + cmd);
+            });
+        }
+    </script>
+</body>
+</html>

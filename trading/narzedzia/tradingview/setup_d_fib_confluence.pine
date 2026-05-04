@@ -1,0 +1,113 @@
+//@version=5
+// ============================================================
+// SETUP D — FIB CONFLUENCE BOUNCE (Daniel's trading system)
+// ============================================================
+// Fib 0.618/0.66/0.786 + MA lub VWAP + Stoch RSI reversal + PA.
+// ============================================================
+
+indicator("SETUP D — Fib Confluence [Daniel]", overlay=true)
+
+grp = "Parametry"
+fib_lookback = input.int(50, "Lookback swing", minval=20, maxval=200, group=grp)
+fib_zone_tol = input.float(0.5, "Tolerancja fib zone %", step=0.1, group=grp)
+rr_target    = input.float(2.5, "R/R target", minval=1.5, group=grp)
+sl_buffer    = input.float(0.5, "SL buffer %", step=0.1, group=grp)
+min_confluences = input.int(3, "Min konfluencji (z 4)", minval=2, maxval=4, group=grp)
+
+// Swings
+sw_high = ta.highest(high, fib_lookback)
+sw_low  = ta.lowest(low,  fib_lookback)
+rng = sw_high - sw_low
+
+// Fib levels
+fib_382 = sw_high - rng * 0.382
+fib_5   = sw_high - rng * 0.5
+fib_618 = sw_high - rng * 0.618
+fib_66  = sw_high - rng * 0.66
+fib_786 = sw_high - rng * 0.786
+
+// Cena w "key zone" (0.618 - 0.786) dla longa
+tol = rng * fib_zone_tol / 100
+in_golden_long  = low  <= fib_618 + tol and high >= fib_786 - tol
+in_golden_short = high >= fib_382 - tol and low  <= fib_5   + tol
+
+// MAs
+ma50  = ta.sma(close, 50)
+ma100 = ta.sma(close, 100)
+ma200 = ta.sma(close, 200)
+
+// VWAP (session anchored)
+new_session = ta.change(time("D")) != 0
+var float vwap_sum = 0.0
+var float vol_sum = 0.0
+if new_session
+    vwap_sum := 0.0
+    vol_sum := 0.0
+vwap_sum += hlc3 * volume
+vol_sum += volume
+avwap = vol_sum > 0 ? vwap_sum / vol_sum : close
+
+// MA / VWAP w fib zone? (confluence test)
+ma_in_zone  = (ma50 >= fib_786 and ma50 <= fib_5) or (ma100 >= fib_786 and ma100 <= fib_5) or (ma200 >= fib_786 and ma200 <= fib_5)
+vwap_in_zone = avwap >= fib_786 and avwap <= fib_5
+confluence_near = ma_in_zone or vwap_in_zone
+
+// Stoch RSI reversal
+rsi_val = ta.rsi(close, 14)
+srsi = ta.stoch(rsi_val, rsi_val, rsi_val, 14)
+k = ta.sma(srsi, 3)
+d = ta.sma(k, 3)
+
+srsi_reversal_long  = ta.crossover(k, d)  and k < 35
+srsi_reversal_short = ta.crossunder(k, d) and k > 65
+
+// PA confirmation
+bull_engulf = close > open and close[1] < open[1] and close > open[1] and open < close[1]
+bear_engulf = close < open and close[1] > open[1] and close < open[1] and open > close[1]
+pin_bar_bull = (close - low) / (high - low + 0.0001) > 0.66
+pin_bar_bear = (high - close) / (high - low + 0.0001) > 0.66
+
+pa_long  = bull_engulf or pin_bar_bull
+pa_short = bear_engulf or pin_bar_bear
+
+// Konfluencje LONG
+c1_long = in_golden_long ? 1 : 0
+c2_long = confluence_near ? 1 : 0
+c3_long = srsi_reversal_long ? 1 : 0
+c4_long = pa_long ? 1 : 0
+long_score = c1_long + c2_long + c3_long + c4_long
+
+// Konfluencje SHORT
+c1_short = in_golden_short ? 1 : 0
+c2_short = confluence_near ? 1 : 0
+c3_short = srsi_reversal_short ? 1 : 0
+c4_short = pa_short ? 1 : 0
+short_score = c1_short + c2_short + c3_short + c4_short
+
+long_signal  = long_score  >= min_confluences and long_score  > short_score
+short_signal = short_score >= min_confluences and short_score > long_score
+
+// Levels
+long_sl  = sw_low  * (1 - sl_buffer/100)
+long_tp  = close + (close - long_sl) * rr_target
+short_sl = sw_high * (1 + sl_buffer/100)
+short_tp = close - (short_sl - close) * rr_target
+
+// Visuals — fib lines
+plot(fib_618, "0.618", color.new(color.yellow, 30), 1, plot.style_circles)
+plot(fib_66,  "0.66",  color.new(color.orange, 30), 1, plot.style_circles)
+plot(fib_786, "0.786", color.new(color.red, 30),    1, plot.style_circles)
+plot(avwap,   "VWAP",  color.new(color.aqua, 0),    2)
+
+plotshape(long_signal,  "LONG D",  shape.labelup,   location.belowbar, color.new(color.lime, 0), text="D↑", textcolor=color.black, size=size.small)
+plotshape(short_signal, "SHORT D", shape.labeldown, location.abovebar, color.new(color.red, 0),  text="D↓", textcolor=color.white, size=size.small)
+
+// Alerts
+if long_signal
+    alert('{"secret":"DANIEL_TRADING_2026","setup":"D","direction":"LONG","ticker":"{{ticker}}","exchange":"{{exchange}}","timeframe":"{{interval}}","time":"{{time}}","price":' + str.tostring(close) + ',"entry":' + str.tostring(close) + ',"sl":' + str.tostring(long_sl) + ',"tp":' + str.tostring(long_tp) + ',"rr":' + str.tostring(rr_target) + ',"confluences":' + str.tostring(long_score) + ',"max_confluences":4,"details":{"fib_zone":' + str.tostring(c1_long) + ',"ma_vwap":' + str.tostring(c2_long) + ',"srsi":' + str.tostring(c3_long) + ',"pa":' + str.tostring(c4_long) + '}}', alert.freq_once_per_bar_close)
+
+if short_signal
+    alert('{"secret":"DANIEL_TRADING_2026","setup":"D","direction":"SHORT","ticker":"{{ticker}}","exchange":"{{exchange}}","timeframe":"{{interval}}","time":"{{time}}","price":' + str.tostring(close) + ',"entry":' + str.tostring(close) + ',"sl":' + str.tostring(short_sl) + ',"tp":' + str.tostring(short_tp) + ',"rr":' + str.tostring(rr_target) + ',"confluences":' + str.tostring(short_score) + ',"max_confluences":4,"details":{"fib_zone":' + str.tostring(c1_short) + ',"ma_vwap":' + str.tostring(c2_short) + ',"srsi":' + str.tostring(c3_short) + ',"pa":' + str.tostring(c4_short) + '}}', alert.freq_once_per_bar_close)
+
+alertcondition(long_signal,  "Setup D LONG",  "D LONG")
+alertcondition(short_signal, "Setup D SHORT", "D SHORT")

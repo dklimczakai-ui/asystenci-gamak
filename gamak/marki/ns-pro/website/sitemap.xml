@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- HOMEPAGE -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- BOISKA MULTISPORTOWE -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/boiska-multisportowe/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-multisportowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/multisportove-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/multisport-courts/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-multisportowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/multisportove-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/multisportove-ihriska/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-multisportowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/multisportove-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/multisport-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- BOISKA PRZYDOMOWE -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/boiska-przydomowe/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-przydomowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/domace-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/backyard-courts/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-przydomowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/domace-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/domace-ihriska/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/boiska-przydomowe/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/domace-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/backyard-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- PLACE ZABAW -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/nawierzchnie-na-place-zabaw/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-na-place-zabaw/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/povrchy-na-detske-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/playground-surfaces/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-na-place-zabaw/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/povrchy-na-detske-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/povrchy-na-detske-ihriska/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-na-place-zabaw/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/povrchy-na-detske-ihriska/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/playground-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- NAWIERZCHNIE WEWNETRZNE -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/nawierzchnie-wewnetrzne/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-wewnetrzne/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/vnutorne-povrchy/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/indoor-surfaces/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-wewnetrzne/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/vnutorne-povrchy/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/vnutorne-povrchy/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/nawierzchnie-wewnetrzne/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/vnutorne-povrchy/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/indoor-surfaces/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- ROLKOWISKA -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/rolkowiska-i-inline-hokej/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/rolkowiska-i-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/korculiarska-draha-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/rolkowiska-i-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/korculiarska-draha-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/korculiarska-draha-inline-hokej/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/rolkowiska-i-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/korculiarska-draha-inline-hokej/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/roller-skating-inline-hockey/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- KORTY -->
+    <url>
+        <loc>https://nawierzchniesportowe.pro/korty-do-tenisa-pickleball-i-badmintona/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/korty-do-tenisa-pickleball-i-badmintona/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/kurty-tenis-pickleball-badminton/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/korty-do-tenisa-pickleball-i-badmintona/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/kurty-tenis-pickleball-badminton/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://nawierzchniesportowe.pro/sk/kurty-tenis-pickleball-badminton/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://nawierzchniesportowe.pro/korty-do-tenisa-pickleball-i-badmintona/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <xhtml:link rel="alternate" hreflang="sk" href="https://nawierzchniesportowe.pro/sk/kurty-tenis-pickleball-badminton/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://nawierzchniesportowe.pro/en/tennis-pickleball-badminton-courts/"/>
+        <lastmod>2026-03-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+</urlset>

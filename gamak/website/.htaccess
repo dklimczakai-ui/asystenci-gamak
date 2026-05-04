@@ -1,0 +1,261 @@
+# ============================================
+# GAMAK.EU - Static HTML Configuration
+# Updated: 2026-03-02
+# ============================================
+
+# LiteSpeed Cache - DISABLE (required for static HTML site)
+<IfModule LiteSpeed>
+CacheLookup off
+</IfModule>
+
+RewriteEngine On
+DirectoryIndex index.html
+
+# ============================================
+# BLOG — explicit rules (no -f check, bypasses LiteSpeed stat cache)
+# ============================================
+RewriteRule ^blog/?$ blog.html [L]
+RewriteRule ^blog/lodowisko-dla-gminy-koszt-budowa/?$ blog/lodowisko-dla-gminy-koszt-budowa.html [L]
+RewriteRule ^blog/lodowisko-syntetyczne-vs-tradycyjne/?$ blog/lodowisko-syntetyczne-vs-tradycyjne.html [L]
+RewriteRule ^blog/dofinansowanie-infrastruktura-sportowa-2026/?$ blog/dofinansowanie-infrastruktura-sportowa-2026.html [L]
+RewriteRule ^blog/boisko-lodowisko-2w1-obiekt-caloroczny/?$ blog/boisko-lodowisko-2w1-obiekt-caloroczny.html [L]
+RewriteRule ^blog/nawierzchnie-sportowe-dla-samorzadow/?$ blog/nawierzchnie-sportowe-dla-samorzadow.html [L]
+RewriteRule ^blog/jak-wybrac-wykonawce-infrastruktury-sportowej/?$ blog/jak-wybrac-wykonawce-infrastruktury-sportowej.html [L]
+
+# ============================================
+# CLEAN URLs (extensionless)
+# ============================================
+
+# Remove .html extension from URLs (301 redirect)
+# Special: index.html -> directory root
+RewriteCond %{THE_REQUEST} \s/+en/index\.html[\s?] [NC]
+RewriteRule ^ /en/ [R=301,L]
+
+RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
+RewriteRule ^ / [R=301,L]
+
+# Generic: any .html -> clean URL
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L,NE]
+
+# Remove trailing slashes (prevents 500 errors)
+# Exception: real directories (like /blog/, /en/)
+RewriteCond %{REQUEST_URI} !^/blog/ [NC]
+RewriteCond %{REQUEST_URI} !^/en/ [NC]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Serve wp-content images from backup folder
+RewriteRule ^wp-content/(.*)$ _wp_backup/wp-content/$1 [L]
+
+# Internally serve .html files for clean URLs (root level pages)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+
+# ============================================
+# 301 REDIRECTS: WordPress -> Static HTML
+# ============================================
+
+# --- Strona glowna ---
+RedirectMatch 301 ^/strona-glowna/?$ https://gamak.eu/
+RedirectMatch 301 ^/home/?$ https://gamak.eu/
+RedirectMatch 301 ^/nowa-strona-glowna/?$ https://gamak.eu/
+RedirectMatch 301 ^/gamak-lodowiska-i-boiska-sportowe/?$ https://gamak.eu/
+
+# --- Lodowiska ---
+RedirectMatch 301 ^/lodowiska/$ https://gamak.eu/lodowiska
+RedirectMatch 301 ^/lodowiska-syntetyczne/?$ https://gamak.eu/lodowiska
+RedirectMatch 301 ^/lodowiska-i-bandy-rekreacyjne/?$ https://gamak.eu/lodowiska
+RedirectMatch 301 ^/lodowiska-rekreacyjne-zadaszone/?$ https://gamak.eu/lodowiska
+RedirectMatch 301 ^/bandy-i-lodowiska-rekreacyjne/?$ https://gamak.eu/lodowiska
+
+# --- Lodowiska hokejowe ---
+RedirectMatch 301 ^/lodowiska-i-bandy-hokejowe/?$ https://gamak.eu/lodowiska-hokejowe
+RedirectMatch 301 ^/lodowiska-hokejowe-mobilne-zadaszone/?$ https://gamak.eu/lodowiska-hokejowe
+RedirectMatch 301 ^/bandy-i-lodowiska-hokejowe/?$ https://gamak.eu/lodowiska-hokejowe
+
+# --- Boisko-lodowisko 2w1 ---
+RedirectMatch 301 ^/boisko-lodowisko-2-w-1/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/lodowisko-z-boiskiem-w-jednym/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/lodowiska-z-funkcja-boiska-i-skateparku-szyte-na-miare/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/szyte-na-miare-lodowiska-z-funkcja-boiska-i-skateparku/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/szyte-na-miare-indywidualnie-dopasowane-lodowiska-z-funkcja-calorocznego-uzytkowania/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/boisko-lodowisko-z-nawierzchnia-epdm/?$ https://gamak.eu/boisko-lodowisko-2w1
+RedirectMatch 301 ^/boisko-lodowisko-z-nawierzchnia-polipropylenowa/?$ https://gamak.eu/boisko-lodowisko-2w1
+
+# --- Rolby ---
+RedirectMatch 301 ^/rolby/$ https://gamak.eu/rolby
+RedirectMatch 301 ^/rolby-maszyny-do-pielegnacji-i-konserwacji-tafli-lodowisk-sportu-profesjonalnego-i-rekreacyjnych/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/maszyny-dla-lodowisk-rekreacyjnych/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/maszyny-dla-lodowisk-sportu-wyczynowego/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-170/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-170sxen/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-200-sx/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-200-sx-2/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-red-tiger/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/engo-red-tiger-2/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/flyer-engo-100-red-fox/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/flyer-engo-100-red-fox-2/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/ice-kid/?$ https://gamak.eu/rolby
+RedirectMatch 301 ^/ice-kid-2/?$ https://gamak.eu/rolby
+
+# --- Nawierzchnie ---
+RedirectMatch 301 ^/nawierzchnie/$ https://gamak.eu/nawierzchnie
+RedirectMatch 301 ^/nawierzchnie-sportowe/?$ https://gamak.eu/nawierzchnie
+RedirectMatch 301 ^/boiska-modularna-nawierzchnia-multisportowa/?$ https://gamak.eu/nawierzchnie
+RedirectMatch 301 ^/boisko-z-nawierzchnia-multisportowa-polipropylenowa/?$ https://gamak.eu/nawierzchnie
+
+# --- Inline hokej ---
+RedirectMatch 301 ^/nawierzchnia-do-gry-w-inline-hokej/?$ https://gamak.eu/inline-hokej
+RedirectMatch 301 ^/panel-for-playing-inline-hockey/?$ https://gamak.eu/inline-hokej
+RedirectMatch 301 ^/panel-for-playing-inline-hockey-uni-hokey-box-lacrosse-roller-derby/?$ https://gamak.eu/inline-hokej
+
+# --- Ice Covertan ---
+RedirectMatch 301 ^/podloga-izotermiczna-do-przykrycia-lodowiska/?$ https://gamak.eu/ice-covertan
+RedirectMatch 301 ^/podloga-izotermiczna-na-lod/?$ https://gamak.eu/ice-covertan
+RedirectMatch 301 ^/isothermal-floor-for-ice/?$ https://gamak.eu/ice-covertan
+RedirectMatch 301 ^/the-isothermal-ice-rink-floor/?$ https://gamak.eu/ice-covertan
+
+# --- Podgrzewanie wody basenowej ---
+RedirectMatch 301 ^/podgrzewanie-wody-basenowej/$ https://gamak.eu/podgrzewanie-wody-basenowej
+RedirectMatch 301 ^/heating-swimming-pool-water/?$ https://gamak.eu/podgrzewanie-wody-basenowej
+
+# --- Dofinansowanie ---
+RedirectMatch 301 ^/program-budowy-lodowisk-2025/?$ https://gamak.eu/dofinansowanie
+RedirectMatch 301 ^/dofinansowanie/$ https://gamak.eu/dofinansowanie
+
+# --- O nas ---
+RedirectMatch 301 ^/o-nas/$ https://gamak.eu/o-nas
+RedirectMatch 301 ^/about-us/?$ https://gamak.eu/o-nas
+RedirectMatch 301 ^/about/?$ https://gamak.eu/o-nas
+
+# --- Kontakt ---
+RedirectMatch 301 ^/kontakt/$ https://gamak.eu/kontakt
+RedirectMatch 301 ^/contact/?$ https://gamak.eu/kontakt
+
+# --- Polityka prywatnosci ---
+RedirectMatch 301 ^/polityka-prywatnosci/$ https://gamak.eu/polityka-prywatnosci
+
+# --- Oferta (stara strona zbiorcza -> strona glowna) ---
+RedirectMatch 301 ^/oferta/?$ https://gamak.eu/
+RedirectMatch 301 ^/offer/?$ https://gamak.eu/
+RedirectMatch 301 ^/products/?$ https://gamak.eu/
+RedirectMatch 301 ^/services/?$ https://gamak.eu/
+RedirectMatch 301 ^/panels/?$ https://gamak.eu/
+
+# --- Kategorie WP (404) ---
+RedirectMatch 301 ^/category/program-budowy-lodowisk/?$ https://gamak.eu/dofinansowanie
+RedirectMatch 301 ^/category/(.*)$ https://gamak.eu/
+
+# --- Stare pliki motywu WP (404) ---
+RedirectMatch 301 ^/wp-content/themes/(.*)$ https://gamak.eu/
+
+# --- Usuniete podstrony -> najblizszy odpowiednik ---
+RedirectMatch 301 ^/baseny-plywackie/?$ https://gamak.eu/podgrzewanie-wody-basenowej
+RedirectMatch 301 ^/swimming-pools/?$ https://gamak.eu/podgrzewanie-wody-basenowej
+RedirectMatch 301 ^/obiekty-rekreacyjno-sportowe/?$ https://gamak.eu/
+RedirectMatch 301 ^/recreational-sports-facilities/?$ https://gamak.eu/
+RedirectMatch 301 ^/inne-produkty/?$ https://gamak.eu/
+RedirectMatch 301 ^/other-products/?$ https://gamak.eu/
+RedirectMatch 301 ^/system-mrozenia-skoczni-narciarskich/?$ https://gamak.eu/
+RedirectMatch 301 ^/ski-jump-freezing-system/?$ https://gamak.eu/
+RedirectMatch 301 ^/oswietlenie-obiektow-sportowych/?$ https://gamak.eu/
+RedirectMatch 301 ^/sports-facility-lightening/?$ https://gamak.eu/
+RedirectMatch 301 ^/tablice-wynikow-bandy-reklamowe/?$ https://gamak.eu/
+RedirectMatch 301 ^/result-boards-advert-borders/?$ https://gamak.eu/
+RedirectMatch 301 ^/artykul-periodyku-boiska-i-stadiony/?$ https://gamak.eu/o-nas
+
+# --- Angielska wersja (stare WP URL-e -> nowe EN) ---
+RedirectMatch 301 ^/english/?$ https://gamak.eu/en/
+RedirectMatch 301 ^/eanglish/?$ https://gamak.eu/en/
+RedirectMatch 301 ^/ice-rinks/?$ https://gamak.eu/en/ice-rinks
+RedirectMatch 301 ^/hockey-ice-rinks-and-borders/?$ https://gamak.eu/en/hockey-rinks
+RedirectMatch 301 ^/hockey-borders-and-ice-rinks/?$ https://gamak.eu/en/hockey-rinks
+RedirectMatch 301 ^/professional-borders-and-ice-rinks/?$ https://gamak.eu/en/hockey-rinks
+RedirectMatch 301 ^/recreational-borders-and-ice-rinks/?$ https://gamak.eu/en/ice-rinks
+RedirectMatch 301 ^/recreational-ice-rinks-and-borders/?$ https://gamak.eu/en/ice-rinks
+RedirectMatch 301 ^/roofed-mobile-hokey-ice-rinks/?$ https://gamak.eu/en/hockey-rinks
+RedirectMatch 301 ^/roofed-recreational-ice-rinks/?$ https://gamak.eu/en/ice-rinks
+RedirectMatch 301 ^/ice-resurfacer/?$ https://gamak.eu/en/ice-resurfacers
+RedirectMatch 301 ^/ice-resurfacing-machines/?$ https://gamak.eu/en/ice-resurfacers
+RedirectMatch 301 ^/machines-for-high-performance-sports-ice-rinks/?$ https://gamak.eu/en/ice-resurfacers
+RedirectMatch 301 ^/machines-for-recreational-ice-rinks/?$ https://gamak.eu/en/ice-resurfacers
+RedirectMatch 301 ^/sports-ground-with-an-ice-rink-2-in-1/?$ https://gamak.eu/en/field-rink-2in1
+RedirectMatch 301 ^/sports-ground-ice-rink-with-epdm-panel/?$ https://gamak.eu/en/field-rink-2in1
+RedirectMatch 301 ^/sports-ground-ice-rink-with-polypropylene-panel/?$ https://gamak.eu/en/field-rink-2in1
+RedirectMatch 301 ^/sports-ground-with-multisport-polypropylene-panel/?$ https://gamak.eu/en/sport-surfaces
+RedirectMatch 301 ^/sports-fields-modular-multisport-surface/?$ https://gamak.eu/en/sport-surfaces
+
+# --- WordPress legacy ---
+RedirectMatch 301 ^/wp-login\.php$ https://gamak.eu/
+RedirectMatch 301 ^/wp-admin/?$ https://gamak.eu/
+RedirectMatch 301 ^/feed/?$ https://gamak.eu/
+
+# ============================================
+# PERFORMANCE & SECURITY
+# ============================================
+
+# Kompresja GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/xml application/xml
+</IfModule>
+
+# Cache przegladarki
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 1 hour"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+</IfModule>
+
+# Sitemap i robots - bez Vary, bez cache, bezposrednie serwowanie
+<Files "sitemap.xml">
+    <IfModule mod_headers.c>
+        Header unset Vary
+        Header set Content-Type "text/xml; charset=UTF-8"
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set X-Robots-Tag "noindex"
+    </IfModule>
+</Files>
+<Files "robots.txt">
+    <IfModule mod_headers.c>
+        Header unset Vary
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </IfModule>
+</Files>
+
+# Blokuj dostep do ukrytych plikow
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Pozwol na .htaccess
+<Files .htaccess>
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Blokuj listowanie katalogow
+Options -Indexes
+
+# Strona 404
+ErrorDocument 404 /index.html
+
+# ============================================
+# Security headers
+# ============================================
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Cache bust: 1774379560

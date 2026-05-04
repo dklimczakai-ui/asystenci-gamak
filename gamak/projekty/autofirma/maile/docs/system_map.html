@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>System MAILE — Mapa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.cmd-box {
+  background: #1a1a1a; color: #d4d4d4; font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px; padding: 12px 14px; border-radius: 6px;
+  position: relative; overflow-x: auto; white-space: pre;
+}
+.copy-btn {
+  position: absolute; top: 8px; right: 8px;
+  background: #2a2a2a; color: #d4d4d4; border: 1px solid #444;
+  padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
+}
+.copy-btn:hover { background: #3a3a3a; }
+.copy-btn.copied { background: #064e3b; color: #6ee7b7; }
+details summary { cursor: pointer; padding: 8px 0; font-weight: 600; user-select: none; }
+details[open] summary { color: #1e40af; }
+.box { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 8px 0; }
+.box-warn { border-left-color: #f59e0b; background: #fffbeb; }
+.box-err { border-left-color: #dc2626; background: #fef2f2; }
+.box-ok { border-left-color: #10b981; background: #ecfdf5; }
+.lambda-card {
+  border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin: 6px 0;
+  background: #fff; transition: all 0.2s;
+}
+.lambda-card:hover { border-color: #3b82f6; box-shadow: 0 2px 8px rgba(59,130,246,0.1); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+.tag-cron { background: #fef3c7; color: #92400e; }
+.tag-push { background: #dbeafe; color: #1e40af; }
+.tag-manual { background: #f3e8ff; color: #6b21a8; }
+.tag-api { background: #dcfce7; color: #166534; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+th { background: #f3f4f6; font-weight: 600; }
+.flow-step {
+  display: inline-block; padding: 8px 14px; border: 2px solid #3b82f6; border-radius: 6px;
+  background: #eff6ff; margin: 4px; font-weight: 600; color: #1e40af;
+}
+.flow-arrow { display: inline-block; color: #6b7280; margin: 0 4px; font-size: 18px; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<div class="max-w-6xl mx-auto p-6">
+
+<header class="mb-8">
+<h1 class="text-3xl font-bold text-slate-900">System Mailowy MAILE</h1>
+<p class="text-slate-600 mt-2">Pełna mapa systemu Daniela. Stan na 2026-04-28.</p>
+<p class="text-sm text-slate-500 mt-1">Plik: <code>gamak/projekty/autofirma/maile/docs/system_map.html</code> — otwórz w przeglądarce.</p>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">📍 SZYBKI START — co możesz zrobić TERAZ</h2>
+
+<div class="box box-warn">
+<strong>Curl działa TYLKO w terminalu.</strong> NIE w przeglądarce, NIE w Notion, NIE w Gmail.
+Otwórz <strong>PowerShell</strong> (Start → wpisz "powershell" → Enter) ALBO <strong>Git Bash</strong>
+(jeśli masz Git zainstalowany — Start → "git bash"). Potem klikasz "kopiuj" pod komendą poniżej i wklejasz w terminal.
+</div>
+
+<h3 class="text-lg font-semibold mt-4 mb-2">A. Pokaż drafty czekające na moją decyzję</h3>
+<div class="cmd-box" id="cmd-inbox">curl https://jb69vusexb.execute-api.eu-central-1.amazonaws.com/agent/inbox<button class="copy-btn" onclick="copyTo(this, 'cmd-inbox')">Kopiuj</button></div>
+<p class="text-sm text-slate-600 mt-1">Zwraca JSON z listą draftów ze status=PENDING (drafty wygenerowane przez AI, czekają aż zdecydujesz: send/reject/amend).</p>
+
+<h3 class="text-lg font-semibold mt-4 mb-2">B. Wyślij draft (po review treści)</h3>
+<div class="cmd-box" id="cmd-send">curl -X POST https://jb69vusexb.execute-api.eu-central-1.amazonaws.com/agent/action -H "Content-Type: application/json" -d '{"action":"send","draft_id":"WSTAW_TUTAJ_DRAFT_ID","dry_run":true}'<button class="copy-btn" onclick="copyTo(this, 'cmd-send')">Kopiuj</button></div>
+<div class="box box-warn">
+<strong>Najpierw <code>"dry_run":true</code></strong> — pokaże co BYŁOBY wysłane, bez wysyłania.
+Jak treść OK, zmień <code>"dry_run":true</code> na <code>"dry_run":false</code> (lub usuń) i pchnij realny send.
+</div>
+
+<h3 class="text-lg font-semibold mt-4 mb-2">C. Odrzuć draft (zły, nie podoba mi się)</h3>
+<div class="cmd-box" id="cmd-reject">curl -X POST https://jb69vusexb.execute-api.eu-central-1.amazonaws.com/agent/action -H "Content-Type: application/json" -d '{"action":"reject","draft_id":"WSTAW_DRAFT_ID"}'<button class="copy-btn" onclick="copyTo(this, 'cmd-reject')">Kopiuj</button></div>
+
+<h3 class="text-lg font-semibold mt-4 mb-2">D. Popraw draft z hintem (Drafter zrobi nowy)</h3>
+<div class="cmd-box" id="cmd-amend">curl -X POST https://jb69vusexb.execute-api.eu-central-1.amazonaws.com/agent/action -H "Content-Type: application/json" -d '{"action":"amend","draft_id":"WSTAW_DRAFT_ID","hint":"Pisz krócej, dodaj że to jest pilne"}'<button class="copy-btn" onclick="copyTo(this, 'cmd-amend')">Kopiuj</button></div>
+
+<h3 class="text-lg font-semibold mt-4 mb-2">E. Zapisz task / decyzję / fakt do S3 (sync ręcznie do plan.md)</h3>
+<div class="cmd-box" id="cmd-propose">curl -X POST https://jb69vusexb.execute-api.eu-central-1.amazonaws.com/agent/action -H "Content-Type: application/json" -d '{"action":"propose","type":"task","title":"Follow-up X","content":"Karpacz prosi ofertę 2027","priority":"high"}'<button class="copy-btn" onclick="copyTo(this, 'cmd-propose')">Kopiuj</button></div>
+<p class="text-sm text-slate-600 mt-1">Type: <code>task</code> / <code>decision</code> / <code>crm_note</code> / <code>fact</code> / <code>context</code>. Zapis idzie do S3 jako markdown.</p>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">🔁 PRZEPŁYW: Co się dzieje gdy mail przychodzi</h2>
+
+<p class="text-slate-700 mb-4">Od momentu wysłania maila przez kogoś do <strong>d.klimczak.gamak@gmail.com</strong> /
+<strong>klimczak.daniel86@gmail.com</strong> / <strong>biuro.gamak@gmail.com</strong> mija ~27 sekund do klasyfikacji w DDB.</p>
+
+<div class="overflow-x-auto py-4 my-4 bg-slate-50 rounded-lg p-4">
+<div class="text-center">
+  <div class="flow-step">📨 Gmail INBOX</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">📡 Gmail watch</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">☁️ GCP Pub/Sub</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">🚪 API Gateway</div>
+</div>
+<div class="text-center mt-2">
+  <span class="flow-arrow">↓</span>
+</div>
+<div class="text-center">
+  <div class="flow-step">📥 mail-notify-receiver</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">📦 SQS queue</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">🧠 mail-processor</div>
+  <span class="flow-arrow">→</span>
+  <div class="flow-step">💾 DDB mail-emails</div>
+</div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+  <div class="box box-ok">
+    <strong>✅ Auto-archive (Daniel NIE widzi w INBOX):</strong>
+    <ul class="list-disc ml-5 mt-2 text-sm">
+      <li>INFO (powiadomienia automatyczne)</li>
+      <li>NEWSLETTER (mailingi)</li>
+      <li>TRANSACTIONAL (faktury, awizo)</li>
+    </ul>
+    <p class="text-sm mt-2 text-slate-700">Tylko gdy <code>confidence ≥ 0.9</code>. Mail leci z INBOX automatycznie. Można cofnąć.</p>
+  </div>
+
+  <div class="box">
+    <strong>⏳ Czeka na Twoją decyzję:</strong>
+    <ul class="list-disc ml-5 mt-2 text-sm">
+      <li>LEAD (nowy potencjalny klient)</li>
+      <li>KLIENT (znany kontakt z CRM)</li>
+      <li>PERSONAL (prywatne)</li>
+    </ul>
+    <p class="text-sm mt-2 text-slate-700">Manual invoke <code>mail-drafter</code> żeby wygenerować draft, potem decydujesz przez @mail review.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">🤖 8 LAMBD — co która robi</h2>
+
+<div class="lambda-card">
+<div><span class="tag tag-push">PUSH</span><strong>mail-notify-receiver</strong></div>
+<p class="text-sm text-slate-700 mt-1">Odbiera POST z Gmail Pub/Sub przez API Gateway, parsuje, wpycha do SQS. To jest "drzwi wejściowe" pipeline'u.</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-push">SQS</span><strong>mail-processor</strong></div>
+<p class="text-sm text-slate-700 mt-1">Klasyfikuje maila używając <strong>RULES R0-R6</strong> (deterministic, conf 1.0) + <strong>Bedrock Haiku 4.5</strong> jako AI fallback (gdy rule conf < 0.8).
+Auto-archive jeśli INFO/NEWSLETTER/TRANSACTIONAL i conf ≥ 0.9.</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-manual">MANUAL</span><strong>mail-drafter</strong> <span class="text-sm text-slate-500">(wywołujesz Ty z message_id)</span></div>
+<p class="text-sm text-slate-700 mt-1">Generuje draft odpowiedzi w <strong>Twoim stylu</strong>. Czyta z S3 dynamicznie:
+<code>mail_context_updates.md</code> + <code>ghost.md</code> + <code>profil.md</code> + <code>oferta.md</code> + <strong>15 realnych przykładów Twoich wysłanych maili</strong> (sent-samples.json).
+Bedrock Sonnet 4.6. Post-process: replace em-dash, "Tatusiu"→"Tatuś", "bandów"→"band" itp. (lista WORD_FIXES w kodzie).</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-api">API</span><strong>mail-agent-api</strong> <span class="text-sm text-slate-500">(/agent/inbox + /agent/action)</span></div>
+<p class="text-sm text-slate-700 mt-1">5 akcji: <code>send</code> / <code>reject</code> / <code>archive</code> / <code>amend</code> (re-draft z hintem) / <code>propose</code> (zapisz task/decyzję/fakt do S3).
+Pełny "control panel" Twoich decyzji.</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-cron">CRON</span><strong>mail-gmail-watch-renew</strong> <span class="text-sm text-slate-500">(codziennie 06:00 UTC)</span></div>
+<p class="text-sm text-slate-700 mt-1">Odnawia Gmail watch dla 3 skrzynek (TTL 7 dni). <strong>Bez tego push pada za tydzień.</strong> Self-healing.</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-cron">CRON</span><strong>mail-historical-miner</strong> <span class="text-sm text-slate-500">(sobota 07:00 UTC)</span></div>
+<p class="text-sm text-slate-700 mt-1">Sweep ostatnich 7 dni biuro.gamak — klasyfikuje stare maile (idempotent), wyciąga kontakty do mail-contacts.
+Można odpalić manual dla full sweep 12 mies wstecz (~52 invocations × 30 sek).</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-cron">CRON</span><strong>mail-extraction-engine</strong> <span class="text-sm text-slate-500">(codziennie 09:00 UTC)</span></div>
+<p class="text-sm text-slate-700 mt-1">Dla LEAD/KLIENT z ostatnich 50 — wyciąga z body strukturyzowane dane (phone, NIP, role, company) + facts list (np. "Karpacz prosi ofertę na 2027").
+Update mail-contacts + facts do S3 (Daniel ręcznie kopiuje wartościowe do mail_context_updates.md).</p>
+</div>
+
+<div class="lambda-card">
+<div><span class="tag tag-cron">CRON</span><strong>mail-feedback-analyzer</strong> <span class="text-sm text-slate-500">(niedziela 20:00 UTC)</span></div>
+<p class="text-sm text-slate-700 mt-1">Skanuje feedback (Twoje akcje send/reject/amend) z ostatnich 7 dni → raport JSON do S3 + SNS notify.
+Pokazuje wzorce: które kategorie najczęściej rejectujesz, jakie hint'y dajesz w amend (kandydaci na nowe reguły).</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">🗂 GDZIE CZEGO SZUKAĆ</h2>
+
+<table>
+<thead><tr><th>Czego szukam</th><th>Gdzie</th><th>Jak</th></tr></thead>
+<tbody>
+<tr>
+<td>Drafty czekające na moją decyzję</td>
+<td>DDB <code>mail-drafts</code></td>
+<td><code>curl /agent/inbox</code></td>
+</tr>
+<tr>
+<td>Treść wszystkich klasyfikowanych maili</td>
+<td>DDB <code>mail-emails</code></td>
+<td><code>aws dynamodb scan --table-name mail-emails</code></td>
+</tr>
+<tr>
+<td>Auto-archived (znikły z INBOX)</td>
+<td>DDB <code>mail-emails</code> filter status=AUTO_ARCHIVED</td>
+<td>scan z filter</td>
+</tr>
+<tr>
+<td>Wszystkie kontakty (1795 z CRM + extracted)</td>
+<td>DDB <code>mail-contacts</code></td>
+<td>scan</td>
+</tr>
+<tr>
+<td>Facts wyciągnięte z maili (phone, NIP, business facts)</td>
+<td>S3 <code>extracted-context/facts/YYYY-MM-DD/*.json</code></td>
+<td>aws s3 ls / cp</td>
+</tr>
+<tr>
+<td>Proposed actions (taski/decyzje/fakty)</td>
+<td>S3 <code>proposed-actions/{type}/YYYY-MM-DD/*.md</code></td>
+<td>aws s3 ls / cp</td>
+</tr>
+<tr>
+<td>Tygodniowy raport feedback</td>
+<td>S3 <code>feedback-reports/{YYYY-WeekNN}/report.json</code></td>
+<td>aws s3 cp</td>
+</tr>
+<tr>
+<td>Logi Lambdy (gdy coś się zepsuło)</td>
+<td>CloudWatch Logs <code>/aws/lambda/mail-*</code></td>
+<td><a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logsV2:log-groups" target="_blank" class="text-blue-600 underline">AWS Console</a></td>
+</tr>
+<tr>
+<td>Dashboard z metrykami</td>
+<td>CloudWatch Dashboard <code>gamak-mail-overview</code></td>
+<td><a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#dashboards:name=gamak-mail-overview" target="_blank" class="text-blue-600 underline">Otwórz dashboard</a></td>
+</tr>
+<tr>
+<td>Alarmy które się odpaliły (errors w Lambdach, pełen DLQ)</td>
+<td>SNS topic <code>gamak-mail-alerts</code> → email</td>
+<td>Mail w <code>d.klimczak.gamak@gmail.com</code> od <code>no-reply@sns.amazonaws.com</code></td>
+</tr>
+<tr>
+<td>Ile maili kosztuje system</td>
+<td>AWS Cost Explorer (filtr Project=AUTOFIRMA)</td>
+<td><a href="https://us-east-1.console.aws.amazon.com/cost-management/home" target="_blank" class="text-blue-600 underline">Cost Explorer</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">🎓 JAK DRAFTER SIĘ UCZY TWOJEGO STYLU</h2>
+
+<p class="mb-3">Drafter (mail-drafter Lambda) buduje prompt z 4 źródeł, każde z S3, dynamicznie:</p>
+
+<ol class="list-decimal ml-5 space-y-2">
+<li><strong><code>mail_context_updates.md</code></strong> — reguły per kontakt (Tatuś dla Wiesława, Paweł dla Galisza, Basiu dla Biernat) + lista błędów słowotwórczych do unikania (Tatusiu→Tatuś, bandów→band)</li>
+<li><strong><code>ghost.md</code></strong> — Twój pełen profil stylu (30 KB)</li>
+<li><strong><code>profil.md</code></strong> — kim jesteś, czym GAMAK się zajmuje</li>
+<li><strong><code>oferta.md</code></strong> — co sprzedajesz, jakie ceny</li>
+<li><strong><code>sent-samples.json</code></strong> — <strong>15 realnych Twoich wysłanych maili</strong> jako few-shot examples</li>
+</ol>
+
+<div class="box box-ok mt-4">
+<strong>Gdy zauważysz że Drafter źle pisze do kogoś:</strong>
+<ol class="list-decimal ml-5 mt-2 text-sm">
+<li>Edytuj <code>gamak/dane/mail_context_updates.md</code> — dodaj regułę</li>
+<li>W terminalu: <code>cd gamak/projekty/autofirma/maile/scripts &amp;&amp; python sync_context_to_s3.py</code></li>
+<li>Następne drafty stosują regułę (cache Lambdy odświeży się przy kolejnym deploy lub po 1h cold start)</li>
+</ol>
+</div>
+
+<div class="box box-warn mt-4">
+<strong>Drafter używa AI Sonnet 4.6.</strong> Nie zawsze idealny.
+Patrz na każdy draft jak na <strong>punkt startowy</strong>, nie finał. Albo "send" jak OK, albo "amend hint=..." żeby poprawił.
+Każdy hint to materiał do nauki — Feedback Analyzer co tydzień zbiera wzorce.
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">📊 STAN OBECNY (28.04.2026)</h2>
+
+<div class="grid md:grid-cols-3 gap-4">
+<div class="bg-blue-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-blue-700">8</div>
+<div class="text-sm text-blue-900">Lambd LIVE</div>
+</div>
+<div class="bg-green-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-green-700">4</div>
+<div class="text-sm text-green-900">Cron jobs</div>
+</div>
+<div class="bg-purple-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-purple-700">1795</div>
+<div class="text-sm text-purple-900">Kontaktów w mail-contacts</div>
+</div>
+<div class="bg-orange-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-orange-700">3</div>
+<div class="text-sm text-orange-900">Skrzynki Gmail (gamak, daniel86, biuro)</div>
+</div>
+<div class="bg-pink-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-pink-700">17</div>
+<div class="text-sm text-pink-900">CloudWatch alarmów</div>
+</div>
+<div class="bg-yellow-50 p-4 rounded-lg">
+<div class="text-3xl font-bold text-yellow-700">~$13</div>
+<div class="text-sm text-yellow-900">Koszt /mies estymowany</div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">❓ FAQ</h2>
+
+<details class="border-b py-2">
+<summary>Curl mi nie działa — gdzie wkleić?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p>Curl to <strong>komenda terminala</strong>, nie URL do przeglądarki.</p>
+<ol class="list-decimal ml-5 space-y-1 mt-2">
+<li>Naciśnij <kbd>Win</kbd> i wpisz <strong>"powershell"</strong> (lub <strong>"git bash"</strong> jeśli masz)</li>
+<li>Otwórz terminal</li>
+<li>Wklej curl, naciśnij Enter</li>
+<li>Wynik to JSON w terminalu — czytaj go tam</li>
+</ol>
+<p class="mt-2">PowerShell na nowych Windows ma curl built-in. Git Bash też. Zwykły CMD — nie ma curl, używaj jednego z powyższych.</p>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Drafter wysłał coś czego bym nie wysłał. Co zrobić?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p><strong>Nigdy NIE wysyłasz auto.</strong> Twoja akcja to ZAWSZE manual <code>send</code>. Jeśli draft jest słaby:</p>
+<ul class="list-disc ml-5 space-y-1 mt-1">
+<li><code>action=reject</code> — wyrzuć draft, mail oryginalny zostaje w INBOX, sam odpiszesz ręcznie</li>
+<li><code>action=amend, hint="..."</code> — Drafter generuje nowy draft z Twoim hintem</li>
+<li>Jeśli pattern się powtarza (np. "zawsze pisz do JST formalnie") → dodaj regułę do <code>mail_context_updates.md</code></li>
+</ul>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Skąd Drafter wie że Wiesław to mój tata?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p>Z pliku <code>gamak/dane/mail_context_updates.md</code> (zsynczowany do S3 jako kontekst). Reguła:</p>
+<pre class="bg-slate-100 p-2 rounded mt-2 text-xs">wklimczak.sportmanager@gmail.com → Wiesław Klimczak (TATA Daniela)
+Pierwsza linia: "Tatuś," (NIE "Tato", NIE "Wiesławie", NIE "Tatusiu")
+Tone: ciepły rodzinny ale często biznesowy
+Często żartobliwie. Bez signoff, kończ "Daniel" lub naturalnie</pre>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Jak wyłączyć auto-archive (znika za dużo dobrych maili)?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p>W terminalu:</p>
+<pre class="bg-slate-100 p-2 rounded mt-1 text-xs">aws lambda update-function-configuration --region eu-central-1 --function-name mail-processor --environment "Variables={...,AUTONOMOUS_MODE=off,...}"</pre>
+<p class="mt-2">Lub podnieś próg: zmień <code>AUTO_ARCHIVE_THRESHOLD</code> z <code>0.9</code> na <code>0.95</code> (więcej będzie czekało na ręczną decyzję).</p>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Co się stanie jak Pub/Sub umrze?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p>SQS DLQ łapie błędy (<code>email-inbox-dlq</code>). Alarm <code>mail-dlq-not-empty</code> powiadomi Cię na email.
+Plus zawsze możesz manual: <code>aws lambda invoke --function-name mail-processor --payload '{"count":10}'</code> — pobierze ostatnie 10 maili ręcznie.</p>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Gdzie pełna treść moich maili?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<p><strong>Treść jest TYLKO w Twoim Gmail.</strong> Lambdy pobierają na żądanie (gdy potrzeba), nie zapisują pełnego body do DDB.
+W <code>mail-emails</code> jest: from, subject, snippet (200 chars), klasyfikacja, status. Pełen body zostaje w skrzynce Gmail.</p>
+</div>
+</details>
+
+<details class="border-b py-2">
+<summary>Co ile kosztuje?</summary>
+<div class="pl-4 mt-2 text-sm text-slate-700">
+<table class="text-xs">
+<tr><td class="pr-4">Bedrock Haiku 4.5 (klasyfikacja)</td><td>~$0.50/mies</td></tr>
+<tr><td class="pr-4">Bedrock Sonnet 4.6 (drafty)</td><td>~$10.5/mies (5 draftów/dzień × $0.07)</td></tr>
+<tr><td class="pr-4">Secrets Manager (3 sekrety)</td><td>$1.20/mies</td></tr>
+<tr><td class="pr-4">DDB / S3 / Lambda / SQS / etc</td><td>~$1/mies (free tier wystarcza)</td></tr>
+<tr class="font-bold"><td>TOTAL</td><td>~$13/mies</td></tr>
+</table>
+<p class="mt-2">Drafter jest dominującym kosztem. Tuning: zmniejsz <code>CONTEXT_MAX_BYTES_PER_FILE</code> z 25000 na 10000 → ~$5/mies zamiast $10.5.</p>
+</div>
+</details>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════ -->
+<section class="mb-8 bg-white rounded-lg shadow-sm p-6">
+<h2 class="text-2xl font-bold mb-4 text-slate-900">📚 LINKI</h2>
+<ul class="space-y-2">
+<li>📄 <a href="../../../dane/mail_context_updates.md" class="text-blue-600 underline">mail_context_updates.md</a> — reguły per kontakt (edytuj gdy zauważysz błąd Drafter)</li>
+<li>📄 <a href="../../../dane/ghost.md" class="text-blue-600 underline">ghost.md</a> — Twój pełen styl pisania</li>
+<li>📄 <a href="ROADMAP.md" class="text-blue-600 underline">ROADMAP.md</a> — plan rozwoju MAILE</li>
+<li>📄 <a href="CHANGELOG.md" class="text-blue-600 underline">CHANGELOG.md</a> — historia wszystkich zmian</li>
+<li>📄 <a href="SYSTEM_MAP.md" class="text-blue-600 underline">SYSTEM_MAP.md</a> — pełna mapa w markdown</li>
+<li>🎛 <a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#dashboards:name=gamak-mail-overview" target="_blank" class="text-blue-600 underline">CloudWatch Dashboard</a> — metryki na żywo</li>
+<li>📊 <a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#logsV2:log-groups" target="_blank" class="text-blue-600 underline">CloudWatch Logs</a> — logi wszystkich Lambd</li>
+<li>📦 <a href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#tables" target="_blank" class="text-blue-600 underline">DynamoDB Tables</a> — przegląd tabel</li>
+<li>🪣 <a href="https://eu-central-1.console.aws.amazon.com/s3/home?region=eu-central-1" target="_blank" class="text-blue-600 underline">S3 Buckets</a> — facts, proposals, archive</li>
+</ul>
+</section>
+
+<footer class="mt-8 pt-4 border-t text-center text-sm text-slate-500">
+System MAILE — 28.04.2026 — Daniel Klimczak (GAMAK).
+Mapa generowana przez @cto. Edytowalna w <code>gamak/projekty/autofirma/maile/docs/system_map.html</code>.
+</footer>
+
+</div>
+
+<script>
+function copyTo(btn, id) {
+  const el = document.getElementById(id);
+  // Pobierz tylko text bez HTML buttona
+  const text = el.cloneNode(true);
+  text.querySelectorAll('button').forEach(b => b.remove());
+  navigator.clipboard.writeText(text.innerText.trim()).then(() => {
+    btn.textContent = '✓ Skopiowane';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Kopiuj';
+      btn.classList.remove('copied');
+    }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>

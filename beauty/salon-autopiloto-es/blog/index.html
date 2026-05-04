@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Salón en Autopiloto</title>
+    <meta name="description" content="Consejos prácticos para dueñas de salones de belleza. Cómo recuperar tu tiempo, crear sistemas y dejar de ser esclava de tu propio negocio.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Lato:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #faf8f4;
+            --color-bg-card: #ffffff;
+            --color-primary: #c4a77d;
+            --color-primary-dark: #a68b5b;
+            --color-text: #3d3d3d;
+            --color-text-muted: #6b6b6b;
+            --color-border: #e8e2d9;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lato', -apple-system, sans-serif;
+            --shadow-md: 0 6px 24px rgba(164, 139, 91, 0.12);
+            --radius-md: 16px;
+            --transition: 0.35s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); font-size: 17px; line-height: 1.75; color: var(--color-text); background-color: var(--color-bg); }
+        header { background: var(--color-bg-card); padding: 20px 0; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-primary-dark); text-decoration: none; }
+        .nav-links a { color: var(--color-text); text-decoration: none; margin-left: 30px; font-size: 0.95rem; }
+        .hero { padding: 80px 0 60px; text-align: center; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 400; margin-bottom: 20px; }
+        .hero p { font-size: 1.15rem; color: var(--color-text-muted); max-width: 600px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 35px; padding: 40px 0 100px; }
+        .article-card { background: var(--color-bg-card); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md); transition: transform var(--transition); }
+        .article-card:hover { transform: translateY(-5px); }
+        .article-card img { width: 100%; height: 200px; object-fit: cover; }
+        .article-card-content { padding: 28px; }
+        .article-card-meta { font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 12px; }
+        .article-card h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; margin-bottom: 12px; }
+        .article-card h2 a { color: var(--color-text); text-decoration: none; }
+        .article-card h2 a:hover { color: var(--color-primary-dark); }
+        .article-card p { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 18px; }
+        .read-more { color: var(--color-primary-dark); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        footer { background: var(--color-text); color: white; padding: 50px 0 30px; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 28px; text-align: center; }
+        .footer-links { margin-bottom: 30px; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 15px; font-size: 0.9rem; }
+        .footer-copy { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .rodo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-text); color: white; padding: 20px; z-index: 1000; display: none; }
+        .rodo-banner.show { display: block; }
+        .rodo-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .rodo-text { flex: 1; font-size: 0.9rem; }
+        .rodo-text a { color: var(--color-primary); }
+        .rodo-buttons { display: flex; gap: 10px; }
+        .rodo-btn { padding: 10px 24px; border: none; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        .rodo-btn-accept { background: var(--color-primary); color: white; }
+        .rodo-btn-reject { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="../index.html" class="logo">Salón en Autopiloto</a>
+            <nav class="nav-links">
+                <a href="../index.html">Inicio</a>
+                <a href="index.html">Blog</a>
+                <a href="../index.html#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Blog</h1>
+            <p>Consejos prácticos para dueñas de salones de belleza. Sin rodeos, sin jerga técnica.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="articles-grid">
+            <article class="article-card">
+                <img src="../img/blog-1-comunicacion.jpg" alt="Cómo dejar de responder mensajes hasta las 22:00">
+                <div class="article-card-content">
+                    <div class="article-card-meta">5 de febrero 2026 • 6 min de lectura</div>
+                    <h2><a href="dejar-de-responder-hasta-las-22.html">Cómo dejar de responder mensajes hasta las 22:00</a></h2>
+                    <p>Tienes un salón, terminas el último tratamiento a las 19:00, y luego 3 horas más respondiendo DMs. Es hora de cambiar.</p>
+                    <a href="dejar-de-responder-hasta-las-22.html" class="read-more">Leer más →</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="../img/blog-2-procedury.jpg" alt="5 procedimientos para tu salón">
+                <div class="article-card-content">
+                    <div class="article-card-meta">3 de febrero 2026 • 8 min de lectura</div>
+                    <h2><a href="5-procedimientos-para-salon-belleza.html">5 procedimientos que todo salón de belleza debería tener</a></h2>
+                    <p>¿Quieres contratar pero tienes miedo de que "nadie lo hará tan bien como tú"? El problema no es la gente – es la falta de procedimientos.</p>
+                    <a href="5-procedimientos-para-salon-belleza.html" class="read-more">Leer más →</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="../img/blog-3-leady.jpg" alt="Cuánto te cuesta una clienta perdida">
+                <div class="article-card-content">
+                    <div class="article-card-meta">1 de febrero 2026 • 5 min de lectura</div>
+                    <h2><a href="cuanto-cuesta-clienta-perdida.html">¿Cuánto te cuesta una clienta perdida?</a></h2>
+                    <p>Seguro piensas: "una clienta menos, no pasa nada". Pero ¿sabes cuánto pierdes realmente por los mensajes sin responder?</p>
+                    <a href="cuanto-cuesta-clienta-perdida.html" class="read-more">Leer más →</a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../index.html">Inicio</a>
+                <a href="index.html">Blog</a>
+                <a href="../aviso-legal.html">Aviso Legal</a>
+                <a href="../politica-privacidad.html">Política de Privacidad</a>
+            </div>
+            <p class="footer-copy">© 2026 Salón en Autopiloto. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="rodo-banner" id="rodoBanner">
+        <div class="rodo-inner">
+            <div class="rodo-text">Este sitio utiliza cookies. <a href="../politica-privacidad.html">Más información</a></div>
+            <div class="rodo-buttons">
+                <button class="rodo-btn rodo-btn-reject" onclick="rejectCookies()">Rechazar</button>
+                <button class="rodo-btn rodo-btn-accept" onclick="acceptCookies()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkCookieConsent() { if (!localStorage.getItem('cookieConsent')) document.getElementById('rodoBanner').classList.add('show'); }
+        function acceptCookies() { localStorage.setItem('cookieConsent', 'accepted'); document.getElementById('rodoBanner').classList.remove('show'); }
+        function rejectCookies() { localStorage.setItem('cookieConsent', 'rejected'); document.getElementById('rodoBanner').classList.remove('show'); }
+        checkCookieConsent();
+    </script>
+</body>
+</html>

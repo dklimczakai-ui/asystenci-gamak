@@ -1,0 +1,9 @@
+# AWS Lambda deps — Python 3.12 runtime
+# NIE pandas-ta — nie jest używany w kodzie (sprawdzone: brak importu pandas_ta)
+# python-dotenv — opcjonalny na Lambdzie; config.py ma try/except, ale zostawiamy
+#                 (tani pakiet) żeby lokalny dev działał identycznie jak prod
+ccxt==4.5.49
+pandas==2.2.3
+numpy==2.1.3
+requests==2.32.3
+python-dotenv==1.0.1

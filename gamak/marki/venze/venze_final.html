@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VENZE | Professional Ice Skate Rental Systems</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #ff5e00;
+            --ice-blue: #00d4ff;
+            --bg-dark: #050505;
+            --card-bg: #111111;
+            --text-light: #f5f5f5;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .accent-font {
+            font-family: 'Barlow Condensed', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+        }
+
+        /* --- Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            z-index: 1000;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 80px; /* Powiększone logo */
+            width: auto;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-orange);
+        }
+
+        .cta-btn {
+            background: var(--primary-orange);
+            color: #fff;
+            padding: 12px 28px;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.3s;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 94, 0, 0.4);
+        }
+
+        /* --- Hero --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            background: radial-gradient(circle at 70% 50%, rgba(255, 94, 0, 0.1) 0%, transparent 50%), 
+                        linear-gradient(to right, #050505 40%, transparent 100%),
+                        url('./Gemini_Generated_Image_r4jy8gr4jy8gr4jy.png'); /* Macro ice texture */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 8vw, 7rem);
+            line-height: 0.85;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--primary-orange);
+            -webkit-text-stroke: 1px var(--primary-orange);
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 40px;
+            border-left: 4px solid var(--primary-orange);
+            padding-left: 20px;
+        }
+
+        /* --- Stats/B2B --- */
+        .b2b-strip {
+            background: var(--primary-orange);
+            padding: 40px 5%;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: #000;
+        }
+
+        .stat-value {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* --- Features --- */
+        .features {
+            padding: 120px 5%;
+        }
+
+        .section-tag {
+            color: var(--primary-orange);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            margin-bottom: 60px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, var(--primary-orange), transparent);
+            opacity: 0;
+            transition: 0.4s;
+            z-index: 0;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-orange);
+            transform: translateY(-10px);
+        }
+
+        .feature-card * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+        }
+
+        /* --- Comparison --- */
+        .comparison {
+            padding: 100px 5%;
+            background: #0a0a0a;
+        }
+
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 40px;
+        }
+
+        .comp-table th {
+            text-align: left;
+            padding: 20px;
+            border-bottom: 2px solid var(--primary-orange);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.5rem;
+        }
+
+        .comp-table td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .check { color: #00ff88; font-weight: bold; }
+        .cross { color: #ff4444; opacity: 0.5; }
+
+        /* --- Footer --- */
+        footer {
+            padding: 80px 5% 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-logo-desc p {
+            margin-top: 20px;
+            color: var(--text-muted);
+            max-width: 300px;
+        }
+
+        .footer-col h4 {
+            margin-bottom: 25px;
+            color: var(--primary-orange);
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--text-light);
+        }
+
+        .copyright {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 1rem 5%; }
+            nav, .cta-btn-header { display: none; }
+            .hero h1 { font-size: 3.5rem; }
+            .section-title { font-size: 2.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .logo-img { height: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-box">
+            <img src="./white logo.png" alt="VENZE Logo" class="logo-img">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#about">O nas</a></li>
+                <li><a href="#technology">Technologia</a></li>
+                <li><a href="#comparison">Dlaczego my?</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+        </nav>
+        <a href="#contact" class="cta-btn cta-btn-header">Zapytaj o ofertę</a>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span class="section-tag">Rental Pro Systems</span>
+            <h1>KOMFORT, DO KTÓREGO <span>SIĘ</span> WRACA.</h1>
+            <h2 class="accent-font" style="font-size: 2.5rem; color: var(--primary-orange); margin-bottom: 20px;">VENZE. Po prostu jedź.</h2>
+            <p>Dostarczamy najbardziej wytrzymałe łyżwy do wypożyczalni na rynku. Zaprojektowane, by znosić 12h pracy na lodzie dziennie.</p>
+            <div style="display: flex; gap: 20px;">
+                <a href="#technology" class="cta-btn">Poznaj model V-Rental</a>
+                <a href="#contact" class="cta-btn" style="background: transparent; border: 2px solid #fff;">Cennik B2B</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="b2b-strip">
+        <div class="stat-item">
+            <span class="stat-value">5000+</span>
+            <span class="stat-label">Par w użyciu</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">-25°C</span>
+            <span class="stat-label">Testowana wytrzymałość</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">45s</span>
+            <span class="stat-label">Czas obsługi klienta</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">3 LATA</span>
+            <span class="stat-label">Gwarancji na skorupę</span>
+        </div>
+    </div>
+
+    <section id="technology" class="features">
+        <span class="section-tag">Inżynieria</span>
+        <h2 class="section-title">Technologia, która zarabia.</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>V-LOCK BUCKLES</h3>
+                <p>Opatentowany system klamer, których nie da się "przekręcić". Redukcja kosztów serwisu o 80% w porównaniu do standardowych rozwiązań.</p>
+            </div>
+            <div class="feature-card">
+                <h3>DRY-TECH LINER</h3>
+                <p>Wymienne wkładki, które schną w rekordowym tempie. Twoi klienci nigdy nie dostaną wilgotnego buta.</p>
+            </div>
+            <div class="feature-card">
+                <h3>EASY-SIZE SYSTEM</h3>
+                <p>Wyraźne, nieścieralne oznaczenia rozmiarów na pięcie i języku. Błyskawiczne wydawanie sprzętu nawet przy pełnym obłożeniu.</p>
+            </div>
+            <div class="feature-card">
+                <h3>STEEL-HD BLADE</h3>
+                <p>Stal hartowana o zwiększonej gęstości. Wymaga ostrzenia 3x rzadziej niż płozy rekreacyjne.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="comparison" class="comparison">
+        <span class="section-tag">Benchmark</span>
+        <h2 class="section-title">VENZE vs Reszta Świata</h2>
+        
+        <div style="overflow-x: auto;">
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Cecha</th>
+                        <th>VENZE RENTAL</th>
+                        <th>Inne marki (T/R)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Wytrzymałość klamer</td>
+                        <td><span class="check">✓</span> Ultra-HD Polymer</td>
+                        <td><span class="cross">✕</span> Standardowy plastik</td>
+                    </tr>
+                    <tr>
+                        <td>Czas schnięcia</td>
+                        <td><span class="check">✓</span> ~15 min (wymuszony obieg)</td>
+                        <td><span class="cross">✕</span> 45 min+</td>
+                    </tr>
+                    <tr>
+                        <td>System identyfikacji rozmiaru</td>
+                        <td><span class="check">✓</span> Color-Code System</td>
+                        <td><span class="cross">✕</span> Tylko nadruk</td>
+                    </tr>
+                    <tr>
+                        <td>Koszt eksploatacji (rok)</td>
+                        <td><span class="check">✓</span> Niski (Mało części zamiennych)</td>
+                        <td><span class="cross">✕</span> Wysoki (Częste wymiany)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="contact" style="padding: 120px 5%; background: var(--primary-orange); color: #000; text-align: center;">
+        <h2 class="accent-font" style="font-size: 4rem; margin-bottom: 20px;">Gotowy na upgrade swojego lodowiska?</h2>
+        <p style="font-weight: 700; margin-bottom: 40px; font-size: 1.2rem;">Zamów darmową parę testową i poczuj różnicę.</p>
+        <a href="mailto:office@venze.com" class="cta-btn" style="background: #000; color: #fff; padding: 20px 60px; font-size: 1.5rem;">Wyślij zapytanie</a>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-logo-desc">
+                <div class="logo-box">
+                    <img src="./white logo.png" alt="VENZE Logo" class="logo-img" style="height: 100px;">
+                </div>
+                <p>Lider systemów rentalowych dla nowoczesnych lodowisk. Tworzymy sprzęt, który pracuje na Twój zysk.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Produkty</h4>
+                <ul>
+                    <li><a href="#">V-Rental Pro</a></li>
+                    <li><a href="#">V-Rental Kids</a></li>
+                    <li><a href="#">Akcesoria</a></li>
+                    <li><a href="#">Serwis</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Firma</h4>
+                <ul>
+                    <li><a href="#">O nas</a></li>
+                    <li><a href="#">Realizacje</a></li>
+                    <li><a href="#">Technologia</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Kontakt</h4>
+                <ul>
+                    <li><a href="#">Wsparcie B2B</a></li>
+                    <li><a href="#">Dział Sprzedaży</a></li>
+                    <li><a href="#">Media</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 VENZE Sports Equipment. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

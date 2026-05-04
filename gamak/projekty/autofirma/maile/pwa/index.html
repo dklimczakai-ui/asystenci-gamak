@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e40af">
+<title>📧 MAILE</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+* { -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: -apple-system, 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #e2e8f0;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.tab-active { color: #60a5fa; border-top-color: #60a5fa; }
+.card {
+  background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+  padding: 14px; margin-bottom: 12px;
+}
+.btn {
+  padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  border: none; transition: all 0.15s;
+}
+.btn:active { transform: scale(0.96); }
+.btn-send { background: #16a34a; color: white; }
+.btn-send:hover { background: #15803d; }
+.btn-reject { background: #dc2626; color: white; }
+.btn-reject:hover { background: #b91c1c; }
+.btn-amend { background: #ea580c; color: white; }
+.btn-amend:hover { background: #c2410c; }
+.btn-open { background: #2563eb; color: white; }
+.btn-open:hover { background: #1d4ed8; }
+.btn-secondary { background: #334155; color: #e2e8f0; }
+.btn-secondary:hover { background: #475569; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.badge-LEAD { background: #fbbf24; color: #78350f; }
+.badge-KLIENT { background: #4ade80; color: #14532d; }
+.badge-PERSONAL { background: #c084fc; color: #4c1d95; }
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal {
+  background: #1e293b; border-radius: 16px; padding: 20px; max-width: 480px; width: 100%;
+  border: 1px solid #475569;
+}
+.spinner {
+  width: 20px; height: 20px; border: 2px solid #475569; border-top-color: #60a5fa;
+  border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.toast {
+  position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%);
+  background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 24px;
+  font-weight: 600; z-index: 100; max-width: 90%;
+  animation: toast-in 0.3s, toast-out 0.3s 2.7s forwards;
+}
+.toast-err { background: #7f1d1d; color: #fecaca; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 20px); } }
+@keyframes toast-out { to { opacity: 0; transform: translate(-50%, 20px); } }
+.bottom-tabs {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #0f172a; border-top: 1px solid #334155; display: flex;
+  padding: 8px env(safe-area-inset-right) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+  z-index: 40;
+}
+.tab-btn {
+  flex: 1; padding: 8px 4px; text-align: center; font-size: 11px; font-weight: 500;
+  color: #64748b; border-top: 2px solid transparent; cursor: pointer; user-select: none;
+}
+.tab-btn .icon { font-size: 22px; display: block; margin-bottom: 2px; }
+header {
+  position: sticky; top: 0; z-index: 30; background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(8px); padding: 14px env(safe-area-inset-right) 14px env(safe-area-inset-left);
+  border-bottom: 1px solid #334155;
+  padding-top: calc(14px + env(safe-area-inset-top));
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="px-4 flex items-center justify-between">
+<h1 class="text-xl font-bold text-white">📧 MAILE</h1>
+<button class="text-2xl text-slate-400 active:text-white" onclick="loadInbox()">↻</button>
+</div>
+<div class="px-4 mt-1 text-xs text-slate-400" id="status">tap ↻ żeby odświeżyć</div>
+</header>
+
+<main class="px-4 pt-4 max-w-2xl mx-auto">
+
+<!-- TAB: INBOX -->
+<section id="tab-inbox" class="tab-content">
+<div id="inbox-list">
+<div class="text-center py-12 text-slate-500">
+<div class="spinner mx-auto mb-4"></div>
+<div>Ładuje drafty...</div>
+</div>
+</div>
+</section>
+
+<!-- TAB: PROPOSE -->
+<section id="tab-propose" class="tab-content hidden">
+<h2 class="text-lg font-semibold mb-3">Zapisz akcję do S3</h2>
+<form onsubmit="proposeSubmit(event)" class="space-y-3">
+<select id="prop-type" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
+<option value="task">📋 Task (do plan.md)</option>
+<option value="decision">🎯 Decision (do decyzje.md)</option>
+<option value="fact">💡 Fact (do mail_context_updates.md)</option>
+<option value="crm_note">👤 CRM note (do CRM kontaktu)</option>
+<option value="context">🌐 Context (rynek/branża)</option>
+</select>
+<input id="prop-title" placeholder="Tytuł" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
+<textarea id="prop-content" rows="4" placeholder="Treść..." class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600"></textarea>
+<select id="prop-priority" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
+<option value="normal">⚪ Normal</option>
+<option value="high">🔴 High</option>
+<option value="low">🟢 Low</option>
+</select>
+<input id="prop-target" placeholder="Target (email kontaktu, opcjonalne)" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
+<button type="submit" class="btn btn-send w-full justify-center text-base py-3">💾 Zapisz do S3</button>
+</form>
+</section>
+
+<!-- TAB: HISTORY -->
+<section id="tab-history" class="tab-content hidden">
+<h2 class="text-lg font-semibold mb-3">Ostatnie wysłane / zarchiwizowane</h2>
+<div id="history-list">
+<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Ładuje...</div>
+</div>
+</section>
+
+<!-- TAB: STATS -->
+<section id="tab-stats" class="tab-content hidden">
+<h2 class="text-lg font-semibold mb-3">📊 Statystyki</h2>
+<div id="stats-content">
+<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Liczy...</div>
+</div>
+</section>
+
+</main>
+
+<!-- BOTTOM TABS -->
+<nav class="bottom-tabs">
+<div class="tab-btn tab-active" data-tab="inbox" onclick="switchTab('inbox')"><span class="icon">📥</span>Inbox</div>
+<div class="tab-btn" data-tab="propose" onclick="switchTab('propose')"><span class="icon">✏️</span>Zapisz</div>
+<div class="tab-btn" data-tab="history" onclick="switchTab('history')"><span class="icon">📚</span>Historia</div>
+<div class="tab-btn" data-tab="stats" onclick="switchTab('stats')"><span class="icon">📊</span>Stats</div>
+</nav>
+
+<!-- AMEND MODAL -->
+<div id="amend-modal" class="modal-bg hidden" onclick="if(event.target.id==='amend-modal')closeAmend()">
+<div class="modal">
+<h3 class="text-lg font-bold mb-3">✏️ Popraw draft</h3>
+<p class="text-sm text-slate-400 mb-3">Co poprawić? AI wygeneruje nowy draft uwzględniając Twój hint.</p>
+<textarea id="amend-hint" rows="4" placeholder="np. 'Krócej, dodaj że to pilne'" class="w-full p-3 bg-slate-700 rounded-lg border border-slate-500 mb-3"></textarea>
+<div class="flex gap-2 justify-end">
+<button class="btn btn-secondary" onclick="closeAmend()">Anuluj</button>
+<button class="btn btn-amend" onclick="amendSubmit()">Wygeneruj nowy draft</button>
+</div>
+</div>
+</div>
+
+<script>
+const API_BASE = 'https://jb69vusexb.execute-api.eu-central-1.amazonaws.com';
+
+let currentDrafts = [];
+let amendDraftId = null;
+
+function toast(msg, isErr = false) {
+  const t = document.createElement('div');
+  t.className = 'toast' + (isErr ? ' toast-err' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+  document.getElementById('tab-' + name).classList.remove('hidden');
+  document.querySelector('[data-tab="' + name + '"]').classList.add('tab-active');
+  if (name === 'history') loadHistory();
+  if (name === 'stats') loadStats();
+}
+
+async function loadInbox() {
+  setStatus('Pobieram drafty...');
+  try {
+    const r = await fetch(API_BASE + '/agent/inbox');
+    const data = await r.json();
+    currentDrafts = data.drafts || [];
+    renderInbox(currentDrafts);
+    setStatus(`${currentDrafts.length} drafty czekają na decyzję`);
+  } catch (e) {
+    setStatus('❌ Błąd ładowania: ' + e.message);
+    toast('Błąd ładowania', true);
+  }
+}
+
+function renderInbox(drafts) {
+  const list = document.getElementById('inbox-list');
+  if (!drafts.length) {
+    list.innerHTML = '<div class="text-center py-12 text-slate-500"><div class="text-4xl mb-3">✅</div><div class="text-lg">Inbox czysty</div><div class="text-sm mt-2">Brak draftów do oceny</div></div>';
+    return;
+  }
+  list.innerHTML = drafts.map(d => `
+    <div class="card" id="card-${d.draft_id}">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex-1">
+          <span class="badge badge-${d.category_source || 'KLIENT'}">${d.category_source || 'KLIENT'}</span>
+          ${d.tone ? `<span class="text-xs text-slate-400 ml-2">${d.tone}</span>` : ''}
+          ${d.sanity_issues && d.sanity_issues.length ? `<span class="text-xs text-red-400 ml-2">⚠ ${d.sanity_issues.length} issues</span>` : ''}
+        </div>
+        <div class="text-xs text-slate-500">${new Date(d.created_at).toLocaleTimeString('pl-PL', {hour:'2-digit', minute:'2-digit'})}</div>
+      </div>
+      <div class="text-sm text-slate-400 mb-1">do: ${escapeHtml((d.reply_to || '').slice(0, 60))}</div>
+      <div class="font-semibold text-white mb-2">${escapeHtml(d.subject_reply || '?')}</div>
+      <div class="text-sm text-slate-300 whitespace-pre-wrap mb-3" style="max-height: 180px; overflow-y: auto;">${escapeHtml(d.body_preview || '')}</div>
+      ${d.notes ? `<div class="text-xs text-amber-300 bg-amber-900/30 p-2 rounded mb-3">💡 ${escapeHtml(d.notes)}</div>` : ''}
+      <div class="flex flex-wrap gap-2">
+        <button class="btn btn-send" onclick="actionSend('${d.draft_id}')">📤 Wyślij</button>
+        <button class="btn btn-amend" onclick="openAmend('${d.draft_id}')">✏️ Popraw</button>
+        <button class="btn btn-reject" onclick="actionReject('${d.draft_id}')">🗑️ Odrzuć</button>
+        ${d.gmail_draft_url ? `<a class="btn btn-open" href="${d.gmail_draft_url}" target="_blank" rel="noopener">📨 Gmail</a>` : ''}
+      </div>
+      <div class="text-xs text-slate-500 mt-2">tokens: ${d.tokens || '?'} | ${d.draft_id.slice(0, 8)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function actionSend(draftId) {
+  if (!confirm('Wysłać tego maila? (NIE dry-run, leci NA ŻYWO)')) return;
+  await callAction({action: 'send', draft_id: draftId}, 'Wysłano ✅');
+}
+
+async function actionReject(draftId) {
+  if (!confirm('Odrzucić draft?')) return;
+  await callAction({action: 'reject', draft_id: draftId}, 'Odrzucono');
+}
+
+function openAmend(draftId) {
+  amendDraftId = draftId;
+  document.getElementById('amend-hint').value = '';
+  document.getElementById('amend-modal').classList.remove('hidden');
+}
+
+function closeAmend() {
+  document.getElementById('amend-modal').classList.add('hidden');
+  amendDraftId = null;
+}
+
+async function amendSubmit() {
+  const hint = document.getElementById('amend-hint').value.trim();
+  if (!hint || hint.length < 3) { toast('Wpisz hint (min 3 znaki)', true); return; }
+  closeAmend();
+  await callAction({action: 'amend', draft_id: amendDraftId, hint: hint}, 'Generuję nowy draft (~10s)');
+}
+
+async function callAction(payload, successMsg) {
+  setStatus('Wysyłam akcję...');
+  try {
+    const r = await fetch(API_BASE + '/agent/action', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (data.ok || data.statusCode === 200) {
+      toast(successMsg);
+      await loadInbox();
+    } else {
+      toast('Błąd: ' + (data.error || 'unknown'), true);
+      setStatus('❌ ' + (data.error || 'błąd'));
+    }
+  } catch (e) {
+    toast('Błąd sieci: ' + e.message, true);
+  }
+}
+
+async function proposeSubmit(e) {
+  e.preventDefault();
+  const payload = {
+    action: 'propose',
+    type: document.getElementById('prop-type').value,
+    title: document.getElementById('prop-title').value,
+    content: document.getElementById('prop-content').value,
+    priority: document.getElementById('prop-priority').value,
+    target_contact: document.getElementById('prop-target').value,
+  };
+  if (!payload.content || payload.content.length < 3) { toast('Wpisz content', true); return; }
+  try {
+    const r = await fetch(API_BASE + '/agent/action', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (data.ok) {
+      toast('Zapisane do S3 ✅');
+      e.target.reset();
+    } else {
+      toast('Błąd: ' + (data.error || 'unknown'), true);
+    }
+  } catch (e) {
+    toast('Błąd: ' + e.message, true);
+  }
+}
+
+async function loadHistory() {
+  // History tab pokazuje ostatnie SENT + REJECTED + ARCHIVED z DDB
+  const div = document.getElementById('history-list');
+  div.innerHTML = '<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Pobieram...</div>';
+  // PWA nie ma osobnego endpointu na history, używamy inbox endpoint dla preview
+  // (szybko można dodać GET /agent/history endpoint, na razie placeholder)
+  setTimeout(() => {
+    div.innerHTML = `<div class="text-center py-8 text-slate-400">
+      <div class="text-4xl mb-3">📚</div>
+      <div>Historia w DDB mail-drafts (status=SENT/REJECTED/AMENDED)</div>
+      <div class="text-sm mt-2 text-slate-500">Endpoint /agent/history TODO — patrz przyciskiem CloudWatch dashboard z metrykami</div>
+      <a href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#table?name=mail-drafts" target="_blank" class="btn btn-secondary mt-4 inline-flex">📦 Otwórz DDB w AWS</a>
+    </div>`;
+  }, 300);
+}
+
+async function loadStats() {
+  const div = document.getElementById('stats-content');
+  div.innerHTML = '<div class="spinner mx-auto"></div>';
+  // Statystyki - placeholder, real implementation pobiera z DDB scan
+  setTimeout(() => {
+    div.innerHTML = `<div class="space-y-3">
+      <div class="card">
+        <div class="text-3xl font-bold text-blue-400">${currentDrafts.length}</div>
+        <div class="text-sm text-slate-400">Drafty PENDING</div>
+      </div>
+      <div class="card">
+        <div class="text-sm text-slate-400 mb-2">System działa autonomicznie:</div>
+        <ul class="text-xs space-y-1 text-slate-300">
+          <li>• 06:00 UTC daily — Gmail watch renew</li>
+          <li>• 09:00 UTC daily — Extraction (facts → S3)</li>
+          <li>• Sob 07:00 UTC — Historical Miner biuro.gamak</li>
+          <li>• Niedz 20:00 UTC — Feedback Analyzer</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="text-sm text-slate-400 mb-2">Linki AWS Console:</div>
+        <div class="space-y-2">
+          <a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#dashboards:name=gamak-mail-overview" target="_blank" class="btn btn-secondary block text-center">📊 CloudWatch Dashboard</a>
+          <a href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#tables" target="_blank" class="btn btn-secondary block text-center">📦 DynamoDB Tables</a>
+          <a href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=extracted-context%2Ffacts%2F" target="_blank" class="btn btn-secondary block text-center">💡 S3 facts</a>
+          <a href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=proposed-actions%2F" target="_blank" class="btn btn-secondary block text-center">✏️ S3 proposed actions</a>
+        </div>
+      </div>
+    </div>`;
+  }, 200);
+}
+
+// Service worker register (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(e => console.log('SW fail:', e));
+  });
+}
+
+// Inicjalizacja
+loadInbox();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+# BiznesZAI — Daniel Klimczak
+
+> Buduję systemy, marki i strony internetowe, które sprzedają. Optymalizacja SEO, LEO i GEO — strony indeksowane w Google i wyszukiwarkach AI (ChatGPT, Perplexity, Gemini, SearchGPT). 15 lat doświadczenia w biznesie, 6 marek zbudowanych od zera. Bielsko-Biała, cała Polska, kraje CEE.
+
+## Kim jestem
+
+Daniel Klimczak — przedsiębiorca z Bielska-Białej, twórca stron WWW, marek i systemów AI. Przez 13 lat prowadziłem własne firmy: produkcję kosmetyczną (Womanity Lashes), import i dystrybucję sprzętu kosmetycznego (Pure Technology), import i dystrybucję sprzętu sportowego (Padel Raze, NS Pro, Stilmat, Venze). Łączne obroty marek do 180 000 PLN miesięcznie. Dziś łączę to doświadczenie biznesowe z nowoczesnymi narzędziami AI.
+
+- **Imię i nazwisko:** Daniel Klimczak
+- **Lokalizacja:** Bielsko-Biała, województwo śląskie, Polska
+- **Email:** d.klimczak.ai@gmail.com
+- **Telefon:** +48 534 550 590
+- **Strona:** https://bizneszai.pl
+- **Doświadczenie:** 15 lat w biznesie, 6 marek zbudowanych od zera
+
+## Czym się zajmuję
+
+### Strony internetowe
+Buduję strony statyczne HTML/CSS — szybsze, bezpieczniejsze i lepiej indeksowane niż WordPress. Każda strona jest mobile-first, zoptymalizowana pod Core Web Vitals (LCP, CLS, INP), z pełnym schema.org, FAQ markup, czytelnymi nagłówkami. Przykład: stilmat.pl ładuje się w 125 ms (51 KB).
+
+### Optymalizacja SEO
+Klasyczne pozycjonowanie pod Google — szybkość strony, struktura nagłówków, słowa kluczowe, linkowanie wewnętrzne, schema.org (Organization, LocalBusiness, Product, Service, FAQPage, BreadcrumbList), mobile-first indexing.
+
+### Optymalizacja LEO (LLM Engine Optimization)
+Optymalizacja stron pod modele językowe — ChatGPT, Claude, Gemini, Perplexity, Copilot. Wymaga: czystego HTML bez ciężkiego JavaScript, strukturyzowanych nagłówków H1/H2/H3, FAQ markup, plików llms.txt, schema.org Person/Organization/Article, czytelnych faktów, brak content cloaking.
+
+### Optymalizacja GEO (Generative Engine Optimization)
+Pozycjonowanie pod wyszukiwarki generatywne — Perplexity, SearchGPT, Google AI Overviews, You.com, Bing Copilot. Liczy się: autorytet domeny, cytowalne fakty z liczbami, źródła i referencje, tematyczna spójność, dane strukturyzowane, świeży content, E-E-A-T (Experience, Expertise, Authoritativeness, Trust).
+
+### Branding i identyfikacja wizualna
+Budowa marki od zera — nazwa, logo, paleta kolorystyczna, typografia, system wizualny, brandbook, tone of voice. Doświadczenie z 6 marek zbudowanych od zera (beauty, sport, infrastruktura sportowa).
+
+### Systemy AI i automatyzacje
+Wdrożenia narzędzi AI w firmach (asystenci AI, generowanie treści, automatyzacja sprzedaży, lead capture, chatboty), automatyzacje procesów (n8n, Make, Zapier), integracje API.
+
+### Strategia biznesowa
+Pozycjonowanie marki, strategia produktowa, model biznesowy, wsparcie dla przedsiębiorców budujących nowe marki lub skalujących istniejące.
+
+## Realizacje (portfolio)
+
+- **gamak.eu** — strona firmowa GAMAK (budowa lodowisk i obiektów sportowych pod klucz). 12 podstron, blog SEO z 12 artykułami, wersja EN.
+- **padelraze.com** — strona produktowa marki kortów padel Padel Raze. 7 modeli, blog z 12 artykułami SEO/GEO/LEO, wersje PL/EN/SK, schema.org, FAQ.
+- **padelraze.sk + padelraze.hu** — lokalne wersje strony Padel Raze dla dystrybutora B.R.A. Company na rynki Słowacji i Węgier (white-label CEE).
+- **nawierzchniesportowe.pro** — premium redesign 2026 marki NS PRO (nawierzchnie modułowe). 21 podstron (7 produktów × PL/EN/SK), 100% statyczna HTML/CSS, glassmorphism, schema.org.
+- **stilmat.pl** — strona Stilmat (nawierzchnie poliuretanowe, 30 lat marki). Single-page 51 KB, ładowanie 125 ms, schema.org (LocalBusiness + Product + FAQ).
+- **venze.pl** — strona marki łyżew rentalowych Venze. Branding od zera, 3 wersje językowe (PL/SK/EN).
+- **Gabinet na Autopilocie** — landing page systemu AI dla gabinetów kosmetycznych. Blog z 3 artykułami, animacje, mobile-first.
+- **Womanity Lashes + Pure Technology** — 2 marki beauty zbudowane od zera (2011-2024), e-commerce, import z Chin, obroty do 180 000 PLN/mies przez 13 lat.
+
+## Proces współpracy
+
+1. **Rozmowa** — bezpłatna pierwsza rozmowa, poznaję biznes i cele.
+2. **Propozycja** — konkretny zakres, termin i cena. Bez ukrytych kosztów.
+3. **Realizacja** — budowa, konsultacje, dopracowanie. Klient widzi postęp na bieżąco.
+4. **Wdrożenie** — uruchomienie, instrukcja, wsparcie powdrożeniowe.
+
+## Czego nie robię
+
+- **WordPress** — buduję strony statyczne HTML/CSS, są szybsze, bezpieczniejsze i lepiej indeksowane.
+- **Praca w agencji 50-osobowej** — jestem jednoosobowy, robię od A do Z, klient ma jeden punkt kontaktu.
+- **Tanie strony "5 minut na szablonie"** — każda strona jest pisana ręcznie, optymalizowana, dopasowana do branży.
+
+## Obsługiwane regiony
+
+- Polska (cały kraj, zdalnie)
+- Słowacja (wdrożenia CEE)
+- Czechy
+- Węgry
+- Spotkania na żywo: Bielsko-Biała i okolice
+
+## Linki kanoniczne
+
+- Strona główna: https://bizneszai.pl/
+- Sitemap: https://bizneszai.pl/sitemap.xml
+- Robots: https://bizneszai.pl/robots.txt

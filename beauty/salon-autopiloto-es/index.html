@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salón en Autopiloto | Sistema para centros de estética</title>
+    <meta name="description" content="El sistema completo que hace que tu salón funcione incluso sin ti. Implementación en 3 semanas.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23c4a77d'/><path d='M50 25 C35 35, 30 55, 50 75 C70 55, 65 35, 50 25' fill='%23faf8f4'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #faf8f4;
+            --color-bg-warm: #f5f0e8;
+            --color-bg-card: #ffffff;
+            --color-primary: #c4a77d;
+            --color-primary-light: #d4bc9a;
+            --color-primary-dark: #a68b5b;
+            --color-accent: #b85c38;
+            --color-text: #3d3d3d;
+            --color-text-muted: #6b6b6b;
+            --color-border: #e8e2d9;
+            --color-success: #7d9a6f;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lato', -apple-system, sans-serif;
+            --shadow-md: 0 6px 24px rgba(164, 139, 91, 0.12);
+            --shadow-lg: 0 12px 48px rgba(164, 139, 91, 0.16);
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); font-size: 17px; line-height: 1.75; color: var(--color-text); background-color: var(--color-bg); }
+
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.25; }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; }
+        h3 { font-size: clamp(1.25rem, 2.5vw, 1.5rem); font-weight: 500; }
+        p { margin-bottom: 1rem; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        section { padding: 100px 0; }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-primary-dark);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 40px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+        .btn--primary {
+            background: var(--color-accent);
+            color: white;
+            box-shadow: 0 4px 20px rgba(184, 92, 56, 0.3);
+        }
+        .btn--primary:hover {
+            background: #a04d2e;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(184, 92, 56, 0.4);
+        }
+        .btn--large { padding: 22px 52px; font-size: 1rem; }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(250, 248, 244, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--color-primary-dark);
+            text-decoration: none;
+        }
+        .nav-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 0.95rem;
+            transition: color var(--transition);
+        }
+        .nav-links a:hover { color: var(--color-primary-dark); }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-warm) 100%);
+        }
+        .hero__content { max-width: 700px; }
+        .hero__tagline {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-primary-dark);
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 { margin-bottom: 1.5rem; }
+        .hero__subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 550px;
+        }
+        .hero__cta-note {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-top: 1rem;
+        }
+
+        /* Problem Section */
+        .problem { background: var(--color-bg-warm); }
+        .problem__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .problem__card {
+            background: var(--color-bg-card);
+            padding: 35px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+        .problem__icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light, #d4806a));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .problem__card h3 { margin-bottom: 15px; color: var(--color-accent); }
+
+        /* Solution Section */
+        .solution__modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .module {
+            background: var(--color-bg-card);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--color-border);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        .module__icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .module h3 { margin-bottom: 15px; }
+        .module ul {
+            list-style: none;
+            margin-top: 20px;
+        }
+        .module li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--color-text-muted);
+        }
+        .module li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            font-weight: bold;
+        }
+        .module__result {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
+            font-weight: 500;
+            color: var(--color-primary-dark);
+        }
+
+        /* About Section */
+        .about { background: var(--color-bg-warm); }
+        .about__content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .about__quote {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--color-text);
+            margin: 40px 0;
+            padding: 30px;
+            border-left: 4px solid var(--color-primary);
+            background: var(--color-bg-card);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            text-align: left;
+        }
+
+        /* Pricing Section */
+        .pricing__card {
+            max-width: 600px;
+            margin: 50px auto 0;
+            background: var(--color-bg-card);
+            padding: 50px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        .pricing__price {
+            margin: 30px 0;
+        }
+        .pricing__price-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .pricing__price-amount {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--color-text);
+        }
+        .pricing__price-period {
+            color: var(--color-text-muted);
+        }
+        .pricing__includes { text-align: left; margin: 30px 0; }
+        .pricing__includes h4 { margin-bottom: 20px; }
+        .pricing__list {
+            list-style: none;
+        }
+        .pricing__list li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pricing__list svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-success);
+            flex-shrink: 0;
+        }
+        .pricing__note {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-top: 20px;
+        }
+        .pricing__comparison {
+            margin-top: 40px;
+            padding: 25px;
+            background: var(--color-bg-warm);
+            border-radius: var(--radius-md);
+        }
+
+        /* Guarantee */
+        .guarantee {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            color: white;
+            text-align: center;
+        }
+        .guarantee h2 { color: white; }
+        .guarantee p { color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto; }
+        .guarantee__badge {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 2.5rem;
+        }
+
+        /* FAQ */
+        .faq__list { max-width: 700px; margin: 50px auto 0; }
+        .faq__item {
+            border-bottom: 1px solid var(--color-border);
+        }
+        .faq__question {
+            width: 100%;
+            padding: 25px 0;
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--color-text);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq__icon {
+            width: 24px;
+            height: 24px;
+            transition: transform var(--transition);
+        }
+        .faq__item.active .faq__icon { transform: rotate(45deg); }
+        .faq__answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .faq__answer-content {
+            padding-bottom: 25px;
+            color: var(--color-text-muted);
+        }
+
+        /* Contact */
+        .contact {
+            background: var(--color-bg-warm);
+            text-align: center;
+        }
+        .contact__limit {
+            display: inline-block;
+            background: var(--color-accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-text);
+            color: white;
+            padding: 50px 0 30px;
+        }
+        .footer-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 28px;
+            text-align: center;
+        }
+        .footer-links { margin-bottom: 30px; }
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+        }
+        .footer-links a:hover { color: white; }
+        .footer-copy {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* RODO Banner */
+        .rodo-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-text);
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            display: none;
+        }
+        .rodo-banner.show { display: block; }
+        .rodo-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .rodo-text { flex: 1; font-size: 0.9rem; }
+        .rodo-text a { color: var(--color-primary-light); }
+        .rodo-buttons { display: flex; gap: 10px; }
+        .rodo-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .rodo-btn-accept { background: var(--color-primary); color: white; }
+        .rodo-btn-reject { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            section { padding: 70px 0; }
+            .pricing__card { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo">Salón en Autopiloto</a>
+            <nav class="nav-links">
+                <a href="#problema">El Problema</a>
+                <a href="#solucion">Solución</a>
+                <a href="#precio">Precio</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero__content">
+                <span class="hero__tagline">Para dueñas de salones de belleza</span>
+                <h1>¿Eres una gran profesional, pero tu negocio es un caos?</h1>
+                <p class="hero__subtitle">
+                    Tienes la agenda llena, pero tienes miedo de contratar a alguien porque "nadie lo hará tan bien como tú".
+                    Te enseñaré cómo clonar tu conocimiento en procedimientos y delegar la recepción a la IA.
+                </p>
+                <a href="#contacto" class="btn btn--primary btn--large">Reservar Auditoría Gratuita</a>
+                <p class="hero__cta-note">Sin compromiso. Veremos si puedo ayudarte.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="problem" id="problema">
+        <div class="container">
+            <span class="section-label">El diagnóstico</span>
+            <h2>¿Así es tu día típico?</h2>
+
+            <div class="problem__grid">
+                <div class="problem__card">
+                    <div class="problem__icon">📱</div>
+                    <h3>Todo depende de ti</h3>
+                    <p>Haces tratamientos, pides productos, limpias y respondes mensajes. Cuando no trabajas, el negocio no factura. ¿Vacaciones? Para ti es estrés, no descanso.</p>
+                </div>
+                <div class="problem__card">
+                    <div class="problem__icon">⏰</div>
+                    <h3>Eres el cuello de botella</h3>
+                    <p>Quieres atender más clientas, pero físicamente no puedes. El día solo tiene 24 horas, y tú ya trabajas 12.</p>
+                </div>
+                <div class="problem__card">
+                    <div class="problem__icon">🌙</div>
+                    <h3>El "segundo turno" nocturno</h3>
+                    <p>En vez de descansar, hasta las 22:00 estás con el móvil respondiendo en Instagram: "¿Precio? ¿Disponibilidad? ¿Qué tratamiento es ese?"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="solution" id="solucion">
+        <div class="container">
+            <span class="section-label">La solución</span>
+            <h2>Un sistema completo que implementaré para ti</h2>
+
+            <div class="solution__modules">
+                <div class="module">
+                    <div class="module__icon">🤖</div>
+                    <h3>Ghost AI (Comunicación)</h3>
+                    <p>Asistente IA entrenado con tu estilo – escribe como tú, solo que más rápido.</p>
+                    <ul>
+                        <li>Análisis de tu estilo de comunicación</li>
+                        <li>50+ respuestas a preguntas frecuentes</li>
+                        <li>Plantillas para Instagram y WhatsApp</li>
+                        <li>Follow-up automático post-visita</li>
+                    </ul>
+                    <p class="module__result">→ Terminas a las 18:00, no a las 22:00</p>
+                </div>
+
+                <div class="module">
+                    <div class="module__icon">📋</div>
+                    <h3>Procedimientos Operativos</h3>
+                    <p>Todo lo que tienes en la cabeza, documentado – listo para delegar.</p>
+                    <ul>
+                        <li>Auditoría operativa (2h sesión online)</li>
+                        <li>15-20 procedimientos escritos</li>
+                        <li>Checklists de apertura/cierre</li>
+                        <li>Manual de incorporación</li>
+                    </ul>
+                    <p class="module__result">→ Puedes contratar y formar en 1-2 semanas</p>
+                </div>
+
+                <div class="module">
+                    <div class="module__icon">💰</div>
+                    <h3>Sistema de Follow-up</h3>
+                    <p>Ningún lead se pierde. Cada clienta está atendida.</p>
+                    <ul>
+                        <li>Auditoría "¿dónde se pierden los leads?"</li>
+                        <li>5 secuencias de follow-up automatizadas</li>
+                        <li>Recordatorios de citas (24h + 2h antes)</li>
+                        <li>Reactivación de clientas "dormidas"</li>
+                    </ul>
+                    <p class="module__result">→ 3-5 leads recuperados/mes = 1.500-2.500€</p>
+                </div>
+
+                <div class="module">
+                    <div class="module__icon">🛡️</div>
+                    <h3>Soporte Continuo</h3>
+                    <p>No te quedas sola – tienes un socio que vigila que el sistema funcione.</p>
+                    <ul>
+                        <li>2 semanas de soporte intensivo</li>
+                        <li>Actualizaciones mensuales del Ghost AI</li>
+                        <li>Ayuda con nuevos procedimientos</li>
+                        <li>Informe mensual de resultados</li>
+                    </ul>
+                    <p class="module__result">→ El sistema crece con tu negocio</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="sobre-mi">
+        <div class="container">
+            <div class="about__content">
+                <span class="section-label">Sobre mí</span>
+                <h2>Me llamo Daniel Klimczak</h2>
+                <p>Durante 13 años dirigí empresas en el sector beauty. Sé lo que es cuando el proveedor se retrasa, una clienta se queja, y hay que pagar impuestos.</p>
+                <p>Pasé del "hacerlo todo a mano" a sistemas que funcionan solos. No soy un teórico de YouTube. Soy un profesional que implementa en tu negocio lo que ha probado en el suyo.</p>
+                <blockquote class="about__quote">
+                    "No vendo tecnología. Vendo tranquilidad, tiempo y control."
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="precio">
+        <div class="container">
+            <span class="section-label">Inversión</span>
+            <h2 style="text-align: center;">¿Cuánto cuesta?</h2>
+            <p style="text-align: center; color: var(--color-text-muted);">Menos que los errores que cometes ahora.</p>
+
+            <div class="pricing__card">
+                <div class="pricing__price">
+                    <div class="pricing__price-row">
+                        <span>Implementación:</span>
+                        <span class="pricing__price-amount">750 €</span>
+                        <span class="pricing__price-period">una vez</span>
+                    </div>
+                    <div class="pricing__price-row">
+                        <span>Suscripción:</span>
+                        <span class="pricing__price-amount">170 €</span>
+                        <span class="pricing__price-period">/ mes</span>
+                    </div>
+                </div>
+
+                <div class="pricing__includes">
+                    <h4>La implementación incluye:</h4>
+                    <ul class="pricing__list">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Ghost AI — comunicación con tu estilo</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>15-20 procedimientos operativos</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Sistema de follow-up (5 secuencias)</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Recordatorios automáticos de citas</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>BONUS: Paquete RGPD (cláusulas, contratos)</span>
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>BONUS: Campaña "Despertamos tu Base"</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="#contacto" class="btn btn--primary btn--large">Reservar Llamada Gratuita</a>
+                <p class="pricing__note">Pago: 50% antes de empezar, 50% al terminar</p>
+            </div>
+
+            <div class="pricing__comparison">
+                <p>Recepcionista a media jornada: <strong>~800 €/mes</strong><br>
+                Mi sistema: <strong>170 €/mes</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="guarantee">
+        <div class="container">
+            <div class="guarantee__badge">🛡️</div>
+            <h2>Garantía de Satisfacción</h2>
+            <p>Sé que tienes miedo de "otro gasto más". Por eso asumo el riesgo. <strong>Tienes 14 días desde la implementación para probar.</strong> Si decides que el sistema no te ahorra tiempo, te devuelvo el 100% del dinero.</p>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="container">
+            <span class="section-label">Preguntas frecuentes</span>
+            <h2 style="text-align: center;">Dudas habituales</h2>
+
+            <div class="faq__list">
+                <div class="faq__item">
+                    <button class="faq__question">
+                        No tengo tiempo para implementar nada.
+                        <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq__answer">
+                        <div class="faq__answer-content">
+                            Por eso lo necesitas. La implementación son 2-3 reuniones de 1-2 horas. Después el sistema trabaja – tú no. En el primer mes recuperas más tiempo del que inviertes.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq__item">
+                    <button class="faq__question">
+                        Mi salón es demasiado pequeño para estos sistemas.
+                        <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq__answer">
+                        <div class="faq__answer-content">
+                            Los negocios pequeños son los que MÁS necesitan sistemas. En una empresa grande hay 5 personas que pueden cubrir diferentes tareas. Tú estás sola – o tienes un sistema, o eres esclava de tu propio negocio.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq__item">
+                    <button class="faq__question">
+                        Las clientas notarán que no soy yo quien escribe.
+                        <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq__answer">
+                        <div class="faq__answer-content">
+                            Ghost AI aprende TU estilo – analizo cómo escribes, qué palabras usas, tu tono. El resultado suena como tú, solo que más rápido. Las clientas no notan la diferencia.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq__item">
+                    <button class="faq__question">
+                        Probé ChatGPT y no me funcionó.
+                        <svg class="faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </button>
+                    <div class="faq__answer">
+                        <div class="faq__answer-content">
+                            Porque ChatGPT es una herramienta vacía. Yo te construyo un EQUIPO – asistentes que conocen tu negocio, tus servicios, tus clientas. Es la diferencia entre un Excel vacío y un sistema de contabilidad completo.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contacto">
+        <div class="container">
+            <span class="contact__limit">Solo 3 implementaciones al mes</span>
+            <h2>Deja de apagar fuegos. Empieza a construir un negocio.</h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 30px;">Trabajo personalmente con cada salón, por eso acepto máximo 3 nuevas implementaciones al mes.</p>
+            <a href="mailto:hola@salon-autopiloto.es" class="btn btn--primary btn--large">Reservar Llamada Gratuita</a>
+            <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 15px;">La llamada es gratuita y sin compromiso.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="blog/index.html">Blog</a>
+                <a href="aviso-legal.html">Aviso Legal</a>
+                <a href="politica-privacidad.html">Política de Privacidad</a>
+            </div>
+            <p class="footer-copy">© 2026 Salón en Autopiloto. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="rodo-banner" id="rodoBanner">
+        <div class="rodo-inner">
+            <div class="rodo-text">
+                Este sitio utiliza cookies para garantizar la mejor experiencia.
+                <a href="politica-privacidad.html">Más información</a>
+            </div>
+            <div class="rodo-buttons">
+                <button class="rodo-btn rodo-btn-reject" onclick="rejectCookies()">Rechazar</button>
+                <button class="rodo-btn rodo-btn-accept" onclick="acceptCookies()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAQ Toggle
+        document.querySelectorAll('.faq__question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.parentElement;
+                const answer = item.querySelector('.faq__answer');
+                const isActive = item.classList.contains('active');
+
+                document.querySelectorAll('.faq__item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq__answer').style.maxHeight = '0';
+                });
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Cookie Banner
+        function checkCookieConsent() {
+            if (!localStorage.getItem('cookieConsent')) {
+                document.getElementById('rodoBanner').classList.add('show');
+            }
+        }
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        function rejectCookies() {
+            localStorage.setItem('cookieConsent', 'rejected');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        checkCookieConsent();
+    </script>
+</body>
+</html>

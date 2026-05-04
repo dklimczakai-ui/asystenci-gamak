@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAMAK CRM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://unpkg.com/alpinejs@3.13.10/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<link rel="stylesheet" href="style.css">
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: { brand: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' } } } }
+}
+</script>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100">
+<div x-data="app()" x-cloak class="min-h-screen flex flex-col">
+
+<!-- LOADING -->
+<div x-show="!ready" class="fixed inset-0 bg-white dark:bg-slate-900 z-50 flex items-center justify-center">
+  <div class="text-center">
+    <div class="text-6xl mb-4 animate-pulse">⚙️</div>
+    <div class="text-xl font-semibold">GAMAK CRM</div>
+    <div class="text-sm text-slate-500 mt-2" x-text="loadingMsg"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div x-show="toast.visible" x-transition class="fixed top-4 right-4 z-50 px-4 py-3 rounded shadow-lg" :class="toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-emerald-600 text-white'">
+  <div x-text="toast.msg"></div>
+</div>
+
+<!-- KEYBOARD SHORTCUTS HELP -->
+<div x-show="showShortcutsHelp" x-transition class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" @click.self="showShortcutsHelp=false">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">⌨️ Skróty klawiszowe</h2>
+      <button @click="showShortcutsHelp=false" class="text-slate-400 hover:text-slate-700">✕</button>
+    </div>
+    <div class="space-y-2 text-sm">
+      <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">Ctrl+K</kbd><span>Globalne szukanie</span></div>
+      <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">N</kbd><span>Nowy (kontekstowy)</span></div>
+      <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">Esc</kbd><span>Zamknij modal</span></div>
+      <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">?</kbd><span>Pomoc skrótów</span></div>
+      <div class="border-t pt-2 mt-2 dark:border-slate-700">
+        <div class="text-xs text-slate-500 mb-1">Nawigacja (vim-style: g + litera):</div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g d</kbd><span>Dashboard</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g c</kbd><span>Kontakty</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g p</kbd><span>Pipeline</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g t</kbd><span>Zadania</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g r</kbd><span>Reports</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g f</kbd><span>Firmy</span></div>
+        <div class="grid grid-cols-2 gap-2 items-center"><kbd class="bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-mono">g s</kbd><span>Settings</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<header class="bg-slate-900 text-white shadow-lg dark:bg-slate-950">
+  <div class="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <div class="text-xl font-bold flex items-center gap-2">
+        <span>🏒</span><span>GAMAK CRM</span>
+        <span class="text-xs bg-brand-600 px-2 py-0.5 rounded ml-2">v0.2</span>
+      </div>
+      <nav class="flex gap-1 text-sm">
+        <button @click="view='dashboard'" :class="view==='dashboard' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">📊 Dashboard</button>
+        <button @click="view='contacts'" :class="view==='contacts' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">👥 Kontakty <span class="ml-1 text-xs opacity-70" x-text="contacts.length"></span></button>
+        <button @click="view='pipeline'" :class="view==='pipeline' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">🎯 Pipeline <span class="ml-1 text-xs opacity-70" x-text="deals.filter(d=>d.status==='open' || !d.status).length"></span></button>
+        <button @click="view='tasks'" :class="view==='tasks' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">✅ Zadania <span class="ml-1 text-xs opacity-70" x-text="tasks.filter(t=>t.status!=='done').length"></span></button>
+        <button @click="view='companies'" :class="view==='companies' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">🏢 Firmy</button>
+        <button @click="view='reports'; initReports()" :class="view==='reports' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">📈 Reports</button>
+        <button @click="view='settings'" :class="view==='settings' ? 'bg-brand-600' : 'hover:bg-slate-800'" class="px-3 py-1.5 rounded transition">⚙️ Ustawienia</button>
+      </nav>
+    </div>
+    <div class="flex items-center gap-2">
+      <input type="text" x-model="globalSearch" @input="onGlobalSearch()" placeholder="🔍 Szukaj globalnie... (Ctrl+K)" class="px-3 py-1.5 rounded bg-slate-800 text-sm w-64 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <button @click="toggleDarkMode()" class="px-2 py-1.5 rounded hover:bg-slate-800 text-sm" :title="darkMode ? 'Light mode' : 'Dark mode'" x-text="darkMode ? '☀️' : '🌙'"></button>
+      <button @click="showShortcutsHelp=true" class="px-2 py-1.5 rounded hover:bg-slate-800 text-sm" title="Skróty (?)"></button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="flex-1 max-w-screen-2xl mx-auto w-full p-4">
+
+  <!-- =================== DASHBOARD =================== -->
+  <div x-show="view==='dashboard'">
+    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <div class="text-sm text-slate-500 dark:text-slate-400">Kontakty</div>
+        <div class="text-3xl font-bold text-brand-700 dark:text-brand-400" x-text="contacts.length"></div>
+        <div class="text-xs text-slate-400 mt-1" x-text="`${contacts.filter(c=>c.category==='B2B').length} B2B · ${contacts.filter(c=>c.category==='JST'||c.category==='JST-jednostka').length} JST`"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <div class="text-sm text-slate-500 dark:text-slate-400">Aktywne Deals</div>
+        <div class="text-3xl font-bold text-emerald-700 dark:text-emerald-400" x-text="deals.filter(d=>d.status==='open' || !d.status).length"></div>
+        <div class="text-xs text-slate-400 mt-1" x-text="`Wartość: ${formatCurrency(deals.filter(d=>d.status==='open' || !d.status).reduce((s,d)=>s+(d.value||0),0))}`"></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <div class="text-sm text-slate-500 dark:text-slate-400">Zadania pilne</div>
+        <div class="text-3xl font-bold text-amber-600 dark:text-amber-400" x-text="urgentTasks.length"></div>
+        <div class="text-xs text-slate-400 mt-1">Deadline w 7 dni</div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <div class="text-sm text-slate-500 dark:text-slate-400">Win Rate</div>
+        <div class="text-3xl font-bold" x-text="winRate + '%'"></div>
+        <div class="text-xs text-slate-400 mt-1" x-text="`${deals.filter(d=>d.status==='won').length} won / ${deals.filter(d=>d.status==='lost').length} lost`"></div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">📌 Najpilniejsze zadania</h2>
+        <div x-show="urgentTasks.length === 0" class="text-slate-400 text-sm">Brak pilnych zadań</div>
+        <div class="space-y-2">
+          <template x-for="t in urgentTasks.slice(0,8)" :key="t.id">
+            <div class="flex items-start justify-between p-2 bg-slate-50 dark:bg-slate-700 rounded hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer" @click="editTask(t)">
+              <div class="flex-1">
+                <div class="font-medium text-sm" x-text="t.title"></div>
+                <div class="text-xs text-slate-500" x-text="t.contactName || ''"></div>
+              </div>
+              <div class="text-xs px-2 py-1 rounded" :class="t.daysLeft < 0 ? 'bg-red-100 text-red-700' : t.daysLeft <= 1 ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'" x-text="t.daysLeft < 0 ? `${-t.daysLeft}d po` : t.daysLeft === 0 ? 'dziś' : `${t.daysLeft}d`"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">📊 Pipeline (<span x-text="activePipeline?.name"></span>)</h2>
+        <div class="space-y-2">
+          <template x-for="stage in activeStages" :key="stage.id">
+            <div class="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer" @click="view='pipeline'">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :style="`background:${stage.color}`"></div>
+                <span class="text-sm" x-text="stage.name"></span>
+              </div>
+              <div class="flex items-center gap-3 text-xs">
+                <span class="text-slate-500" x-text="`${dealsAtStage(stage.id).length} deals`"></span>
+                <span class="font-semibold" x-text="formatCurrency(dealsAtStage(stage.id).reduce((s,d)=>s+(d.value||0),0))"></span>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+      <h2 class="font-semibold mb-3">📞 Ostatnio kontaktowani (top 10)</h2>
+      <div class="space-y-1">
+        <template x-for="c in topRecentContacts" :key="c.id">
+          <div class="flex items-center justify-between py-2 px-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer" @click="editContact(c)">
+            <div class="flex-1">
+              <span class="font-medium text-sm" x-text="c.fullName || c.email"></span>
+              <span class="text-xs text-slate-500 ml-2" x-text="c.company || ''"></span>
+            </div>
+            <div class="text-xs text-slate-400" x-text="formatDate(c.lastSeen)"></div>
+            <span class="text-xs px-2 py-0.5 rounded ml-3" :class="categoryColor(c.category)" x-text="c.category"></span>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== CONTACTS =================== -->
+  <div x-show="view==='contacts'">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">Kontakty <span class="text-base font-normal text-slate-500" x-text="`(${filteredContacts.length} z ${contacts.length})`"></span></h1>
+      <div class="flex gap-2">
+        <button @click="newContact()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">+ Nowy (N)</button>
+        <button @click="exportContactsCSV()" class="border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded text-sm">📤 Export CSV</button>
+      </div>
+    </div>
+
+    <div class="flex gap-4">
+      <!-- Sidebar: Saved Views -->
+      <aside class="w-56 flex-shrink-0">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-3 mb-3">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-semibold text-sm">📌 Zapisane widoki</h3>
+            <button @click="saveCurrentView()" class="text-xs text-brand-600 hover:text-brand-800">+ Zapisz</button>
+          </div>
+          <div x-show="savedViews.length === 0" class="text-xs text-slate-400">Brak zapisanych</div>
+          <div class="space-y-1">
+            <template x-for="v in savedViews" :key="v.id">
+              <div class="flex items-center justify-between text-sm group">
+                <button @click="applyView(v)" class="flex-1 text-left px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 truncate" x-text="v.name"></button>
+                <button @click="deleteView(v)" class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs px-1">✕</button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </aside>
+
+      <div class="flex-1 min-w-0">
+        <!-- Filters -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-3 mb-3 flex flex-wrap gap-2 items-center">
+          <input type="text" x-model="contactsFilter.search" placeholder="🔍 Szukaj..." class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm flex-1 min-w-[200px]">
+          <select x-model="contactsFilter.category" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm">
+            <option value="">Wszystkie</option>
+            <option value="B2B">B2B</option><option value="JST">JST</option><option value="JST-jednostka">JST-jednostka</option>
+            <option value="private">private</option><option value="system">system</option>
+            <option value="edu">edu</option><option value="NGO">NGO</option><option value="dostawca">dostawca</option>
+          </select>
+          <select x-model="contactsFilter.status" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm">
+            <option value="">Statusy</option>
+            <option value="lead">Lead</option><option value="active">Active</option><option value="customer">Customer</option><option value="archived">Archived</option>
+          </select>
+          <input type="text" x-model="contactsFilter.tag" placeholder="Tag" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm w-28">
+          <button @click="resetContactsFilter()" class="text-xs text-slate-500 hover:text-slate-700 px-2">Reset</button>
+        </div>
+
+        <!-- Bulk actions bar -->
+        <div x-show="selected.length > 0" x-transition class="bg-brand-100 dark:bg-brand-900 border border-brand-300 dark:border-brand-700 rounded-lg p-2 mb-3 flex items-center gap-2 text-sm">
+          <span class="font-semibold">Zaznaczono <span x-text="selected.length"></span></span>
+          <button @click="bulkAddTag()" class="bg-white dark:bg-slate-800 px-2 py-1 rounded border hover:bg-slate-50">+ Tag</button>
+          <button @click="bulkSetCategory()" class="bg-white dark:bg-slate-800 px-2 py-1 rounded border hover:bg-slate-50">Kategoria</button>
+          <button @click="bulkSetStatus()" class="bg-white dark:bg-slate-800 px-2 py-1 rounded border hover:bg-slate-50">Status</button>
+          <button @click="bulkDelete()" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">🗑 Usuń</button>
+          <button @click="clearSelection()" class="ml-auto text-slate-500 hover:text-slate-700">✕</button>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-700 text-xs uppercase text-slate-600 dark:text-slate-300">
+              <tr>
+                <th class="px-2 py-2 w-8"><input type="checkbox" @change="selectAllVisible()" :checked="pagedContacts.length>0 && pagedContacts.every(c=>selected.includes(c.id))"></th>
+                <th class="px-3 py-2 text-left cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600" @click="sortContacts('fullName')">Imię/Nazwa</th>
+                <th class="px-3 py-2 text-left cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600" @click="sortContacts('email')">Email</th>
+                <th class="px-3 py-2 text-left cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600" @click="sortContacts('company')">Firma</th>
+                <th class="px-3 py-2 text-left">Telefon</th>
+                <th class="px-3 py-2 text-left">Kategoria</th>
+                <th class="px-3 py-2 text-left">Status</th>
+                <th class="px-3 py-2 text-left cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600" @click="sortContacts('lastSeen')">Ostatni</th>
+                <th class="px-3 py-2 text-left cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600" @click="sortContacts('msgCount')">Maile</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="c in pagedContacts" :key="c.id">
+                <tr class="border-t dark:border-slate-700 hover:bg-brand-50 dark:hover:bg-slate-700">
+                  <td class="px-2 py-1.5"><input type="checkbox" :checked="isSelected(c.id)" @click="toggleSelect(c.id)" @click.stop></td>
+                  <td class="px-3 py-1.5 font-medium cursor-pointer" @click="editContact(c)" x-text="c.fullName || '(brak)'"></td>
+                  <td class="px-3 py-1.5 text-slate-600 dark:text-slate-400 cursor-pointer" @click="editContact(c)" x-text="c.email"></td>
+                  <td class="px-3 py-1.5 text-slate-600 dark:text-slate-400 truncate max-w-[200px] cursor-pointer" :title="c.company" @click="editContact(c)" x-text="c.company"></td>
+                  <td class="px-3 py-1.5 text-slate-600 dark:text-slate-400 text-xs font-mono cursor-pointer" @click="editContact(c)" x-text="(c.phones||[])[0] || ''"></td>
+                  <td class="px-3 py-1.5">
+                    <template x-if="!(inlineEdit && inlineEdit.id===c.id && inlineEdit.field==='category')">
+                      <span class="text-xs px-2 py-0.5 rounded cursor-pointer" :class="categoryColor(c.category)" x-text="c.category" @click.stop="startInlineEdit(c.id, 'category', c.category)"></span>
+                    </template>
+                    <template x-if="inlineEdit && inlineEdit.id===c.id && inlineEdit.field==='category'">
+                      <select data-inline-edit-input x-model="inlineValue" @blur="commitInlineEdit()" @keydown.enter="commitInlineEdit()" @keydown.escape="cancelInlineEdit()" @click.stop class="text-xs border rounded px-1 py-0.5 dark:bg-slate-700">
+                        <option value="B2B">B2B</option><option value="JST">JST</option><option value="JST-jednostka">JST-jednostka</option>
+                        <option value="private">private</option><option value="system">system</option>
+                        <option value="edu">edu</option><option value="NGO">NGO</option><option value="dostawca">dostawca</option><option value="inne">inne</option>
+                      </select>
+                    </template>
+                  </td>
+                  <td class="px-3 py-1.5">
+                    <template x-if="!(inlineEdit && inlineEdit.id===c.id && inlineEdit.field==='status')">
+                      <span class="text-xs px-2 py-0.5 rounded cursor-pointer bg-slate-200 dark:bg-slate-600" x-text="c.status || '(brak)'" @click.stop="startInlineEdit(c.id, 'status', c.status || '')"></span>
+                    </template>
+                    <template x-if="inlineEdit && inlineEdit.id===c.id && inlineEdit.field==='status'">
+                      <select data-inline-edit-input x-model="inlineValue" @blur="commitInlineEdit()" @keydown.enter="commitInlineEdit()" @keydown.escape="cancelInlineEdit()" @click.stop class="text-xs border rounded px-1 py-0.5 dark:bg-slate-700">
+                        <option value="">(brak)</option><option value="lead">lead</option><option value="active">active</option><option value="customer">customer</option><option value="archived">archived</option>
+                      </select>
+                    </template>
+                  </td>
+                  <td class="px-3 py-1.5 text-xs text-slate-500 cursor-pointer" @click="editContact(c)" x-text="formatDate(c.lastSeen)"></td>
+                  <td class="px-3 py-1.5 text-xs text-right text-slate-500 cursor-pointer" @click="editContact(c)" x-text="c.msgCount"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <div x-show="filteredContacts.length === 0" class="text-center py-8 text-slate-400">Brak wyników</div>
+        </div>
+
+        <div class="flex items-center justify-between mt-3 text-sm">
+          <div class="text-slate-500" x-text="`Strona ${contactsPage} / ${contactsTotalPages} · ${filteredContacts.length} kontaktów`"></div>
+          <div class="flex gap-1">
+            <button @click="contactsPage = Math.max(1, contactsPage-1)" :disabled="contactsPage === 1" class="px-3 py-1 border dark:border-slate-600 rounded disabled:opacity-30">← Prev</button>
+            <button @click="contactsPage = Math.min(contactsTotalPages, contactsPage+1)" :disabled="contactsPage === contactsTotalPages" class="px-3 py-1 border dark:border-slate-600 rounded disabled:opacity-30">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== PIPELINE =================== -->
+  <div x-show="view==='pipeline'">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold">Pipeline</h1>
+        <select x-model="activePipelineId" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5">
+          <template x-for="p in pipelines" :key="p.id">
+            <option :value="p.id" x-text="`${p.icon} ${p.name}`"></option>
+          </template>
+        </select>
+      </div>
+      <button @click="newDeal()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">+ Nowy deal (N)</button>
+    </div>
+    <div class="overflow-x-auto pb-4">
+      <div class="flex gap-3 min-w-max">
+        <template x-for="stage in activeStages" :key="stage.id">
+          <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-2 w-72 flex-shrink-0" @drop.prevent="onDealDrop($event, stage.id)" @dragover.prevent>
+            <div class="flex items-center justify-between mb-2 px-1">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" :style="`background:${stage.color}`"></div>
+                <span class="font-semibold text-sm" x-text="stage.name"></span>
+                <span class="text-xs text-slate-500" x-text="`(${dealsAtStage(stage.id).length})`"></span>
+              </div>
+              <div class="text-xs font-semibold" x-text="formatCurrency(dealsAtStage(stage.id).reduce((s,d)=>s+(d.value||0),0))"></div>
+            </div>
+            <div class="space-y-2">
+              <template x-for="d in dealsAtStage(stage.id)" :key="d.id">
+                <div class="bg-white dark:bg-slate-700 p-2 rounded shadow cursor-pointer hover:shadow-md" draggable="true" @dragstart="draggedDealId = d.id" @click="editDeal(d)">
+                  <div class="font-medium text-sm" x-text="d.name"></div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400" x-text="d.companyName || ''"></div>
+                  <div class="flex items-center justify-between mt-1">
+                    <div class="text-xs font-semibold text-emerald-700 dark:text-emerald-400" x-text="d.value ? formatCurrency(d.value) : ''"></div>
+                    <div class="text-xs" :class="d.dueDate && daysUntil(d.dueDate) < 7 ? 'text-red-600 font-semibold' : 'text-slate-400'" x-text="d.dueDate ? formatDate(d.dueDate) : ''"></div>
+                  </div>
+                  <div class="flex gap-1 mt-1 flex-wrap">
+                    <template x-for="tag in (d.tags||[])">
+                      <span class="text-xs px-1.5 py-0.5 bg-brand-100 text-brand-800 rounded" x-text="tag"></span>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== TASKS =================== -->
+  <div x-show="view==='tasks'">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">Zadania</h1>
+      <button @click="newTask()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">+ Nowe (N)</button>
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-3 mb-4 flex gap-2">
+      <select x-model="tasksFilter" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm">
+        <option value="pending">Pending</option><option value="done">Done</option><option value="all">Wszystkie</option>
+      </select>
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 dark:bg-slate-700 text-xs uppercase text-slate-600 dark:text-slate-300">
+          <tr>
+            <th class="px-3 py-2 w-8"></th>
+            <th class="px-3 py-2 text-left">Tytuł</th>
+            <th class="px-3 py-2 text-left">Kontakt</th>
+            <th class="px-3 py-2 text-left">Deal</th>
+            <th class="px-3 py-2 text-left">Priorytet</th>
+            <th class="px-3 py-2 text-left">Termin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="t in filteredTasks" :key="t.id">
+            <tr class="border-t dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+              <td class="px-3 py-2"><input type="checkbox" :checked="t.status==='done'" @change="toggleTask(t)"></td>
+              <td class="px-3 py-2 font-medium cursor-pointer" :class="t.status==='done' ? 'line-through text-slate-400' : ''" @click="editTask(t)" x-text="t.title"></td>
+              <td class="px-3 py-2 text-slate-600 dark:text-slate-400 text-xs" x-text="t.contactName || ''"></td>
+              <td class="px-3 py-2 text-slate-600 dark:text-slate-400 text-xs" x-text="t.dealName || ''"></td>
+              <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded" :class="priorityColor(t.priority)" x-text="t.priority || 'med'"></span></td>
+              <td class="px-3 py-2 text-xs" :class="t.dueDate && daysUntil(t.dueDate) < 0 && t.status==='pending' ? 'text-red-600 font-semibold' : ''" x-text="t.dueDate ? formatDate(t.dueDate) + ' (' + daysUntilLabel(t.dueDate) + ')' : ''"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div x-show="filteredTasks.length === 0" class="text-center py-8 text-slate-400">Brak zadań</div>
+    </div>
+  </div>
+
+  <!-- =================== COMPANIES =================== -->
+  <div x-show="view==='companies'">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">Firmy <span class="text-base font-normal text-slate-500" x-text="`(${companies.length})`"></span></h1>
+      <button @click="newCompany()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">+ Nowa (N)</button>
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-3 mb-4">
+      <input type="text" x-model="companiesSearch" placeholder="🔍 Szukaj firmy" class="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded px-3 py-1.5 text-sm w-full">
+    </div>
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 dark:bg-slate-700 text-xs uppercase text-slate-600 dark:text-slate-300">
+          <tr>
+            <th class="px-3 py-2 text-left">Nazwa</th><th class="px-3 py-2 text-left">Typ</th><th class="px-3 py-2 text-left">Region</th><th class="px-3 py-2 text-left">Kontakty</th><th class="px-3 py-2 text-left">Notatki</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="c in filteredCompanies" :key="c.id">
+            <tr class="border-t dark:border-slate-700 hover:bg-brand-50 dark:hover:bg-slate-700 cursor-pointer" @click="editCompany(c)">
+              <td class="px-3 py-2 font-medium" x-text="c.name"></td>
+              <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded" :class="categoryColor(c.type)" x-text="c.type || ''"></span></td>
+              <td class="px-3 py-2 text-slate-600 dark:text-slate-400" x-text="c.region || ''"></td>
+              <td class="px-3 py-2 text-slate-500 text-xs" x-text="(c.contactIds||[]).length"></td>
+              <td class="px-3 py-2 text-slate-500 text-xs truncate max-w-[300px]" x-text="c.notes ? c.notes.substring(0,80) : ''"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div x-show="filteredCompanies.length === 0" class="text-center py-8 text-slate-400">Brak firm</div>
+    </div>
+  </div>
+
+  <!-- =================== REPORTS =================== -->
+  <div x-show="view==='reports'">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold">Reports</h1>
+      <button @click="initReports()" class="text-sm border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded">🔄 Odśwież</button>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-2">Pipeline value: <span x-text="activePipeline?.name"></span></h2>
+        <div style="height: 300px"><canvas id="chart-pipeline-value"></canvas></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-2">Win Rate (wszystkie deals)</h2>
+        <div style="height: 300px"><canvas id="chart-win-rate"></canvas></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-2">Kontakty per kategoria</h2>
+        <div style="height: 300px"><canvas id="chart-categories"></canvas></div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-2">Deals w czasie (per miesiąc)</h2>
+        <div style="height: 300px"><canvas id="chart-deals-time"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== SETTINGS =================== -->
+  <div x-show="view==='settings'">
+    <h1 class="text-2xl font-bold mb-4">Ustawienia</h1>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">📥 Import danych</h2>
+        <div class="space-y-3">
+          <div>
+            <div class="text-sm font-medium mb-1">Import kontaktów z CSV</div>
+            <input type="file" @change="importContactsCSV($event)" accept=".csv,.txt" class="text-sm">
+          </div>
+          <div class="border-t dark:border-slate-700 pt-3">
+            <div class="text-sm font-medium mb-1">Import z biuro.gamak (jednorazowy)</div>
+            <button @click="importDefaultCSV()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">Import 1348 kontaktów</button>
+          </div>
+          <div class="border-t dark:border-slate-700 pt-3">
+            <div class="text-sm font-medium mb-1">🤖 Re-import enriched (Claude Haiku 4.5)</div>
+            <div class="text-xs text-slate-500 mb-2">Naprawia regex-błędy: śmieciowe firmy ("temat maila" zamiast "GAMAK Sp. z o.o."), brakujące stanowiska, niepoprawne telefony. NADPISUJE company/position/phones/location/firstName/lastName. ZACHOWUJE Twoje ręczne edycje: status, tags, notes, customFields.</div>
+            <button @click="importEnrichedCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-sm">Re-import enriched z Bedrock</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">💾 Backup / Export</h2>
+        <div class="space-y-2">
+          <button @click="exportAllJSON()" class="w-full text-left border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 rounded text-sm">📤 Export wszystko (JSON)</button>
+          <button @click="exportContactsCSV()" class="w-full text-left border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 rounded text-sm">📤 Export kontaktów (CSV)</button>
+          <button @click="exportDealsCSV()" class="w-full text-left border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 px-3 py-2 rounded text-sm">📤 Export deals (CSV)</button>
+          <input type="file" @change="importJSON($event)" accept=".json" class="text-sm w-full mt-2">
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">🎯 Pipelines</h2>
+        <div class="space-y-2">
+          <template x-for="p in pipelines" :key="p.id">
+            <div class="border dark:border-slate-700 rounded p-2">
+              <div class="flex items-center gap-2 font-medium text-sm" x-text="`${p.icon} ${p.name}`"></div>
+              <div class="text-xs text-slate-500 mt-1">
+                <template x-for="(s,i) in p.stages" :key="s.id">
+                  <span><span x-show="i>0">→ </span><span x-text="s.name"></span> </span>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="text-xs text-slate-400 mt-2">Edycja stages w app.js (DEFAULT_PIPELINES). UI w V0.3.</div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
+        <h2 class="font-semibold mb-3">🧩 Custom fields</h2>
+        <button @click="addCustomField()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm mb-2">+ Dodaj pole</button>
+        <div class="space-y-1 mt-2">
+          <template x-for="f in customFields" :key="f.id">
+            <div class="flex items-center justify-between border dark:border-slate-700 rounded p-2 text-sm">
+              <div>
+                <span class="font-medium" x-text="f.name"></span>
+                <span class="text-xs text-slate-500 ml-2" x-text="`(${f.entity}, ${f.type})`"></span>
+              </div>
+              <button @click="deleteCustomField(f)" class="text-red-500 hover:text-red-700 text-xs">✕</button>
+            </div>
+          </template>
+          <div x-show="customFields.length===0" class="text-xs text-slate-400">Brak custom fields</div>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 lg:col-span-2">
+        <h2 class="font-semibold mb-3">⚠️ Strefa niebezpieczna</h2>
+        <button @click="resetAllData()" class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">🗑 Wyczyść WSZYSTKO (reset DB)</button>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- =================== CONTACT MODAL with TABS =================== -->
+<div x-show="modal === 'contact'" x-transition class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" @click.self="closeModal()">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-4 border-b dark:border-slate-700 flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold" x-text="editing.id ? (editing.fullName || editing.email) : 'Nowy kontakt'"></h2>
+        <div x-show="editing.id" class="text-xs text-slate-500" x-text="editing.email"></div>
+      </div>
+      <button @click="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b dark:border-slate-700 flex gap-1 px-4">
+      <button @click="modalTab='info'" :class="modalTab==='info' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">📋 Info</button>
+      <button @click="modalTab='activities'" :class="modalTab==='activities' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">📞 Activities (<span x-text="editing.id ? activitiesForContact(editing.id).length : 0"></span>)</button>
+      <button @click="modalTab='deals'" :class="modalTab==='deals' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">🎯 Deals (<span x-text="editing.id ? dealsForContact(editing.id).length : 0"></span>)</button>
+      <button @click="modalTab='tasks'" :class="modalTab==='tasks' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">✅ Tasks (<span x-text="editing.id ? tasksForContact(editing.id).length : 0"></span>)</button>
+    </div>
+
+    <!-- Tab: Info -->
+    <div x-show="modalTab==='info'" class="p-4 grid grid-cols-2 gap-3">
+      <div><label class="text-xs text-slate-500">Email</label><input type="email" x-model="editing.email" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Pełna nazwa</label><input type="text" x-model="editing.fullName" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Imię</label><input type="text" x-model="editing.firstName" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Nazwisko</label><input type="text" x-model="editing.lastName" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Telefon (oddziel /)</label><input type="text" x-model="editing.phonesStr" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Stanowisko</label><input type="text" x-model="editing.position" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Firma</label><input type="text" x-model="editing.company" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Lokalizacja</label><input type="text" x-model="editing.location" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Kategoria</label>
+        <select x-model="editing.category" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="B2B">B2B</option><option value="JST">JST</option><option value="JST-jednostka">JST-jednostka</option>
+          <option value="private">private</option><option value="system">system</option>
+          <option value="edu">edu</option><option value="NGO">NGO</option><option value="dostawca">dostawca</option><option value="inne">inne</option>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-500">Status</label>
+        <select x-model="editing.status" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="">(brak)</option><option value="lead">Lead</option><option value="active">Active</option><option value="customer">Customer</option><option value="archived">Archived</option>
+        </select>
+      </div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Tagi</label><input type="text" x-model="editing.tagsStr" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm" placeholder="np. lodowisko, mazowieckie, vip"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Notatki</label><textarea x-model="editing.notes" rows="6" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm font-mono"></textarea></div>
+      <!-- Custom fields -->
+      <template x-for="cf in customFieldsFor('contact')" :key="cf.id">
+        <div class="col-span-2">
+          <label class="text-xs text-slate-500" x-text="cf.name + ' (custom)'"></label>
+          <template x-if="cf.type==='select'">
+            <select x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+              <option value="">-</option>
+              <template x-for="o in cf.options" :key="o"><option :value="o" x-text="o"></option></template>
+            </select>
+          </template>
+          <template x-if="cf.type==='date'">
+            <input type="date" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          </template>
+          <template x-if="cf.type==='number'">
+            <input type="number" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          </template>
+          <template x-if="cf.type==='text'">
+            <input type="text" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          </template>
+        </div>
+      </template>
+      <div class="col-span-2 text-xs text-slate-400">
+        <span x-show="editing.id">id: <span x-text="editing.id"></span> · </span>
+        <span x-show="editing.msgCount">maile: <span x-text="editing.msgCount"></span> · </span>
+        <span x-show="editing.firstSeen">pierwszy: <span x-text="formatDate(editing.firstSeen)"></span> · </span>
+        <span x-show="editing.lastSeen">ostatni: <span x-text="formatDate(editing.lastSeen)"></span></span>
+      </div>
+    </div>
+
+    <!-- Tab: Activities -->
+    <div x-show="modalTab==='activities'" class="p-4">
+      <div x-show="!editing.id" class="text-sm text-slate-500">Zapisz kontakt aby dodawać aktywności</div>
+      <div x-show="editing.id">
+        <div class="flex flex-wrap gap-1 mb-3">
+          <template x-for="t in activityTypes" :key="t.id">
+            <button @click="newActivity(t.id)" class="px-2 py-1 rounded border text-xs hover:bg-slate-100 dark:hover:bg-slate-700"><span x-text="t.icon + ' ' + t.name"></span></button>
+          </template>
+        </div>
+        <!-- New activity form -->
+        <template x-if="editingActivity">
+          <div class="bg-slate-50 dark:bg-slate-700 border dark:border-slate-600 rounded p-3 mb-3">
+            <div class="text-sm font-semibold mb-2"><span x-text="activityTypeMeta(editingActivity.type).icon + ' ' + activityTypeMeta(editingActivity.type).name"></span></div>
+            <textarea x-model="editingActivity.content" rows="3" class="border dark:border-slate-600 dark:bg-slate-800 w-full rounded px-2 py-1.5 text-sm" placeholder="Opis (np. 'Rozmowa z Maciejem - omówiliśmy specyfikację 30x60, czeka na PFU za 2 tyg')"></textarea>
+            <div class="flex gap-2 mt-2">
+              <input type="datetime-local" :value="editingActivity.date ? editingActivity.date.substring(0,16) : ''" @change="editingActivity.date = new Date($event.target.value).toISOString()" class="border dark:border-slate-600 dark:bg-slate-800 rounded px-2 py-1 text-sm">
+              <button @click="saveActivity()" class="bg-brand-600 text-white px-3 py-1 rounded text-sm">Zapisz</button>
+              <button @click="cancelActivity()" class="border dark:border-slate-600 px-3 py-1 rounded text-sm">Anuluj</button>
+            </div>
+          </div>
+        </template>
+        <!-- Timeline -->
+        <div class="space-y-2">
+          <template x-for="a in activitiesForContact(editing.id)" :key="a.id">
+            <div class="border-l-4 dark:border-slate-700 pl-3 py-1 group">
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2 py-0.5 rounded" :class="activityTypeMeta(a.type).color" x-text="activityTypeMeta(a.type).icon + ' ' + activityTypeMeta(a.type).name"></span>
+                <span class="text-xs text-slate-400" x-text="formatDateTime(a.date)"></span>
+                <span class="text-xs text-slate-400" x-text="'· ' + timeAgo(a.date)"></span>
+                <button @click="deleteActivity(a)" class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs ml-auto">✕</button>
+              </div>
+              <div class="text-sm mt-1 whitespace-pre-wrap" x-text="a.content"></div>
+            </div>
+          </template>
+          <div x-show="activitiesForContact(editing.id).length === 0" class="text-sm text-slate-400">Brak aktywności. Kliknij typ powyżej żeby dodać.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Deals -->
+    <div x-show="modalTab==='deals'" class="p-4">
+      <div x-show="!editing.id" class="text-sm text-slate-500">Zapisz kontakt aby zobaczyć powiązane deals</div>
+      <div x-show="editing.id">
+        <div class="space-y-2">
+          <template x-for="d in dealsForContact(editing.id)" :key="d.id">
+            <div class="border dark:border-slate-700 rounded p-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer" @click="closeModal(); $nextTick(() => editDeal(d))">
+              <div class="flex justify-between">
+                <span class="font-medium text-sm" x-text="d.name"></span>
+                <span class="text-xs text-emerald-700" x-text="d.value ? formatCurrency(d.value) : ''"></span>
+              </div>
+              <div class="text-xs text-slate-500" x-text="`${d.companyName || ''} · ${d.stage || ''} · ${d.status}`"></div>
+            </div>
+          </template>
+          <div x-show="dealsForContact(editing.id).length === 0" class="text-sm text-slate-400">Brak deals. <button @click="closeModal(); $nextTick(()=>{ newDeal(); editing.contactEmailsStr = (contacts.find(c=>c.id===arguments[0])?.email || ''); })" class="text-brand-600 underline ml-1">Stwórz deal</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Tasks -->
+    <div x-show="modalTab==='tasks'" class="p-4">
+      <div x-show="!editing.id" class="text-sm text-slate-500">Zapisz kontakt aby zobaczyć zadania</div>
+      <div x-show="editing.id">
+        <div class="space-y-2">
+          <template x-for="t in tasksForContact(editing.id)" :key="t.id">
+            <div class="border dark:border-slate-700 rounded p-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer" @click="closeModal(); $nextTick(() => editTask(t))">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" :checked="t.status==='done'" @change.stop="toggleTask(t)">
+                <span class="font-medium text-sm" :class="t.status==='done' ? 'line-through text-slate-400' : ''" x-text="t.title"></span>
+                <span class="text-xs text-slate-400 ml-auto" x-text="t.dueDate ? daysUntilLabel(t.dueDate) : ''"></span>
+              </div>
+            </div>
+          </template>
+          <div x-show="tasksForContact(editing.id).length === 0" class="text-sm text-slate-400">Brak zadań</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between">
+      <button x-show="editing.id" @click="deleteContact(editing)" class="text-red-600 hover:text-red-800 text-sm">🗑 Usuń</button>
+      <div class="flex gap-2 ml-auto">
+        <button @click="closeModal()" class="border dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded text-sm">Anuluj</button>
+        <button @click="saveContact()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">Zapisz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== DEAL MODAL with TABS =================== -->
+<div x-show="modal === 'deal'" x-transition class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" @click.self="closeModal()">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-4 border-b dark:border-slate-700 flex items-center justify-between">
+      <h2 class="text-lg font-semibold" x-text="editing.id ? editing.name : 'Nowy deal'"></h2>
+      <button @click="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
+    </div>
+
+    <div class="border-b dark:border-slate-700 flex gap-1 px-4">
+      <button @click="modalTab='info'" :class="modalTab==='info' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">📋 Info</button>
+      <button @click="modalTab='activities'" :class="modalTab==='activities' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">📞 Activities (<span x-text="editing.id ? activitiesForDeal(editing.id).length : 0"></span>)</button>
+      <button @click="modalTab='tasks'" :class="modalTab==='tasks' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">✅ Tasks (<span x-text="editing.id ? tasksForDeal(editing.id).length : 0"></span>)</button>
+      <button @click="modalTab='docs'" :class="modalTab==='docs' ? 'border-brand-600 text-brand-700 dark:text-brand-400' : 'border-transparent text-slate-500'" class="px-3 py-2 border-b-2 text-sm">📎 Dokumenty (<span x-text="(editing.documents||[]).length"></span>)</button>
+    </div>
+
+    <!-- Info -->
+    <div x-show="modalTab==='info'" class="p-4 grid grid-cols-2 gap-3">
+      <div class="col-span-2"><label class="text-xs text-slate-500">Nazwa</label><input type="text" x-model="editing.name" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Pipeline</label>
+        <select x-model="editing.pipelineId" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <template x-for="p in pipelines" :key="p.id"><option :value="p.id" x-text="`${p.icon} ${p.name}`"></option></template>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-500">Stage</label>
+        <select x-model="editing.stage" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <template x-for="s in (pipelines.find(p=>p.id===editing.pipelineId)?.stages || activeStages)" :key="s.id">
+            <option :value="s.id" x-text="s.name"></option>
+          </template>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-500">Status</label>
+        <select x-model="editing.status" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="open">Open</option><option value="won">Won</option><option value="lost">Lost</option>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-500">Wartość (PLN netto)</label><input type="number" step="0.01" x-model.number="editing.value" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Termin</label><input type="date" x-model="editing.dueDate" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Firma</label><input type="text" x-model="editing.companyName" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm" placeholder="np. UM Chrzanów"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Kontakty (emails oddzielone ,)</label><input type="text" x-model="editing.contactEmailsStr" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Tagi</label><input type="text" x-model="editing.tagsStr" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm" placeholder="np. PZP, lodowisko, woj-malopolskie"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Notatki</label><textarea x-model="editing.notes" rows="6" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm font-mono"></textarea></div>
+      <div x-show="editing.status === 'lost'" class="col-span-2"><label class="text-xs text-slate-500">Powód utraty</label><input type="text" x-model="editing.lostReason" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <!-- Custom fields for deals -->
+      <template x-for="cf in customFieldsFor('deal')" :key="cf.id">
+        <div class="col-span-2">
+          <label class="text-xs text-slate-500" x-text="cf.name + ' (custom)'"></label>
+          <template x-if="cf.type==='select'">
+            <select x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+              <option value="">-</option>
+              <template x-for="o in cf.options" :key="o"><option :value="o" x-text="o"></option></template>
+            </select>
+          </template>
+          <template x-if="cf.type==='date'"><input type="date" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></template>
+          <template x-if="cf.type==='number'"><input type="number" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></template>
+          <template x-if="cf.type==='text'"><input type="text" x-model="editing._customFields[cf.id]" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></template>
+        </div>
+      </template>
+    </div>
+
+    <!-- Activities for deal -->
+    <div x-show="modalTab==='activities'" class="p-4">
+      <div x-show="!editing.id" class="text-sm text-slate-500">Zapisz deal aby dodawać aktywności</div>
+      <div x-show="editing.id">
+        <div class="flex flex-wrap gap-1 mb-3">
+          <template x-for="t in activityTypes" :key="t.id">
+            <button @click="newActivity(t.id)" class="px-2 py-1 rounded border dark:border-slate-600 text-xs hover:bg-slate-100 dark:hover:bg-slate-700"><span x-text="t.icon + ' ' + t.name"></span></button>
+          </template>
+        </div>
+        <template x-if="editingActivity">
+          <div class="bg-slate-50 dark:bg-slate-700 border dark:border-slate-600 rounded p-3 mb-3">
+            <textarea x-model="editingActivity.content" rows="3" class="border dark:border-slate-600 dark:bg-slate-800 w-full rounded px-2 py-1.5 text-sm"></textarea>
+            <div class="flex gap-2 mt-2">
+              <input type="datetime-local" :value="editingActivity.date ? editingActivity.date.substring(0,16) : ''" @change="editingActivity.date = new Date($event.target.value).toISOString()" class="border dark:border-slate-600 dark:bg-slate-800 rounded px-2 py-1 text-sm">
+              <button @click="saveActivity()" class="bg-brand-600 text-white px-3 py-1 rounded text-sm">Zapisz</button>
+              <button @click="cancelActivity()" class="border dark:border-slate-600 px-3 py-1 rounded text-sm">Anuluj</button>
+            </div>
+          </div>
+        </template>
+        <div class="space-y-2">
+          <template x-for="a in activitiesForDeal(editing.id)" :key="a.id">
+            <div class="border-l-4 dark:border-slate-700 pl-3 py-1 group">
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2 py-0.5 rounded" :class="activityTypeMeta(a.type).color" x-text="activityTypeMeta(a.type).icon + ' ' + activityTypeMeta(a.type).name"></span>
+                <span class="text-xs text-slate-400" x-text="formatDateTime(a.date)"></span>
+                <button @click="deleteActivity(a)" class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs ml-auto">✕</button>
+              </div>
+              <div class="text-sm mt-1 whitespace-pre-wrap" x-text="a.content"></div>
+            </div>
+          </template>
+          <div x-show="activitiesForDeal(editing.id).length === 0" class="text-sm text-slate-400">Brak aktywności</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tasks for deal -->
+    <div x-show="modalTab==='tasks'" class="p-4">
+      <div x-show="!editing.id" class="text-sm text-slate-500">Zapisz deal aby zobaczyć zadania</div>
+      <div x-show="editing.id">
+        <div class="space-y-2">
+          <template x-for="t in tasksForDeal(editing.id)" :key="t.id">
+            <div class="border dark:border-slate-700 rounded p-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer" @click="closeModal(); $nextTick(() => editTask(t))">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" :checked="t.status==='done'" @change.stop="toggleTask(t)">
+                <span class="font-medium text-sm" :class="t.status==='done' ? 'line-through text-slate-400' : ''" x-text="t.title"></span>
+                <span class="text-xs text-slate-400 ml-auto" x-text="t.dueDate ? daysUntilLabel(t.dueDate) : ''"></span>
+              </div>
+            </div>
+          </template>
+          <div x-show="tasksForDeal(editing.id).length === 0" class="text-sm text-slate-400">Brak zadań do tego dealu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div x-show="modalTab==='docs'" class="p-4">
+      <button @click="addDocument()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm mb-3">+ Dodaj dokument</button>
+      <div class="space-y-2">
+        <template x-for="d in (editing.documents || [])" :key="d.id">
+          <div class="flex items-center gap-2 border dark:border-slate-700 rounded p-2">
+            <span class="text-xl">📎</span>
+            <div class="flex-1">
+              <a :href="d.url" target="_blank" class="font-medium text-sm text-brand-700 dark:text-brand-400 hover:underline" x-text="d.name"></a>
+              <div class="text-xs text-slate-500" x-text="d.url"></div>
+            </div>
+            <span class="text-xs text-slate-400" x-text="formatDate(d.addedAt)"></span>
+            <button @click="removeDocument(d.id)" class="text-red-500 hover:text-red-700 text-xs">✕</button>
+          </div>
+        </template>
+        <div x-show="(editing.documents||[]).length===0" class="text-sm text-slate-400">Brak dokumentów. Dodaj URL/ścieżkę pliku (np. oferty PDF, PFU).</div>
+      </div>
+    </div>
+
+    <div class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between">
+      <button x-show="editing.id" @click="deleteDeal(editing)" class="text-red-600 hover:text-red-800 text-sm">🗑 Usuń</button>
+      <div class="flex gap-2 ml-auto">
+        <button @click="closeModal()" class="border dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded text-sm">Anuluj</button>
+        <button @click="saveDeal()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">Zapisz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== TASK MODAL =================== -->
+<div x-show="modal === 'task'" x-transition class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" @click.self="closeModal()">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-4 border-b dark:border-slate-700 flex items-center justify-between">
+      <h2 class="text-lg font-semibold" x-text="editing.id ? 'Edytuj zadanie' : 'Nowe zadanie'"></h2>
+      <button @click="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
+    </div>
+    <div class="p-4 grid grid-cols-2 gap-3">
+      <div class="col-span-2"><label class="text-xs text-slate-500">Tytuł</label><input type="text" x-model="editing.title" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Termin</label><input type="date" x-model="editing.dueDate" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Priorytet</label>
+        <select x-model="editing.priority" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="low">Low</option><option value="med">Med</option><option value="high">High</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-slate-500">Kontakt (email)</label>
+        <input type="text" x-model="editing.contactEmail" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm" list="contactEmailsList">
+        <datalist id="contactEmailsList">
+          <template x-for="c in contacts.slice(0,500)"><option :value="c.email" x-text="c.fullName + ' — ' + c.email"></option></template>
+        </datalist>
+      </div>
+      <div>
+        <label class="text-xs text-slate-500">Status</label>
+        <select x-model="editing.status" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="pending">Pending</option><option value="done">Done</option>
+        </select>
+      </div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Notatki</label><textarea x-model="editing.notes" rows="4" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></textarea></div>
+    </div>
+    <div class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between">
+      <button x-show="editing.id" @click="deleteTask(editing)" class="text-red-600 hover:text-red-800 text-sm">🗑 Usuń</button>
+      <div class="flex gap-2 ml-auto">
+        <button @click="closeModal()" class="border dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded text-sm">Anuluj</button>
+        <button @click="saveTask()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">Zapisz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== COMPANY MODAL =================== -->
+<div x-show="modal === 'company'" x-transition class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4" @click.self="closeModal()">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="p-4 border-b dark:border-slate-700 flex items-center justify-between">
+      <h2 class="text-lg font-semibold" x-text="editing.id ? 'Edytuj firmę' : 'Nowa firma'"></h2>
+      <button @click="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
+    </div>
+    <div class="p-4 grid grid-cols-2 gap-3">
+      <div class="col-span-2"><label class="text-xs text-slate-500">Nazwa</label><input type="text" x-model="editing.name" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div><label class="text-xs text-slate-500">Typ</label>
+        <select x-model="editing.type" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm">
+          <option value="B2B">B2B</option><option value="JST">JST</option><option value="JST-jednostka">JST-jednostka</option>
+          <option value="edu">edu</option><option value="NGO">NGO</option><option value="dostawca">dostawca</option><option value="inne">inne</option>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-500">Region</label><input type="text" x-model="editing.region" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Strona WWW</label><input type="text" x-model="editing.website" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Adres</label><input type="text" x-model="editing.address" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></div>
+      <div class="col-span-2"><label class="text-xs text-slate-500">Notatki</label><textarea x-model="editing.notes" rows="4" class="border dark:border-slate-600 dark:bg-slate-700 w-full rounded px-2 py-1.5 text-sm"></textarea></div>
+    </div>
+    <div class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between">
+      <button x-show="editing.id" @click="deleteCompany(editing)" class="text-red-600 hover:text-red-800 text-sm">🗑 Usuń</button>
+      <div class="flex gap-2 ml-auto">
+        <button @click="closeModal()" class="border dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 px-3 py-1.5 rounded text-sm">Anuluj</button>
+        <button @click="saveCompany()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded text-sm">Zapisz</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-slate-100 dark:bg-slate-950 border-t dark:border-slate-800 text-xs text-slate-500 py-3 text-center">
+  GAMAK CRM v0.2 · IndexedDB local · zbudowane w YOLO 26.04.2026 · ⌨️ <kbd class="bg-slate-200 dark:bg-slate-700 px-1 rounded">?</kbd> dla skrótów
+</footer>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <url>
+        <loc>https://bizneszai.pl/</loc>
+        <lastmod>2026-04-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/og-image.jpg</image:loc>
+            <image:title>Daniel Klimczak — BiznesZAI</image:title>
+            <image:caption>Buduję systemy, marki i strony, które sprzedają. SEO, LEO, GEO.</image:caption>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/profile.jpg</image:loc>
+            <image:title>Daniel Klimczak</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/gamak-eu.png</image:loc>
+            <image:title>gamak.eu — strona firmowa GAMAK</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/padelraze-com.png</image:loc>
+            <image:title>padelraze.com — marka kortów padel</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/nspro-pl.png</image:loc>
+            <image:title>nawierzchniesportowe.pro — NS PRO</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/stilmat-pl.png</image:loc>
+            <image:title>stilmat.pl — nawierzchnie poliuretanowe</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/venze-pl.png</image:loc>
+            <image:title>venze.pl — łyżwy rentalowe</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/gabinet-autopilot.png</image:loc>
+            <image:title>Gabinet na Autopilocie — system AI dla beauty</image:title>
+        </image:image>
+        <image:image>
+            <image:loc>https://bizneszai.pl/img/primroses.png</image:loc>
+            <image:title>Primroses — Womanity Lashes i Pure Technology</image:title>
+        </image:image>
+    </url>
+</urlset>

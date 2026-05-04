@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Cuánto te cuesta una clienta perdida? | Salón en Autopiloto</title>
+    <meta name="description" content="Calcula cuánto dinero pierdes por mensajes sin responder y falta de follow-up. Números reales para salones de belleza.">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --color-bg: #faf8f4; --color-bg-warm: #f5f0e8; --color-bg-card: #ffffff; --color-primary: #c4a77d; --color-primary-dark: #a68b5b; --color-accent: #b85c38; --color-text: #3d3d3d; --color-text-muted: #6b6b6b; --color-border: #e8e2d9; --font-display: 'Playfair Display', serif; --font-body: 'Lato', sans-serif; --shadow-md: 0 6px 24px rgba(164, 139, 91, 0.12); --radius-md: 16px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); font-size: 17px; line-height: 1.75; color: var(--color-text); background-color: var(--color-bg); }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+        header { background: var(--color-bg-card); padding: 20px 0; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-primary-dark); text-decoration: none; }
+        .nav-links a { color: var(--color-text); text-decoration: none; margin-left: 30px; font-size: 0.95rem; }
+        article { padding: 80px 0; }
+        .article-header { text-align: center; margin-bottom: 50px; }
+        .article-meta { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 20px; }
+        h1 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 400; line-height: 1.3; margin-bottom: 20px; }
+        .article-lead { font-size: 1.15rem; color: var(--color-text-muted); max-width: 600px; margin: 0 auto; }
+        .article-image { width: 100%; height: 400px; object-fit: cover; border-radius: var(--radius-md); margin: 40px 0; }
+        h2 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 500; margin: 50px 0 20px; }
+        p { margin-bottom: 1.25rem; }
+        ul, ol { margin: 1.25rem 0; padding-left: 1.5rem; }
+        li { margin-bottom: 0.75rem; }
+        blockquote { border-left: 4px solid var(--color-primary); padding: 20px 30px; margin: 30px 0; background: var(--color-bg-warm); border-radius: 0 var(--radius-md) var(--radius-md) 0; font-style: italic; }
+        .calc-box { background: var(--color-bg-card); border: 2px solid var(--color-primary); border-radius: var(--radius-md); padding: 35px; margin: 35px 0; }
+        .calc-box h3 { color: var(--color-primary-dark); margin: 0 0 20px 0; font-family: var(--font-display); }
+        .calc-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+        .calc-row:last-child { border-bottom: none; font-weight: 700; font-size: 1.1rem; color: var(--color-accent); }
+        .stat-highlight { background: var(--color-accent); color: white; padding: 25px 35px; border-radius: var(--radius-md); margin: 35px 0; text-align: center; }
+        .stat-highlight .number { font-family: var(--font-display); font-size: 3rem; font-weight: 400; display: block; }
+        .stat-highlight .label { font-size: 1rem; opacity: 0.9; }
+        .cta-box { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: white; padding: 50px; border-radius: var(--radius-md); text-align: center; margin: 60px 0; }
+        .cta-box h3 { color: white; margin-top: 0; font-family: var(--font-display); }
+        .btn { display: inline-block; padding: 16px 36px; background: white; color: var(--color-primary-dark); text-decoration: none; border-radius: 50px; font-weight: 600; margin-top: 15px; }
+        footer { background: var(--color-text); color: white; padding: 50px 0 30px; margin-top: 80px; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 28px; text-align: center; }
+        .footer-links { margin-bottom: 30px; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 15px; font-size: 0.9rem; }
+        .footer-copy { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .rodo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-text); color: white; padding: 20px; z-index: 1000; display: none; }
+        .rodo-banner.show { display: block; }
+        .rodo-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .rodo-text { flex: 1; font-size: 0.9rem; }
+        .rodo-text a { color: var(--color-primary); }
+        .rodo-buttons { display: flex; gap: 10px; }
+        .rodo-btn { padding: 10px 24px; border: none; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        .rodo-btn-accept { background: var(--color-primary); color: white; }
+        .rodo-btn-reject { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="../index.html" class="logo">Salón en Autopiloto</a>
+            <nav class="nav-links">
+                <a href="../index.html">Inicio</a>
+                <a href="index.html">Blog</a>
+                <a href="../index.html#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
+
+    <article>
+        <div class="container">
+            <div class="article-header">
+                <div class="article-meta">1 de febrero 2026 • 5 min de lectura</div>
+                <h1>¿Cuánto te cuesta una clienta perdida?</h1>
+                <p class="article-lead">Seguro piensas: "una clienta menos, no pasa nada". Pero ¿sabes cuánto pierdes realmente por mensajes sin responder?</p>
+            </div>
+
+            <img src="../img/blog-3-leady.jpg" alt="Calculadora de pérdidas en salón de belleza" class="article-image">
+
+            <p>Recibes un mensaje en Instagram: "Hola, ¿cuánto cuesta el lifting de pestañas?". Estás en medio de un tratamiento, así que responderás luego. Y después... se te olvida. O respondes 6 horas después, cuando la clienta ya ha reservado en otro sitio.</p>
+
+            <p>¿Te suena?</p>
+
+            <div class="stat-highlight">
+                <span class="number">67%</span>
+                <span class="label">de las dueñas de salones son recepcionista mientras hacen tratamientos</span>
+            </div>
+
+            <p>No es tu culpa. Es falta de sistema. Pero calculemos cuánto te cuesta.</p>
+
+            <h2>Las matemáticas de las clientas perdidas</h2>
+
+            <p>Supongamos que tienes un salón de estética típico:</p>
+
+            <div class="calc-box">
+                <h3>Escenario: Un lead sin responder a la semana</h3>
+                <div class="calc-row">
+                    <span>Valor medio de la primera visita</span>
+                    <span>50 €</span>
+                </div>
+                <div class="calc-row">
+                    <span>Visitas medias al año (clienta fiel)</span>
+                    <span>8 visitas</span>
+                </div>
+                <div class="calc-row">
+                    <span>Valor de la clienta al año</span>
+                    <span>400 €</span>
+                </div>
+                <div class="calc-row">
+                    <span>Leads perdidos al mes (1/semana)</span>
+                    <span>4 clientas</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>PÉRDIDA MENSUAL</strong></span>
+                    <span><strong>1.600 €</strong></span>
+                </div>
+            </div>
+
+            <p>1.600 € al mes. 19.200 € al año. Por un mensaje sin responder a la semana.</p>
+
+            <p>Y eso son solo clientas nuevas. ¿Qué pasa con las que ya vinieron?</p>
+
+            <h2>Clientas "dormidas" – la pérdida silenciosa</h2>
+
+            <p>Una clienta vino hace 3 meses. Estaba contenta. Pero no ha vuelto porque... se olvidó. Nadie le recordó. Nadie le escribió "Hola, hace tiempo que no te vemos, ¿te apetece un retoque?".</p>
+
+            <div class="calc-box">
+                <h3>Escenario: 10 clientas "dormidas" al mes</h3>
+                <div class="calc-row">
+                    <span>Clientas que no volvieron (sin follow-up)</span>
+                    <span>10</span>
+                </div>
+                <div class="calc-row">
+                    <span>% que volverían con recordatorio</span>
+                    <span>30%</span>
+                </div>
+                <div class="calc-row">
+                    <span>Clientas recuperadas</span>
+                    <span>3</span>
+                </div>
+                <div class="calc-row">
+                    <span>Valor medio de visita</span>
+                    <span>60 €</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>PÉRDIDA MENSUAL</strong></span>
+                    <span><strong>180 €</strong></span>
+                </div>
+            </div>
+
+            <h2>No-shows – dinero tirado a la basura</h2>
+
+            <p>El 25% de las clientas se olvida de su cita. Tienes reserva a las 15:00, esperas, no viene nadie. Podrías haber atendido a otra persona.</p>
+
+            <div class="calc-box">
+                <h3>Escenario: 2 no-shows a la semana</h3>
+                <div class="calc-row">
+                    <span>No-shows al mes</span>
+                    <span>8</span>
+                </div>
+                <div class="calc-row">
+                    <span>Valor medio del tratamiento</span>
+                    <span>45 €</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>PÉRDIDA MENSUAL</strong></span>
+                    <span><strong>360 €</strong></span>
+                </div>
+            </div>
+
+            <h2>Total: ¿cuánto pierdes realmente?</h2>
+
+            <div class="calc-box">
+                <h3>RESUMEN MENSUAL</h3>
+                <div class="calc-row">
+                    <span>Leads sin responder</span>
+                    <span>1.600 €</span>
+                </div>
+                <div class="calc-row">
+                    <span>Clientas "dormidas"</span>
+                    <span>180 €</span>
+                </div>
+                <div class="calc-row">
+                    <span>No-shows</span>
+                    <span>360 €</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>TOTAL PÉRDIDA</strong></span>
+                    <span><strong>2.140 € / mes</strong></span>
+                </div>
+            </div>
+
+            <p>2.140 € al mes. Suficiente para un empleado a tiempo parcial. O para un sistema que se encargue de todo esto.</p>
+
+            <h2>¿Qué puedes hacer?</h2>
+
+            <ol>
+                <li><strong>Recordatorios automáticos</strong> – 24h y 2h antes de la cita. Reduce no-shows un 60-70%.</li>
+                <li><strong>Respuestas rápidas a FAQs</strong> – plantillas preparadas para las preguntas más frecuentes. Respondes en 30 segundos.</li>
+                <li><strong>Sistema de follow-up</strong> – mensaje automático a clientas que llevan tiempo sin venir.</li>
+                <li><strong>Asistente de IA</strong> – responde preguntas básicas incluso cuando tú estás haciendo un tratamiento.</li>
+            </ol>
+
+            <blockquote>
+                "Un lead perdido de ácido hialurónico = 200 €. Un sistema que cuesta 170 €/mes y salva 5 leads, ¿es un gasto? Es una inversión."
+            </blockquote>
+
+            <div class="cta-box">
+                <h3>¿Quieres dejar de perder clientas?</h3>
+                <p>Te ayudo a crear un sistema que vigila cada lead y cada clienta. Ninguna se pierde en el caos de mensajes.</p>
+                <a href="../index.html#contacto" class="btn">Reservar llamada</a>
+            </div>
+
+            <p><em>Daniel Klimczak – 13 años en el sector beauty. Ayudo a dueñas de salones a recuperar su tiempo y control.</em></p>
+        </div>
+    </article>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../index.html">Inicio</a>
+                <a href="index.html">Blog</a>
+                <a href="../aviso-legal.html">Aviso Legal</a>
+                <a href="../politica-privacidad.html">Política de Privacidad</a>
+            </div>
+            <p class="footer-copy">© 2026 Salón en Autopiloto. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="rodo-banner" id="rodoBanner">
+        <div class="rodo-inner">
+            <div class="rodo-text">Este sitio utiliza cookies. <a href="../politica-privacidad.html">Más información</a></div>
+            <div class="rodo-buttons">
+                <button class="rodo-btn rodo-btn-reject" onclick="rejectCookies()">Rechazar</button>
+                <button class="rodo-btn rodo-btn-accept" onclick="acceptCookies()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkCookieConsent() { if (!localStorage.getItem('cookieConsent')) document.getElementById('rodoBanner').classList.add('show'); }
+        function acceptCookies() { localStorage.setItem('cookieConsent', 'accepted'); document.getElementById('rodoBanner').classList.remove('show'); }
+        function rejectCookies() { localStorage.setItem('cookieConsent', 'rejected'); document.getElementById('rodoBanner').classList.remove('show'); }
+        checkCookieConsent();
+    </script>
+</body>
+</html>

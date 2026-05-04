@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Rekomendator — opisz swoj problem biznesowy, dostan 3 narzedzia z uzasadnieniem.">
+  <title>AI Rekomendator — 3 narzedzia dla Twojego problemu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>AI Rekomendator</h1>
+      <p class="subtitle">Opisz problem biznesowy — dostaniesz 3 rekomendowane narzedzia.</p>
+      <p class="version">v0.1 MVP (mock) · krok 1/4 · Claude wejdzie w kroku 2</p>
+    </header>
+
+    <form id="form" autocomplete="off">
+      <label for="problem" class="label">Twoj problem:</label>
+      <textarea
+        id="problem"
+        name="problem"
+        placeholder="np. Potrzebuje CRM dla malej kancelarii prawnej, 3 osoby, budzet 200 zl/mies..."
+        minlength="10"
+        maxlength="2000"
+        required
+      ></textarea>
+      <div class="meta">
+        <span id="counter">0 / 2000</span>
+      </div>
+      <button type="submit" id="submit">Pokaz rekomendacje</button>
+    </form>
+
+    <div id="status" role="status" aria-live="polite"></div>
+    <div id="results"></div>
+
+    <footer>
+      <p>Region: eu-central-1 · <span id="source"></span></p>
+    </footer>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>

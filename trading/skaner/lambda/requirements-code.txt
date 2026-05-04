@@ -1,0 +1,4 @@
+# Małe deps pakowane razem z naszym kodem (deployment.zip)
+# Te pakiety są lekkie — nie ma sensu ich wyciągać do layer
+requests==2.32.3
+python-dotenv==1.0.1

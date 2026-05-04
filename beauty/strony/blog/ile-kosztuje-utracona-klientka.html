@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ile kosztuje Cię utracona klientka? | Gabinet na Autopilocie</title>
+    <meta name="description" content="Policz, ile pieniędzy tracisz przez nieodpisane wiadomości i brak follow-up. Konkretne liczby dla gabinetów beauty.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #faf8f4;
+            --color-bg-warm: #f5f0e8;
+            --color-bg-card: #ffffff;
+            --color-primary: #c4a77d;
+            --color-primary-light: #d4bc9a;
+            --color-primary-dark: #a68b5b;
+            --color-accent: #b85c38;
+            --color-text: #3d3d3d;
+            --color-text-muted: #6b6b6b;
+            --color-border: #e8e2d9;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lato', -apple-system, sans-serif;
+            --shadow-md: 0 6px 24px rgba(164, 139, 91, 0.12);
+            --radius-md: 16px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); font-size: 17px; line-height: 1.75; color: var(--color-text); background-color: var(--color-bg); }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 28px; }
+        header { background: var(--color-bg-card); padding: 20px 0; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-primary-dark); text-decoration: none; }
+        .nav-links a { color: var(--color-text); text-decoration: none; margin-left: 30px; font-size: 0.95rem; transition: color var(--transition); }
+        .nav-links a:hover { color: var(--color-primary-dark); }
+        article { padding: 80px 0; }
+        .article-header { text-align: center; margin-bottom: 50px; }
+        .article-meta { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 20px; }
+        h1 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 400; line-height: 1.3; margin-bottom: 20px; }
+        .article-lead { font-size: 1.15rem; color: var(--color-text-muted); max-width: 600px; margin: 0 auto; }
+        .article-image { width: 100%; height: 400px; object-fit: cover; border-radius: var(--radius-md); margin: 40px 0; }
+        h2 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 500; margin: 50px 0 20px; }
+        h3 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; margin: 35px 0 15px; }
+        p { margin-bottom: 1.25rem; }
+        ul, ol { margin: 1.25rem 0; padding-left: 1.5rem; }
+        li { margin-bottom: 0.75rem; }
+        strong { color: var(--color-text); }
+        blockquote { border-left: 4px solid var(--color-primary); padding: 20px 30px; margin: 30px 0; background: var(--color-bg-warm); border-radius: 0 var(--radius-md) var(--radius-md) 0; font-style: italic; }
+        .calc-box { background: var(--color-bg-card); border: 2px solid var(--color-primary); border-radius: var(--radius-md); padding: 35px; margin: 35px 0; }
+        .calc-box h3 { color: var(--color-primary-dark); margin-top: 0; }
+        .calc-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+        .calc-row:last-child { border-bottom: none; font-weight: 700; font-size: 1.1rem; color: var(--color-accent); }
+        .stat-highlight { background: var(--color-accent); color: white; padding: 25px 35px; border-radius: var(--radius-md); margin: 35px 0; text-align: center; }
+        .stat-highlight .number { font-family: var(--font-display); font-size: 3rem; font-weight: 400; display: block; }
+        .stat-highlight .label { font-size: 1rem; opacity: 0.9; }
+        .cta-box { background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary)); color: white; padding: 50px; border-radius: var(--radius-md); text-align: center; margin: 60px 0; }
+        .cta-box h3 { color: white; margin-top: 0; }
+        .cta-box p { color: rgba(255,255,255,0.9); }
+        .btn { display: inline-block; padding: 16px 36px; background: white; color: var(--color-primary-dark); text-decoration: none; border-radius: 50px; font-weight: 600; margin-top: 15px; transition: transform var(--transition), box-shadow var(--transition); }
+        .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        footer { background: var(--color-text); color: white; padding: 50px 0 30px; margin-top: 80px; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 28px; text-align: center; }
+        .footer-links { margin-bottom: 30px; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 15px; font-size: 0.9rem; transition: color var(--transition); }
+        .footer-links a:hover { color: white; }
+        .footer-copy { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+        .rodo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-text); color: white; padding: 20px; z-index: 1000; display: none; }
+        .rodo-banner.show { display: block; }
+        .rodo-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .rodo-text { flex: 1; font-size: 0.9rem; }
+        .rodo-text a { color: var(--color-primary-light); }
+        .rodo-buttons { display: flex; gap: 10px; }
+        .rodo-btn { padding: 10px 24px; border: none; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all var(--transition); }
+        .rodo-btn-accept { background: var(--color-primary); color: white; }
+        .rodo-btn-reject { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="../gabinet-autopilot-animated.html" class="logo">Gabinet na Autopilocie</a>
+            <nav class="nav-links">
+                <a href="../gabinet-autopilot-animated.html">Strona główna</a>
+                <a href="index.html">Blog</a>
+                <a href="../gabinet-autopilot-animated.html#kontakt">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <article>
+        <div class="container">
+            <div class="article-header">
+                <div class="article-meta">1 lutego 2026 • 5 min czytania</div>
+                <h1>Ile kosztuje Cię utracona klientka?</h1>
+                <p class="article-lead">Pewnie myślisz: "jedna klientka mniej, trudno". Ale czy wiesz, ile naprawdę tracisz przez nieodpisane wiadomości?</p>
+            </div>
+
+            <img src="../img/blog-3-leady.jpg" alt="Kalkulator strat w gabinecie beauty" class="article-image">
+
+            <p>Dostajesz wiadomość na Instagramie: "Hej, ile kosztuje u Was lifting rzęs?". Jesteś w trakcie zabiegu, więc odpiszesz później. A potem... zapominasz. Albo odpisujesz po 6 godzinach, gdy klientka już umówiła się gdzie indziej.</p>
+
+            <p>Brzmi znajomo?</p>
+
+            <div class="stat-highlight">
+                <span class="number">67%</span>
+                <span class="label">właścicielek gabinetów jest jednocześnie recepcjonistką podczas zabiegu</span>
+            </div>
+
+            <p>To nie Twoja wina. To brak systemu. Ale policzmy, ile Cię to kosztuje.</p>
+
+            <h2>Matematyka utraconych klientek</h2>
+
+            <p>Załóżmy, że prowadzisz typowy gabinet kosmetyczny premium:</p>
+
+            <div class="calc-box">
+                <h3>Scenariusz: Jeden nieodpisany lead tygodniowo</h3>
+                <div class="calc-row">
+                    <span>Średnia wartość pierwszej wizyty</span>
+                    <span>250 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span>Średnia liczba wizyt rocznie (lojalna klientka)</span>
+                    <span>8 wizyt</span>
+                </div>
+                <div class="calc-row">
+                    <span>Wartość klientki rocznie</span>
+                    <span>2 000 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span>Utracone leady miesięcznie (1/tydzień)</span>
+                    <span>4 klientki</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>STRATA MIESIĘCZNA</strong></span>
+                    <span><strong>8 000 PLN</strong></span>
+                </div>
+            </div>
+
+            <p>8 000 PLN miesięcznie. 96 000 PLN rocznie. Przez jedną nieodpisaną wiadomość tygodniowo.</p>
+
+            <p>A to tylko nowe klientki. Co z tymi, które już były?</p>
+
+            <h2>"Uśpione" klientki – cicha strata</h2>
+
+            <p>Klientka była u Ciebie 3 miesiące temu. Była zadowolona. Ale nie wróciła, bo... zapomniała. Nikt jej nie przypomniał. Nikt nie napisał "Hej, dawno Cię nie było, może czas na odświeżenie?".</p>
+
+            <div class="calc-box">
+                <h3>Scenariusz: 10 "uśpionych" klientek miesięcznie</h3>
+                <div class="calc-row">
+                    <span>Klientki które nie wróciły (bez follow-up)</span>
+                    <span>10</span>
+                </div>
+                <div class="calc-row">
+                    <span>% które wróciłyby po przypomnieniu</span>
+                    <span>30%</span>
+                </div>
+                <div class="calc-row">
+                    <span>Odzyskane klientki</span>
+                    <span>3</span>
+                </div>
+                <div class="calc-row">
+                    <span>Średnia wartość wizyty</span>
+                    <span>300 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>STRATA MIESIĘCZNA</strong></span>
+                    <span><strong>900 PLN</strong></span>
+                </div>
+            </div>
+
+            <h2>No-shows – pieniądze wyrzucone w błoto</h2>
+
+            <p>25% klientek zapomina o umówionej wizycie. Masz rezerwację na 15:00, czekasz, nikogo nie ma. Mogłaś przyjąć kogoś innego.</p>
+
+            <div class="calc-box">
+                <h3>Scenariusz: 2 no-shows tygodniowo</h3>
+                <div class="calc-row">
+                    <span>No-shows miesięcznie</span>
+                    <span>8</span>
+                </div>
+                <div class="calc-row">
+                    <span>Średnia wartość zabiegu</span>
+                    <span>200 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>STRATA MIESIĘCZNA</strong></span>
+                    <span><strong>1 600 PLN</strong></span>
+                </div>
+            </div>
+
+            <h2>Suma: ile naprawdę tracisz?</h2>
+
+            <div class="calc-box">
+                <h3>PODSUMOWANIE MIESIĘCZNE</h3>
+                <div class="calc-row">
+                    <span>Nieodpisane leady</span>
+                    <span>8 000 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span>"Uśpione" klientki</span>
+                    <span>900 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span>No-shows</span>
+                    <span>1 600 PLN</span>
+                </div>
+                <div class="calc-row">
+                    <span><strong>RAZEM STRATA</strong></span>
+                    <span><strong>10 500 PLN / mies</strong></span>
+                </div>
+            </div>
+
+            <p>10 500 PLN miesięcznie. Wystarczy na pensję pracownika. Albo na system, który tego pilnuje.</p>
+
+            <h2>Co możesz z tym zrobić?</h2>
+
+            <ol>
+                <li><strong>Automatyczne przypomnienia</strong> – 24h i 2h przed wizytą. Zmniejsza no-shows o 60-70%.</li>
+                <li><strong>Szybkie odpowiedzi na FAQ</strong> – gotowe szablony na najczęstsze pytania. Odpisujesz w 30 sekund.</li>
+                <li><strong>System follow-up</strong> – automatyczna wiadomość do klientek, które dawno nie były.</li>
+                <li><strong>Asystent AI</strong> – odpowiada na proste pytania nawet gdy Ty robisz zabieg.</li>
+            </ol>
+
+            <blockquote>
+                "Jeden utracony lead na kwas hialuronowy = 1000 PLN. System który kosztuje 800 PLN miesięcznie i ratuje 5 leadów? To nie koszt – to inwestycja."
+            </blockquote>
+
+            <div class="cta-box">
+                <h3>Chcesz przestać tracić klientki?</h3>
+                <p>Pomogę Ci zbudować system, który pilnuje każdego leada i każdej klientki. Żadna nie zginie w chaosie wiadomości.</p>
+                <a href="../gabinet-autopilot-animated.html#kontakt" class="btn">Umów rozmowę</a>
+            </div>
+
+            <p><em>Daniel Klimczak – 13 lat w branży beauty. Pomagam właścicielkom gabinetów odzyskać czas i kontrolę.</em></p>
+        </div>
+    </article>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../gabinet-autopilot-animated.html">Strona główna</a>
+                <a href="index.html">Blog</a>
+                <a href="../regulamin.html">Regulamin</a>
+                <a href="../polityka-prywatnosci.html">Polityka prywatności</a>
+            </div>
+            <p class="footer-copy">© 2026 Gabinet na Autopilocie. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <div class="rodo-banner" id="rodoBanner">
+        <div class="rodo-inner">
+            <div class="rodo-text">
+                Ta strona używa plików cookies w celu zapewnienia najlepszej jakości usług.
+                <a href="../polityka-prywatnosci.html">Dowiedz się więcej</a>
+            </div>
+            <div class="rodo-buttons">
+                <button class="rodo-btn rodo-btn-reject" onclick="rejectCookies()">Odrzuć</button>
+                <button class="rodo-btn rodo-btn-accept" onclick="acceptCookies()">Akceptuję</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkCookieConsent() {
+            if (!localStorage.getItem('cookieConsent')) {
+                document.getElementById('rodoBanner').classList.add('show');
+            }
+        }
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        function rejectCookies() {
+            localStorage.setItem('cookieConsent', 'rejected');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        checkCookieConsent();
+    </script>
+</body>
+</html>

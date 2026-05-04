@@ -1,0 +1,31 @@
+# @mail v0.1 LOCAL — .gitignore
+# Sekrety NIGDY do repo (R1: credential-protection.md).
+# Daniel nie używa Git aktualnie, ale plik jest gotowy gdy projekt pójdzie pod kontrolę wersji.
+
+# === Konfiguracja realna (z sekretami) ===
+config/config.local.yaml
+
+# === Folder z tokenami i App Passwordami ===
+.credentials/
+
+# === Logi sesji (zawierają id_maila, adresat, timestamp — bez treści, ale ostrożnie) ===
+logs/
+
+# === Wzorce na pliki z poświadczeniami (gdziekolwiek się pojawią) ===
+gmail_token*
+gmail_oauth_keys*
+graph_client_secret*
+graph_token*
+imap_app_password*
+*credentials*.json
+!config/config.example.yaml
+
+# === Generowane przez Pythona ===
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# === System ===
+.DS_Store
+Thumbs.db

@@ -1,0 +1,6 @@
+# Duże deps dla Lambda Layer (instalowane osobno)
+# Layer rozmiar: < 250MB unzipped (limit AWS)
+# pandas + numpy + ccxt łącznie ~100-150MB unzipped — mieści się w layerze z zapasem
+ccxt==4.5.49
+pandas==2.2.3
+numpy==2.1.3

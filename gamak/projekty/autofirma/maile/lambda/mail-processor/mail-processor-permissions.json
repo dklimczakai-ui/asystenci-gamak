@@ -1,0 +1,67 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CloudWatchLogs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:eu-central-1:098456445101:log-group:/aws/lambda/mail-processor*"
+        },
+        {
+            "Sid": "ReadAllGmailSecrets",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:eu-central-1:098456445101:secret:gmail-oauth-*"
+        },
+        {
+            "Sid": "WriteEmailsTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Query"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-emails"
+        },
+        {
+            "Sid": "ReadContactsTable",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Query",
+                "dynamodb:GetItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-contacts"
+        },
+        {
+            "Sid": "BedrockInvokeHaiku45",
+            "Effect": "Allow",
+            "Action": "bedrock:InvokeModel",
+            "Resource": [
+                "arn:aws:bedrock:eu-central-1:098456445101:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+                "arn:aws:bedrock:eu-*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0"
+            ]
+        },
+        {
+            "Sid": "ReadInboxQueue",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:ChangeMessageVisibility"
+            ],
+            "Resource": "arn:aws:sqs:eu-central-1:098456445101:email-inbox-queue"
+        },
+        {
+            "Sid": "InvokeDrafter",
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": "arn:aws:lambda:eu-central-1:098456445101:function:mail-drafter"
+        }
+    ]
+}

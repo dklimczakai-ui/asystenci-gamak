@@ -1,0 +1,37 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Logs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:eu-central-1:098456445101:log-group:/aws/lambda/mail-draft-janitor*"
+        },
+        {
+            "Sid": "ReadAllGmailSecrets",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:eu-central-1:098456445101:secret:gmail-oauth-*"
+        },
+        {
+            "Sid": "DraftsTableRW",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem",
+                "dynamodb:GetItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:098456445101:table/mail-drafts"
+        },
+        {
+            "Sid": "SNSAlerts",
+            "Effect": "Allow",
+            "Action": "sns:Publish",
+            "Resource": "arn:aws:sns:eu-central-1:098456445101:gamak-mail-alerts"
+        }
+    ]
+}

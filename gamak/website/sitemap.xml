@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- ===== POLISH PAGES ===== -->
+    <url>
+        <loc>https://gamak.eu/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/lodowiska</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/lodowiska"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/lodowiska-hokejowe</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/lodowiska-hokejowe"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/hockey-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/boisko-lodowisko-2w1</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/boisko-lodowisko-2w1"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/field-rink-2in1"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/rolby</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/rolby"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-resurfacers"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/nawierzchnie</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/nawierzchnie"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/sport-surfaces"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/inline-hokej</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/inline-hokej"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/inline-hockey"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/padel</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/padel"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/padel"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/venze</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/venze"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/venze"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/ice-covertan</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/ice-covertan"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-covertan"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/podgrzewanie-wody-basenowej</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/podgrzewanie-wody-basenowej"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/pool-heating"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/nowa-era-lodowisk</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/nowa-era-lodowisk"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/new-era-ice-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/malowanie-linii</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/malowanie-linii"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/line-painting"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/dofinansowanie</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/dofinansowanie"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/funding"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/o-nas</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/o-nas"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/about"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/kontakt</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/kontakt"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/contact"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/polityka-prywatnosci</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/polityka-prywatnosci"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/privacy-policy"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ===== ENGLISH PAGES ===== -->
+    <url>
+        <loc>https://gamak.eu/en/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/ice-rinks</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/lodowiska"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/hockey-rinks</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/lodowiska-hokejowe"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/hockey-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/field-rink-2in1</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/boisko-lodowisko-2w1"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/field-rink-2in1"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/ice-resurfacers</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/rolby"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-resurfacers"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/sport-surfaces</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/nawierzchnie"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/sport-surfaces"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/inline-hockey</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/inline-hokej"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/inline-hockey"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/padel</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/padel"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/padel"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/venze</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/venze"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/venze"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/ice-covertan</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/ice-covertan"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/ice-covertan"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/pool-heating</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/podgrzewanie-wody-basenowej"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/pool-heating"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/new-era-ice-rinks</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/nowa-era-lodowisk"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/new-era-ice-rinks"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/line-painting</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/malowanie-linii"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/line-painting"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/funding</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/dofinansowanie"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/funding"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/about</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/o-nas"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/about"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/contact</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/kontakt"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/contact"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/en/privacy-policy</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://gamak.eu/polityka-prywatnosci"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://gamak.eu/en/privacy-policy"/>
+        <lastmod>2026-03-10</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- ===== BLOG ===== -->
+    <url>
+        <loc>https://gamak.eu/blog/</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/lodowisko-dla-gminy-koszt-budowa</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/lodowisko-syntetyczne-vs-tradycyjne</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/dofinansowanie-infrastruktura-sportowa-2026</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/boisko-lodowisko-2w1-obiekt-caloroczny</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/nawierzchnie-sportowe-dla-samorzadow</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
+        <loc>https://gamak.eu/blog/jak-wybrac-wykonawce-infrastruktury-sportowej</loc>
+        <lastmod>2026-03-24</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+</urlset>

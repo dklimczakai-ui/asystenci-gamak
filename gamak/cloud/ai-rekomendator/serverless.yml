@@ -1,0 +1,207 @@
+service: ai-rekomendator
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-central-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  timeout: 30
+  logRetentionInDays: 14
+  architecture: arm64
+  environment:
+    STAGE: ${self:provider.stage}
+    LOG_LEVEL: info
+    BEDROCK_MODEL_ID: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+  stackTags:
+    Project: ai-rekomendator
+    Env: ${self:provider.stage}
+    Owner: daniel
+    ManagedBy: serverless-framework
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - Content-Type
+      allowedMethods:
+        - POST
+        - OPTIONS
+      maxAge: 300
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource:
+            - arn:aws:logs:${self:provider.region}:*:log-group:/aws/lambda/${self:service}-${self:provider.stage}-*
+        - Effect: Allow
+          Action:
+            - bedrock:InvokeModel
+          Resource:
+            - arn:aws:bedrock:${self:provider.region}:${aws:accountId}:inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-west-1::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-west-3::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-north-1::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-south-1::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+            - arn:aws:bedrock:eu-south-2::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0
+
+package:
+  patterns:
+    - '!**'
+    - 'src/**'
+    - 'node_modules/**'
+    - 'package.json'
+    - 'package-lock.json'
+    - '!node_modules/.cache/**'
+    - '!node_modules/**/test/**'
+    - '!node_modules/**/*.md'
+    - '!node_modules/**/*.d.ts'
+    - '!node_modules/**/*.map'
+
+functions:
+  recommend:
+    handler: src/handler.recommend
+    description: AI Rekomendator — przyjmuje problem i zwraca 3 narzędzia (MVP mock)
+    events:
+      - httpApi:
+          path: /api/recommend
+          method: post
+
+resources:
+  Resources:
+    WebBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${self:provider.stage}-web-${aws:accountId}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        VersioningConfiguration:
+          Status: Enabled
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+            - Id: ExpireOldVersions
+              Status: Enabled
+              NoncurrentVersionExpiration:
+                NoncurrentDays: 90
+        Tags:
+          - Key: Project
+            Value: ${self:service}
+          - Key: Env
+            Value: ${self:provider.stage}
+          - Key: Owner
+            Value: daniel
+
+    WebOAC:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties:
+        OriginAccessControlConfig:
+          Name: ${self:service}-${self:provider.stage}-oac
+          Description: OAC dla frontendu ai-rekomendator
+          SigningProtocol: sigv4
+          SigningBehavior: always
+          OriginAccessControlOriginType: s3
+
+    WebDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          Comment: ${self:service}-${self:provider.stage} frontend + /api via API Gateway
+          DefaultRootObject: index.html
+          HttpVersion: http2
+          IPV6Enabled: true
+          PriceClass: PriceClass_100
+          Origins:
+            - Id: S3WebOrigin
+              DomainName: !GetAtt WebBucket.RegionalDomainName
+              S3OriginConfig:
+                OriginAccessIdentity: ''
+              OriginAccessControlId: !GetAtt WebOAC.Id
+            - Id: ApiOrigin
+              DomainName: !Sub '${HttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+                OriginSSLProtocols:
+                  - TLSv1.2
+          DefaultCacheBehavior:
+            TargetOriginId: S3WebOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          CacheBehaviors:
+            - PathPattern: /api/*
+              TargetOriginId: ApiOrigin
+              ViewerProtocolPolicy: https-only
+              AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+              CachedMethods: [GET, HEAD]
+              Compress: true
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
+            MinimumProtocolVersion: TLSv1.2_2021
+          CustomErrorResponses:
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 10
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 10
+        Tags:
+          - Key: Project
+            Value: ${self:service}
+          - Key: Env
+            Value: ${self:provider.stage}
+          - Key: Owner
+            Value: daniel
+
+    WebBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref WebBucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: AllowCloudFrontOACRead
+              Effect: Allow
+              Principal:
+                Service: cloudfront.amazonaws.com
+              Action: s3:GetObject
+              Resource: !Sub '${WebBucket.Arn}/*'
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebDistribution}'
+
+  Outputs:
+    WebBucketName:
+      Value: !Ref WebBucket
+      Description: S3 bucket dla frontendu (upload tutaj)
+    CloudFrontDomain:
+      Value: !GetAtt WebDistribution.DomainName
+      Description: Publiczny HTTPS adres aplikacji
+    CloudFrontDistributionId:
+      Value: !Ref WebDistribution
+      Description: ID CloudFront distribution (dla invalidation po upload)
+    ApiDirectEndpoint:
+      Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+      Description: Bezposredni URL API GW (backup; normalnie przez CloudFront /api/*)

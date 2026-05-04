@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Gabinet na Autopilocie</title>
+    <meta name="description" content="Praktyczne porady dla właścicielek gabinetów beauty. Jak odzyskać czas, zbudować systemy i przestać być niewolnicą własnego biznesu.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #faf8f4;
+            --color-bg-warm: #f5f0e8;
+            --color-bg-card: #ffffff;
+            --color-primary: #c4a77d;
+            --color-primary-light: #d4bc9a;
+            --color-primary-dark: #a68b5b;
+            --color-text: #3d3d3d;
+            --color-text-muted: #6b6b6b;
+            --color-border: #e8e2d9;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Lato', -apple-system, sans-serif;
+            --shadow-md: 0 6px 24px rgba(164, 139, 91, 0.12);
+            --radius-md: 16px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); font-size: 17px; line-height: 1.75; color: var(--color-text); background-color: var(--color-bg); }
+        header { background: var(--color-bg-card); padding: 20px 0; border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-primary-dark); text-decoration: none; }
+        .nav-links a { color: var(--color-text); text-decoration: none; margin-left: 30px; font-size: 0.95rem; transition: color var(--transition); }
+        .nav-links a:hover { color: var(--color-primary-dark); }
+
+        .hero { padding: 80px 0 60px; text-align: center; }
+        .hero h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 400; margin-bottom: 20px; }
+        .hero p { font-size: 1.15rem; color: var(--color-text-muted); max-width: 600px; margin: 0 auto; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 35px; padding: 40px 0 100px; }
+
+        .article-card { background: var(--color-bg-card); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md); transition: transform var(--transition), box-shadow var(--transition); }
+        .article-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(164, 139, 91, 0.18); }
+        .article-card img { width: 100%; height: 200px; object-fit: cover; }
+        .article-card-content { padding: 28px; }
+        .article-card-meta { font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 12px; }
+        .article-card h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; margin-bottom: 12px; line-height: 1.35; }
+        .article-card h2 a { color: var(--color-text); text-decoration: none; transition: color var(--transition); }
+        .article-card h2 a:hover { color: var(--color-primary-dark); }
+        .article-card p { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 18px; }
+        .read-more { color: var(--color-primary-dark); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .read-more:hover { text-decoration: underline; }
+
+        footer { background: var(--color-text); color: white; padding: 50px 0 30px; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; padding: 0 28px; text-align: center; }
+        .footer-links { margin-bottom: 30px; }
+        .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; margin: 0 15px; font-size: 0.9rem; }
+        .footer-links a:hover { color: white; }
+        .footer-copy { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+
+        .rodo-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-text); color: white; padding: 20px; z-index: 1000; display: none; }
+        .rodo-banner.show { display: block; }
+        .rodo-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .rodo-text { flex: 1; font-size: 0.9rem; }
+        .rodo-text a { color: var(--color-primary-light); }
+        .rodo-buttons { display: flex; gap: 10px; }
+        .rodo-btn { padding: 10px 24px; border: none; border-radius: 50px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+        .rodo-btn-accept { background: var(--color-primary); color: white; }
+        .rodo-btn-reject { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <a href="../gabinet-autopilot-animated.html" class="logo">Gabinet na Autopilocie</a>
+            <nav class="nav-links">
+                <a href="../gabinet-autopilot-animated.html">Strona główna</a>
+                <a href="index.html">Blog</a>
+                <a href="../gabinet-autopilot-animated.html#kontakt">Kontakt</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Blog</h1>
+            <p>Praktyczne porady dla właścicielek gabinetów beauty. Bez lania wody, bez technicznego żargonu.</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="articles-grid">
+            <article class="article-card">
+                <img src="../img/blog-1-komunikacja.jpg" alt="Jak przestać odpowiadać na wiadomości do 22:00">
+                <div class="article-card-content">
+                    <div class="article-card-meta">5 lutego 2026 • 6 min czytania</div>
+                    <h2><a href="jak-przestac-odpowiadac-do-22.html">Jak przestać odpowiadać na wiadomości do 22:00</a></h2>
+                    <p>Prowadzisz gabinet, kończysz ostatni zabieg o 19:00, a potem jeszcze 3 godziny odpisujesz na DM-y? Czas to zmienić.</p>
+                    <a href="jak-przestac-odpowiadac-do-22.html" class="read-more">Czytaj dalej →</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="../img/blog-2-procedury.jpg" alt="5 procedur dla gabinetu beauty">
+                <div class="article-card-content">
+                    <div class="article-card-meta">3 lutego 2026 • 8 min czytania</div>
+                    <h2><a href="5-procedur-dla-gabinetu-beauty.html">5 procedur, które powinien mieć każdy gabinet beauty</a></h2>
+                    <p>Chcesz zatrudnić pracownika, ale boisz się, że "nikt nie zrobi tego tak dobrze jak Ty"? Problem nie w ludziach – problem w braku procedur.</p>
+                    <a href="5-procedur-dla-gabinetu-beauty.html" class="read-more">Czytaj dalej →</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="../img/blog-3-leady.jpg" alt="Ile kosztuje utracona klientka">
+                <div class="article-card-content">
+                    <div class="article-card-meta">1 lutego 2026 • 5 min czytania</div>
+                    <h2><a href="ile-kosztuje-utracona-klientka.html">Ile kosztuje Cię utracona klientka?</a></h2>
+                    <p>Pewnie myślisz: "jedna klientka mniej, trudno". Ale czy wiesz, ile naprawdę tracisz przez nieodpisane wiadomości?</p>
+                    <a href="ile-kosztuje-utracona-klientka.html" class="read-more">Czytaj dalej →</a>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../gabinet-autopilot-animated.html">Strona główna</a>
+                <a href="index.html">Blog</a>
+                <a href="../regulamin.html">Regulamin</a>
+                <a href="../polityka-prywatnosci.html">Polityka prywatności</a>
+            </div>
+            <p class="footer-copy">© 2026 Gabinet na Autopilocie. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <div class="rodo-banner" id="rodoBanner">
+        <div class="rodo-inner">
+            <div class="rodo-text">
+                Ta strona używa plików cookies w celu zapewnienia najlepszej jakości usług.
+                <a href="../polityka-prywatnosci.html">Dowiedz się więcej</a>
+            </div>
+            <div class="rodo-buttons">
+                <button class="rodo-btn rodo-btn-reject" onclick="rejectCookies()">Odrzuć</button>
+                <button class="rodo-btn rodo-btn-accept" onclick="acceptCookies()">Akceptuję</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkCookieConsent() {
+            if (!localStorage.getItem('cookieConsent')) {
+                document.getElementById('rodoBanner').classList.add('show');
+            }
+        }
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        function rejectCookies() {
+            localStorage.setItem('cookieConsent', 'rejected');
+            document.getElementById('rodoBanner').classList.remove('show');
+        }
+        checkCookieConsent();
+    </script>
+</body>
+</html>

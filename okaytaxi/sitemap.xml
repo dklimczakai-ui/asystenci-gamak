@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://okaytaxi.pl/</loc>
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+    <image:image>
+      <image:loc>https://okaytaxi.pl/wp-content/uploads/2021/07/okay_duze.png</image:loc>
+      <image:title>Logo Okay Taxi</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://okaytaxi.pl/wp-content/uploads/2024/01/Baner-Okay-Taxi-2024-3.png</image:loc>
+      <image:title>Baner Okay Taxi 2024</image:title>
+    </image:image>
+  </url>
+  <url><loc>https://okaytaxi.pl/o-nas/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/flota/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/cennik/</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/cennik-2/</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/aplikacja/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okayka/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/program-okayka/</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/dla-niepelnosprawnych/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/programy-bezgotowkowe/</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/towar/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/ambasador/</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/reklamacja/</loc><priority>0.5</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/reklama-na-tablety/</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/reklama-na-tabletach/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/reklama-na-szybie/</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <!-- Location pages -->
+  <url><loc>https://okaytaxi.pl/okay-taxi-czechowice-dziedzice/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-kozy/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-szczyrk/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-jasienica/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-cieszyn/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-oswiecim/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-wisla/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <!-- Partner pages -->
+  <url><loc>https://okaytaxi.pl/partner-okayka/</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/al-capone/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/tajemnicza-piwnica/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/2be-club/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/barimed/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/czarny-tech/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/grupa-tobi/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/sports-arena/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/okay-taxi/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/eco-horizon/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/ecusoft/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/magnum/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/partner-okayka/stek-i-wino/</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <!-- New cities -->
+  <url><loc>https://okaytaxi.pl/okay-taxi-zywiec/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-andrychow/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-kety/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-wadowice/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-skoczow/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-ustron/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-wilkowice/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-milowka/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-brzesce/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://okaytaxi.pl/okay-taxi-miedzybrodzie/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+</urlset>

@@ -1,0 +1,74 @@
+# Sport Ice Polska
+
+> Wyłączny dystrybutor maszyn Sport Ice w Polsce. Profesjonalne rolby (ice resurfacers) i krawędziarki do lodowisk — napęd elektryczny LiFePO4, zero emisji, 5-letnia gwarancja baterii, serwis i części zamienne w Polsce.
+
+## O marce
+
+Sport Ice powstało w 2004 roku jako partnerstwo amerykańskiej firmy inżynierskiej Rutherford Engineering & Design i pekińskiego producenta sprzętu lodowiskowego. Maszyny powstają w fabryce w Qingdao (Chiny), a zespół inżynierów ma łącznie ponad 100 lat doświadczenia w projektowaniu rolb.
+
+Kontakt: biuro@sportice.pl
+Zakres: cała Polska
+Godziny: pon–pt, 8:00–17:00
+
+## Katalog modeli 2026
+
+### Sport Ice Bumblebee 160 — kompakt
+- Zastosowanie: lodowiska 200–600 m²
+- Napęd: 48V LiFePO4 200Ah
+- Szerokość ostrza: 1524 mm (60")
+- Zbiornik wody: 228 L
+- Zbiornik śniegu: 0,5 m³
+- Waga: 1106 kg (pusta) / 1334 kg (pełna)
+- Prędkość maks.: 16 km/h
+- Promień skrętu: 2,44 m
+
+### Sport Ice Bronco 248 — średni (NHL standard)
+- Zastosowanie: lodowiska 500–1600 m²
+- Napęd: 48V LiFePO4 200/230Ah
+- Szerokość robocza: 1600 mm
+- Zbiornik wody: 284 L
+- Zbiornik śniegu: 1,13 m³
+- Waga: 1345 kg / 1627 kg
+- Prędkość maks.: 16 km/h
+- Promień skrętu: 3,65 m
+
+### Sport Ice Kodiak 348 — flagowy (K1 / K2 / K3)
+- Zastosowanie: lodowiska 1500–2000+ m²
+- Napęd: 48V LiFePO4 280Ah (opcjonalnie 400Ah); wariant K3 z silnikiem spalinowym
+- Szerokość ostrza: 2200 mm
+- Zbiornik wody: 1060 L (z opcją stali nierdzewnej)
+- Zbiornik śniegu: 3,11 m³ free / 3,89 m³ compacted
+- Prędkość maks.: 16 km/h (10 mph)
+- Promień skrętu: 4,5 m
+- Gwarancja baterii: 5 lat
+- Sterowanie: ekran dotykowy, hydrauliczny zrzut śniegu
+
+### Sport Ice Panda — pre-sale 2026
+- Średnio-duża klasa, napęd elektryczny, zero emisji
+- Pełne specyfikacje dostępne po oficjalnej premierze
+
+### Sport Ice Ice Edger — krawędziarka
+- Pierwsza na świecie krawędziarka zasilana baterią litowo-jonową (LFP)
+- Silnik: 48V DC 8 kW
+- Bateria: 48V 50Ah LFP, żywotność >4500 cykli przy 85% DOD
+- 9 wymiennych noży z węglika, głębokość cięcia 10 mm
+- Tarcza tnąca: ø 450 mm
+- Wymiary: 1200 × 600 × 1000 mm
+- Zastosowanie: wszystkie rozmiary lodowisk (200–2000 m²)
+
+## Często zadawane pytania (FAQ)
+
+- Czym jest rolba? → Maszyna do pielęgnacji tafli lodu: zdejmuje uszkodzony lód, zbiera śnieg, rozlewa ciepłą wodę do odnowienia powierzchni.
+- Jaka rolba do lodowiska 500 m²? → Bumblebee 160 (do 600 m²) lub Bronco 248 (do 1600 m²).
+- Jaka rolba do hali 2000 m²? → Kodiak 348 (K1/K2/K3).
+- Czy Ice Edger ma silnik spalinowy? → Nie, to pierwsza na świecie krawędziarka w pełni elektryczna LFP.
+- Ile kosztuje rolba Sport Ice? → 200 tys. – 740 tys. PLN (wariant). Cennik: biuro@sportice.pl.
+- Czy jest dofinansowanie? → Tak — Program modernizacji infrastruktury sportowej MSiT (do 50% kosztów kwalifikowalnych).
+- Czas dostawy? → 8–16 tygodni z fabryki. Uruchomienie 1–2 dni + szkolenie operatora 8–16 h.
+- Gwarancja? → 24 mc na maszynę, 5 lat na baterię LiFePO4 (Kodiak).
+- Serwis w PL? → Tak — ostrzenie noży, kolcowanie opon, wymiana płynów, diagnostyka baterii, oryginalne części.
+
+## Strony źródłowe producenta
+
+- https://sporticeusa.com — oficjalna strona Sport Ice (globalna)
+- https://sporticeasia.cn — oficjalny mirror azjatycki

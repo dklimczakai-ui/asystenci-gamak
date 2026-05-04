@@ -1,0 +1,25 @@
+AddHandler application/x-httpd-php84 php
+
+RewriteEngine On
+
+# 301 redirect SK paths to padelraze.sk (dystrybutor B.R.A. Company)
+# Powod: GSC duplicate canonical — Google wybiera domene .sk zamiast /sk/ na .com
+# UWAGA: padelraze.sk uzywa .html w URL-ach, wiec doklejamy .html
+RewriteRule ^sk/?$ https://padelraze.sk/ [R=301,L]
+RewriteRule ^sk/(.+?)\.html?$ https://padelraze.sk/$1.html [R=301,L]
+RewriteRule ^sk/(.+)$ https://padelraze.sk/$1.html [R=301,L]
+
+# Remove .html extension - clean URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Link response headers dla agentow AI (RFC 8288)
+# Wskazuja llms.txt (opis strony dla AI) + sitemap.xml
+<IfModule mod_headers.c>
+    <FilesMatch "\.html$">
+        Header set Link '</llms.txt>; rel="describedby"; type="text/markdown"'
+        Header append Link '</sitemap.xml>; rel="sitemap"'
+    </FilesMatch>
+</IfModule>

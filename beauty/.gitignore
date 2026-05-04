@@ -1,0 +1,8 @@
+# Pliki z sekretami - NIGDY nie commituj
+.env
+*.env
+.env.*
+
+# Klucze API
+api-inventory.md
+dane/api-inventory.md

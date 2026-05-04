@@ -1,0 +1,6 @@
+{"Variables":{
+  "EMAILS_TABLE":"mail-emails",
+  "CONTACTS_TABLE":"mail-contacts",
+  "BEDROCK_MODEL_ID":"eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "MAILBOXES":"[{\"email\":\"d.klimczak.gamak@gmail.com\",\"secret\":\"gmail-oauth-d-klimczak-gamak\"},{\"email\":\"klimczak.daniel86@gmail.com\",\"secret\":\"gmail-oauth-klimczak-daniel86\"},{\"email\":\"biuro.gamak@gmail.com\",\"secret\":\"gmail-oauth-biuro-gamak\"}]"
+}}

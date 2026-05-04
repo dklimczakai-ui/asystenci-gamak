@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Allow: /blog/
+
+Sitemap: https://gamak.eu/sitemap.xml

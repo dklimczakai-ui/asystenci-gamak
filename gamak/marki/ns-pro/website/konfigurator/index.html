@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konfigurator Boisk 3D | NS Pro - Nawierzchnie Sportowe</title>
+<meta name="description" content="Zaprojektuj swoje boisko sportowe w 3D. Wybierz typ, wymiary, nawierzchnie i kolory. Otrzymaj wycene online.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--nspro:#2020ff;--nspro-deep:#060097;--nspro-light:#4a4aff;--nspro-glow:rgba(32,32,255,.35);
+--accent:#00c853;--bg:#0a0a0f;--bg2:#101018;--card:#151520;--card-h:#1a1a28;
+--text:#f0f0f5;--muted:#888;--border:rgba(255,255,255,.07);--border-h:rgba(32,32,255,.45);
+--r:10px;--t:.25s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;height:100vh}
+h1,h2,h3,h4,h5,.hf{font-family:'League Spartan',sans-serif;text-transform:uppercase;letter-spacing:-.01em}
+
+.app{display:flex;height:100vh}
+/* RIGHT SIDEBAR like oncourt */
+.sidebar{width:400px;min-width:400px;height:100vh;overflow-y:auto;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;order:2}
+.sidebar::-webkit-scrollbar{width:5px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.viewport{flex:1;position:relative;order:1;background:var(--bg)}
+
+/* HEADER */
+.sb-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-family:'League Spartan',sans-serif;font-weight:800;font-size:20px;color:#fff}
+.brand b{color:var(--nspro)}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:var(--t)}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.02)}
+.tab.on{color:var(--nspro);border-color:var(--nspro)}
+.tab i{display:block;font-style:normal;font-size:15px;font-weight:800;margin-bottom:1px}
+
+/* PANELS */
+.pnl{display:none;padding:16px 20px;flex:1;overflow-y:auto}
+.pnl.on{display:block}
+.pnl h4{font-size:12px;color:var(--muted);margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.pnl h4:first-child{margin-top:0}
+
+/* CARDS */
+.cards{display:grid;gap:8px}
+.cards.c2{grid-template-columns:1fr 1fr}
+.cards.c3{grid-template-columns:1fr 1fr 1fr}
+.cd{background:var(--card);border:2px solid transparent;border-radius:var(--r);padding:12px;cursor:pointer;transition:var(--t);position:relative}
+.cd:hover{background:var(--card-h);border-color:rgba(255,255,255,.08)}
+.cd.on{border-color:var(--nspro);background:rgba(32,32,255,.06)}
+.cd .ic{font-size:24px;margin-bottom:6px}
+.cd .tt{font-family:'League Spartan',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase}
+.cd .ds{font-size:10px;color:var(--muted);line-height:1.4;margin-top:3px}
+.cd .bg{position:absolute;top:6px;right:6px;background:var(--accent);color:#000;font-size:8px;font-weight:800;padding:2px 5px;border-radius:3px;text-transform:uppercase}
+
+/* RANGE */
+.rg{margin-bottom:14px}
+.rg-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.rg-top span{color:var(--muted)}
+.rg-top b{color:var(--nspro);font-weight:700}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:rgba(255,255,255,.08);border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--nspro);border-radius:50%;cursor:pointer;box-shadow:0 0 8px var(--nspro-glow)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--nspro);border-radius:50%;cursor:pointer;border:none}
+
+/* COLORS */
+.clr-row{margin-bottom:14px}
+.clr-row label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}
+.swatches{display:flex;flex-wrap:wrap;gap:6px}
+.sw{width:32px;height:32px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:var(--t)}
+.sw:hover{transform:scale(1.12)}
+.sw.on{border-color:#fff;box-shadow:0 0 10px var(--nspro-glow)}
+.sw.on::after{content:'\2713';display:flex;align-items:center;justify-content:center;height:100%;color:#fff;font-weight:900;font-size:14px;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+
+/* SCHEME ROW */
+.sch{display:flex;gap:4px;margin-top:5px}
+.sch-dot{width:18px;height:18px;border-radius:4px}
+
+/* SUMMARY */
+.sum{background:var(--card);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.sr{display:flex;justify-content:space-between;padding:5px 0;font-size:11px;border-bottom:1px solid var(--border)}
+.sr:last-child{border:none}
+.sr .l{color:var(--muted)}.sr .v{font-weight:600}
+.area-big{font-family:'League Spartan',sans-serif;font-size:26px;font-weight:800;color:var(--nspro);margin-bottom:10px}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:var(--r);font-family:'League Spartan',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;transition:var(--t);text-align:center;text-decoration:none;color:#fff}
+.btn-p{background:var(--nspro)}.btn-p:hover{background:var(--nspro-light);box-shadow:0 4px 20px var(--nspro-glow)}
+.btn-s{background:transparent;border:1px solid var(--border-h);color:var(--nspro);margin-top:6px}
+.btn-s:hover{background:rgba(32,32,255,.06)}
+
+/* VIEWPORT OVERLAY */
+.v-ctrl{position:absolute;top:14px;left:14px;display:flex;gap:6px;z-index:5}
+.vb{background:rgba(16,16,24,.85);backdrop-filter:blur(6px);border:1px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:var(--t)}
+.vb:hover,.vb.on{color:#fff;border-color:var(--nspro);background:rgba(32,32,255,.12)}
+.v-info{position:absolute;bottom:14px;left:14px;background:rgba(16,16,24,.85);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:10px;color:var(--muted);z-index:5}
+.v-info b{color:var(--text)}
+.v-dims{position:absolute;top:14px;right:14px;background:rgba(16,16,24,.85);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-size:13px;z-index:5;font-family:'League Spartan',sans-serif;font-weight:700;color:var(--nspro)}
+
+@media(max-width:900px){
+.app{flex-direction:column}
+.sidebar{width:100%;min-width:100%;height:55vh;order:2;border-left:none;border-top:1px solid var(--border)}
+.viewport{height:45vh;order:1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="viewport" id="vp">
+    <div class="v-ctrl">
+        <button class="vb on" id="b3d">3D</button>
+        <button class="vb" id="b2d">2D</button>
+        <button class="vb" id="brst">Reset</button>
+    </div>
+    <div class="v-dims" id="v-dims">15 x 28 m</div>
+    <div class="v-info"><b>Obrot:</b> przeciagnij &nbsp; <b>Zoom:</b> scroll &nbsp; <b>Przesun:</b> prawy przycisk</div>
+</div>
+<div class="sidebar">
+    <div class="sb-header">
+        <div><div class="brand">NS <b>PRO</b></div><div class="brand-sub">Konfigurator 3D</div></div>
+    </div>
+    <div class="tabs">
+        <div class="tab on" data-t="1"><i>1</i>Typ</div>
+        <div class="tab" data-t="2"><i>2</i>Wymiary</div>
+        <div class="tab" data-t="3"><i>3</i>Plytka</div>
+        <div class="tab" data-t="4"><i>4</i>Kolory</div>
+        <div class="tab" data-t="5"><i>5</i>Wycena</div>
+    </div>
+
+    <div class="pnl on" id="p1">
+        <h4>Wybierz typ boiska</h4>
+        <div class="cards c2" id="g-type"></div>
+    </div>
+
+    <div class="pnl" id="p2">
+        <h4>Wymiary boiska</h4>
+        <div class="rg"><div class="rg-top"><span>Szerokosc</span><b id="vW">15 m</b></div><input type="range" id="sW" min="5" max="44" value="15" step="0.5"></div>
+        <div class="rg"><div class="rg-top"><span>Dlugosc</span><b id="vL">28 m</b></div><input type="range" id="sL" min="8" max="52" value="28" step="0.5"></div>
+        <div class="rg"><div class="rg-top"><span>Strefa bezpieczenstwa</span><b id="vR">1.5 m</b></div><input type="range" id="sR" min="0" max="4" value="1.5" step="0.5"></div>
+        <h4>Presety</h4>
+        <div class="cards c3" id="g-pre"></div>
+    </div>
+
+    <div class="pnl" id="p3">
+        <h4>Nawierzchnia NS Pro</h4>
+        <div class="cards" id="g-surf"></div>
+    </div>
+
+    <div class="pnl" id="p4">
+        <h4>Pole glowne</h4>
+        <div class="clr-row"><div class="swatches" id="cM"></div></div>
+        <h4>Strefa kluczowa</h4>
+        <div class="clr-row"><div class="swatches" id="cK"></div></div>
+        <h4>Obrzeze / Run-off</h4>
+        <div class="clr-row"><div class="swatches" id="cB"></div></div>
+        <h4>Gotowe schematy</h4>
+        <div class="cards c3" id="g-sch"></div>
+    </div>
+
+    <div class="pnl" id="p5">
+        <div class="area-big" id="totalA">0 m&sup2;</div>
+        <div class="sum" id="sumD"></div>
+        <a class="btn btn-p" id="cta" href="#">Zapytaj o wycene</a>
+        <button class="btn btn-s" id="bShare">Udostepnij projekt</button>
+        <button class="btn btn-s" id="bSnap">Pobierz wizualizacje PNG</button>
+    </div>
+</div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+/* ========== STATE ========== */
+const S={type:'basketball-full',w:15,l:28,ro:1.5,surf:'sport',cM:'#2563eb',cK:'#dc2626',cB:'#1e293b'};
+
+/* ========== DATA ========== */
+const TYPES=[
+{id:'basketball-full',ic:'\u{1F3C0}',t:'Koszykowka',d:'Pelny wymiar FIBA',w:15,l:28},
+{id:'basketball-half',ic:'\u{1F3C0}',t:'Polboisko',d:'Trening / 3x3',w:15,l:14},
+{id:'basketball-3x3',ic:'\u{1F3C0}',t:'Streetball 3x3',d:'FIBA 3x3 15x11m',w:15,l:11},
+{id:'tennis',ic:'\u{1F3BE}',t:'Tenis',d:'ITF 10.97x23.77m',w:10.97,l:23.77,bg:'ITF'},
+{id:'pickleball',ic:'\u{1F3D3}',t:'Pickleball',d:'USAPA 6.1x13.41m',w:6.1,l:13.41,bg:'USAPA'},
+{id:'volleyball',ic:'\u{1F3D0}',t:'Siatkowka',d:'FIVB 9x18m',w:9,l:18},
+{id:'multisport',ic:'\u26BD',t:'Multisport',d:'Uniwersalne boisko',w:20,l:40,bg:'HIT'},
+{id:'futsal',ic:'\u26BD',t:'Futsal',d:'FIFA 20x40m',w:20,l:40},
+{id:'badminton',ic:'\u{1F3F8}',t:'Badminton',d:'BWF 6.1x13.4m',w:6.1,l:13.4,bg:'BWF'},
+{id:'handball',ic:'\u{1F93E}',t:'Pilka reczna',d:'IHF 20x40m',w:20,l:40}
+];
+
+const SURFS=[
+{id:'sport',t:'NS Pro Sport',d:'Outdoor. Odpornosc UV, drenaz, trwalosc.',bg:'Bestseller'},
+{id:'x',t:'NS Pro X',d:'Premium. Grip 95%, odpowiedz pilki 95%.',bg:'Premium'},
+{id:'indoor',t:'NS Pro Indoor',d:'Hale sportowe. Amortyzacja, komfort stawow.'},
+{id:'grid',t:'NS Pro Grid',d:'System kratowy. Szybkie schnienie, drenaz.'},
+{id:'mat',t:'NS Pro Mat',d:'Maty modulowe. Uniwersalne, latwy montaz.'},
+{id:'kids',t:'NS Pro Kids',d:'Place zabaw. Amortyzacja upadkow, bezpieczenstwo.'},
+{id:'track',t:'NS Pro Track',d:'Bieznia, lekkoatletyka. Sprezystosc, trwalosc.'}
+];
+
+const COLORS=[
+{c:'#2563eb',n:'Niebieski'},{c:'#1e40af',n:'Granatowy'},{c:'#3b82f6',n:'Jasny niebieski'},
+{c:'#dc2626',n:'Czerwony'},{c:'#991b1b',n:'Bordowy'},
+{c:'#16a34a',n:'Zielony'},{c:'#15803d',n:'Ciemny zielony'},{c:'#059669',n:'Szmaragd'},
+{c:'#eab308',n:'Zolty'},{c:'#ea580c',n:'Pomaranczowy'},
+{c:'#7c3aed',n:'Fioletowy'},{c:'#64748b',n:'Szary'},{c:'#334155',n:'Grafitowy'},
+{c:'#1e293b',n:'Antracyt'},{c:'#171717',n:'Czarny'},{c:'#e8e8e8',n:'Bialy'}
+];
+
+const SCHEMES=[
+{n:'Klasyczny',m:'#2563eb',k:'#dc2626',b:'#1e293b'},
+{n:'Ocean',m:'#1e40af',k:'#059669',b:'#334155'},
+{n:'Lesny',m:'#16a34a',k:'#eab308',b:'#171717'},
+{n:'Ogien',m:'#dc2626',k:'#ea580c',b:'#171717'},
+{n:'NS Pro',m:'#2020ff',k:'#e8e8e8',b:'#060097'},
+{n:'Nowoczesny',m:'#334155',k:'#3b82f6',b:'#171717'}
+];
+
+const PRESETS={
+'basketball-full':[{n:'FIBA',w:15,l:28},{n:'NBA',w:15.24,l:28.65},{n:'Szkolne',w:12,l:22}],
+'basketball-half':[{n:'Standard',w:15,l:14},{n:'Mniejsze',w:12,l:12},{n:'Kompakt',w:10,l:10}],
+'basketball-3x3':[{n:'FIBA 3x3',w:15,l:11},{n:'Street',w:12,l:10}],
+'tennis':[{n:'Standard',w:10.97,l:23.77},{n:'Z run-off',w:10.97,l:23.77}],
+'pickleball':[{n:'Pojedynczy',w:6.1,l:13.41},{n:'Podwojny',w:13.41,l:13.41}],
+'volleyball':[{n:'FIVB',w:9,l:18},{n:'Plazowa',w:8,l:16}],
+'multisport':[{n:'Duze',w:22,l:44},{n:'Standard',w:20,l:40},{n:'Kompakt',w:15,l:28}],
+'futsal':[{n:'FIFA',w:20,l:40},{n:'Standard',w:18,l:36},{n:'Maly',w:15,l:28}],
+'badminton':[{n:'Singiel',w:5.18,l:13.4},{n:'Debel',w:6.1,l:13.4}],
+'handball':[{n:'IHF',w:20,l:40},{n:'Mniejsze',w:18,l:36}]
+};
+
+/* ========== THREE.JS ========== */
+let scene,cam,ren,ctrl,courtG,lineG,keyG,borderG,equipG;
+const VP=document.getElementById('vp');
+
+function init(){
+    scene=new THREE.Scene();
+    scene.background=new THREE.Color(0x0a0a0f);
+    scene.fog=new THREE.Fog(0x0a0a0f,60,120);
+
+    cam=new THREE.PerspectiveCamera(40,VP.clientWidth/VP.clientHeight,0.1,200);
+    cam.position.set(0,22,28);
+
+    ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,alpha:false});
+    ren.setSize(VP.clientWidth,VP.clientHeight);
+    ren.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    ren.shadowMap.enabled=true;
+    ren.shadowMap.type=THREE.PCFSoftShadowMap;
+    ren.toneMapping=THREE.ACESFilmicToneMapping;
+    ren.toneMappingExposure=1.1;
+    VP.appendChild(ren.domElement);
+
+    ctrl=new OrbitControls(cam,ren.domElement);
+    ctrl.enableDamping=true;ctrl.dampingFactor=0.07;
+    ctrl.maxPolarAngle=Math.PI/2.05;ctrl.minDistance=4;ctrl.maxDistance=90;
+    ctrl.target.set(0,0,0);
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff,0.55));
+    const sun=new THREE.DirectionalLight(0xfff5e8,1.3);
+    sun.position.set(18,35,22);sun.castShadow=true;
+    sun.shadow.mapSize.set(2048,2048);
+    sun.shadow.camera.near=1;sun.shadow.camera.far=80;
+    sun.shadow.camera.left=-35;sun.shadow.camera.right=35;
+    sun.shadow.camera.top=35;sun.shadow.camera.bottom=-35;
+    sun.shadow.bias=-0.001;
+    scene.add(sun);
+    const fill=new THREE.DirectionalLight(0x8888ff,0.25);fill.position.set(-12,18,-12);scene.add(fill);
+    const rim=new THREE.DirectionalLight(0xffffff,0.15);rim.position.set(0,5,-20);scene.add(rim);
+
+    // Ground
+    const gnd=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0x0e0e14,roughness:0.95}));
+    gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.02;gnd.receiveShadow=true;scene.add(gnd);
+    const grid=new THREE.GridHelper(200,200,0x18181f,0x14141a);grid.position.y=-0.01;scene.add(grid);
+
+    courtG=new THREE.Group();lineG=new THREE.Group();keyG=new THREE.Group();borderG=new THREE.Group();equipG=new THREE.Group();
+    scene.add(borderG,courtG,keyG,lineG,equipG);
+
+    window.addEventListener('resize',()=>{cam.aspect=VP.clientWidth/VP.clientHeight;cam.updateProjectionMatrix();ren.setSize(VP.clientWidth,VP.clientHeight)});
+    (function anim(){requestAnimationFrame(anim);ctrl.update();ren.render(scene,cam)})();
+}
+
+/* ========== TILE TEXTURE ========== */
+function tileTex(color,sz=1024){
+    const cv=document.createElement('canvas');cv.width=cv.height=sz;const c=cv.getContext('2d');
+    const base=new THREE.Color(color);
+    c.fillStyle=color;c.fillRect(0,0,sz,sz);
+    // Tile pattern 30x30cm tiles
+    const ts=sz/20;
+    // Per-tile subtle variation
+    for(let x=0;x<20;x++)for(let y=0;y<20;y++){
+        const v=(Math.random()-.5)*.04;
+        const r=Math.min(255,Math.max(0,(base.r+v)*255));
+        const g=Math.min(255,Math.max(0,(base.g+v)*255));
+        const b=Math.min(255,Math.max(0,(base.b+v)*255));
+        c.fillStyle=`rgb(${r|0},${g|0},${b|0})`;
+        c.fillRect(x*ts,y*ts,ts,ts);
+    }
+    // Grid lines
+    c.strokeStyle='rgba(0,0,0,.18)';c.lineWidth=1.5;
+    for(let i=0;i<=20;i++){c.beginPath();c.moveTo(i*ts,0);c.lineTo(i*ts,sz);c.stroke();c.beginPath();c.moveTo(0,i*ts);c.lineTo(sz,i*ts);c.stroke()}
+    // Inner tile bevel highlight
+    c.strokeStyle='rgba(255,255,255,.04)';c.lineWidth=1;
+    for(let x=0;x<20;x++)for(let y=0;y<20;y++){c.strokeRect(x*ts+2,y*ts+2,ts-4,ts-4)}
+
+    const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;
+}
+
+/* ========== COURT BUILD ========== */
+function clearG(g){while(g.children.length){const c=g.children[0];c.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material){if(m.material.map)m.material.map.dispose();m.material.dispose()}});g.remove(c)}}
+
+function build(){
+    [courtG,lineG,keyG,borderG,equipG].forEach(clearG);
+    const{w,l,ro,cM,cK,cB}=S;
+    const hw=w/2,hl=l/2;
+
+    // Border
+    if(ro>0){
+        const t=tileTex(cB);t.repeat.set((w+ro*2)/5,(l+ro*2)/5);
+        const m=new THREE.Mesh(new THREE.PlaneGeometry(w+ro*2,l+ro*2),new THREE.MeshStandardMaterial({map:t,roughness:.72}));
+        m.rotation.x=-Math.PI/2;m.position.y=.001;m.receiveShadow=true;borderG.add(m);
+    }
+    // Main court
+    const mt=tileTex(cM);mt.repeat.set(w/5,l/5);
+    const mm=new THREE.Mesh(new THREE.PlaneGeometry(w,l),new THREE.MeshStandardMaterial({map:mt,roughness:.65}));
+    mm.rotation.x=-Math.PI/2;mm.position.y=.006;mm.receiveShadow=true;courtG.add(mm);
+
+    // Key zones
+    drawKeys(hw,hl);
+    // Lines
+    drawLines(hw,hl);
+    // Equipment
+    drawEquip(hw,hl);
+    // Camera
+    fitCam();
+    // Dims overlay
+    document.getElementById('v-dims').textContent=w+' x '+l+' m';
+}
+
+/* ========== LINES ========== */
+const Y=.018;
+function ln(pts,col=0xffffff,w=2){
+    const g=new THREE.BufferGeometry().setFromPoints(pts);
+    const m=new THREE.Line(g,new THREE.LineBasicMaterial({color:col}));
+    m.position.y=Y;lineG.add(m);
+}
+function rect(cx,cz,w,h,col=0xffffff){
+    const hw=w/2,hh=h/2;
+    ln([v3(cx-hw,cz-hh),v3(cx+hw,cz-hh),v3(cx+hw,cz+hh),v3(cx-hw,cz+hh),v3(cx-hw,cz-hh)],col);
+}
+function circ(cx,cz,r,col=0xffffff,seg=64,s=0,e=Math.PI*2){
+    const pts=[];for(let i=0;i<=seg;i++){const a=s+(e-s)*(i/seg);pts.push(v3(cx+Math.cos(a)*r,cz+Math.sin(a)*r))}
+    ln(pts,col);
+}
+function v3(x,z){return new THREE.Vector3(x,0,z)}
+
+function drawKeys(hw,hl){
+    const T=S.type;const kt=tileTex(S.cK);
+    function addK(x,z,w,h){
+        const t=kt.clone();t.repeat.set(w/5,h/5);t.needsUpdate=true;
+        const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.65}));
+        m.rotation.x=-Math.PI/2;m.position.set(x,.009,z);m.receiveShadow=true;keyG.add(m);
+    }
+    if(T==='basketball-full'){addK(0,-hl+2.9,4.9,5.8);addK(0,hl-2.9,4.9,5.8)}
+    else if(T==='basketball-half'||T==='basketball-3x3'){addK(0,-hl+2.9,4.9,5.8)}
+    else if(T==='tennis'){const sw=hw*.55;addK(-sw/2,0,sw,S.l*.36);addK(sw/2,0,sw,S.l*.36)}
+    else if(T==='pickleball'){addK(0,-hl+2.13,S.w*.92,4.26);addK(0,hl-2.13,S.w*.92,4.26)}
+    else if(T==='volleyball'){addK(0,-3,S.w*.98,3);addK(0,3,S.w*.98,3)}
+}
+
+function drawLines(hw,hl){
+    const T=S.type;
+    // Outline
+    rect(0,0,S.w,S.l);
+
+    if(T==='basketball-full'){
+        // Center
+        ln([v3(-hw,0),v3(hw,0)]);circ(0,0,1.8);
+        // Keys
+        rect(0,-hl+2.9,4.9,5.8);rect(0,hl-2.9,4.9,5.8);
+        circ(0,-hl+5.8,1.8);circ(0,hl-5.8,1.8);
+        // 3pt arcs
+        const R=6.75;
+        circ(0,-hl,R,0xffffff,48,Math.PI*.15,Math.PI*.85);
+        ln([v3(-6.6,-hl),v3(-6.6,-hl+1.575)]);ln([v3(6.6,-hl),v3(6.6,-hl+1.575)]);
+        circ(0,hl,R,0xffffff,48,Math.PI*1.15,Math.PI*1.85);
+        ln([v3(-6.6,hl),v3(-6.6,hl-1.575)]);ln([v3(6.6,hl),v3(6.6,hl-1.575)]);
+        // No-charge zones
+        circ(0,-hl+1.25,1.25,0xffffff,32,Math.PI*.1,Math.PI*.9);
+        circ(0,hl-1.25,1.25,0xffffff,32,Math.PI*1.1,Math.PI*1.9);
+    }
+    else if(T==='basketball-half'||T==='basketball-3x3'){
+        rect(0,-hl+2.9,4.9,5.8);circ(0,-hl+5.8,1.8);
+        circ(0,-hl,6.75,0xffffff,48,Math.PI*.15,Math.PI*.85);
+        ln([v3(-6.6,-hl),v3(-6.6,-hl+1.575)]);ln([v3(6.6,-hl),v3(6.6,-hl+1.575)]);
+        circ(0,-hl+1.25,1.25,0xffffff,32,Math.PI*.1,Math.PI*.9);
+        if(T==='basketball-3x3'){ln([v3(-hw,0),v3(hw,0)])} // mid line for 3x3
+    }
+    else if(T==='tennis'){
+        ln([v3(-hw,0),v3(hw,0)]); // net
+        const sL=6.4;const sw=4.115;
+        ln([v3(0,-sL),v3(0,sL)]); // center service
+        ln([v3(-sw,-sL),v3(sw,-sL)]);ln([v3(-sw,sL),v3(sw,sL)]); // service lines
+        ln([v3(-sw,-hl),v3(-sw,hl)]);ln([v3(sw,-hl),v3(sw,hl)]); // singles
+        // Baseline center marks
+        ln([v3(0,-hl),v3(0,-hl+.5)]);ln([v3(0,hl),v3(0,hl-.5)]);
+    }
+    else if(T==='pickleball'){
+        ln([v3(-hw,0),v3(hw,0)]); // net
+        ln([v3(-hw,-2.13),v3(hw,-2.13)]);ln([v3(-hw,2.13),v3(hw,2.13)]); // kitchen
+        ln([v3(0,-hl),v3(0,-2.13)]);ln([v3(0,2.13),v3(0,hl)]); // center
+    }
+    else if(T==='volleyball'){
+        ln([v3(-hw,0),v3(hw,0)]); // net
+        ln([v3(-hw,-3),v3(hw,-3)]);ln([v3(-hw,3),v3(hw,3)]); // attack
+    }
+    else if(T==='multisport'){
+        ln([v3(-hw,0),v3(hw,0)]);circ(0,0,3);
+        rect(0,-hl+3,12,6);rect(0,hl-3,12,6);
+        // Penalty dots
+        circ(0,-hl+6,.15);circ(0,hl-6,.15);
+    }
+    else if(T==='futsal'){
+        ln([v3(-hw,0),v3(hw,0)]);circ(0,0,3);
+        rect(0,-hl+3,12,6);rect(0,hl-3,12,6);
+        // penalty arcs
+        circ(0,-hl+6,6,0xffffff,32,Math.PI*.3,Math.PI*.7);
+        circ(0,hl-6,6,0xffffff,32,Math.PI*1.3,Math.PI*1.7);
+    }
+    else if(T==='badminton'){
+        ln([v3(-hw,0),v3(hw,0)]); // net
+        ln([v3(-hw,-hl+1.98),v3(hw,-hl+1.98)]);ln([v3(-hw,hl-1.98),v3(hw,hl-1.98)]); // short svc
+        ln([v3(0,-hl+1.98),v3(0,hl-1.98)]); // center
+        ln([v3(-hw,-hl+.76),v3(hw,-hl+.76)]);ln([v3(-hw,hl-.76),v3(hw,hl-.76)]); // long svc doubles
+        // Singles sidelines
+        const ss=hw-.46;
+        ln([v3(-ss,-hl),v3(-ss,hl)]);ln([v3(ss,-hl),v3(ss,hl)]);
+    }
+    else if(T==='handball'){
+        ln([v3(-hw,0),v3(hw,0)]);circ(0,0,3);
+        // Goal area (6m arc)
+        circ(0,-hl,6,0xffffff,48,Math.PI*.2,Math.PI*.8);
+        circ(0,hl,6,0xffffff,48,Math.PI*1.2,Math.PI*1.8);
+        // 9m dashed concept - just arc
+        circ(0,-hl,9,0x888888,48,Math.PI*.15,Math.PI*.85);
+        circ(0,hl,9,0x888888,48,Math.PI*1.15,Math.PI*1.85);
+    }
+}
+
+/* ========== 3D EQUIPMENT ========== */
+const STEEL=()=>new THREE.MeshStandardMaterial({color:0x999999,metalness:.85,roughness:.25});
+const WHITE_M=()=>new THREE.MeshStandardMaterial({color:0xf0f0f0,roughness:.5});
+
+function drawEquip(hw,hl){
+    const T=S.type;
+    if(T.startsWith('basketball')){
+        addHoop(0,-hl,false);
+        if(T==='basketball-full') addHoop(0,hl,true);
+    }
+    if(['tennis','pickleball','volleyball','badminton'].includes(T)){
+        const nh=T==='volleyball'?2.43:T==='badminton'?1.55:T==='tennis'?1.07:.914;
+        addNet(0,0,S.w+.8,nh);
+    }
+    if(T==='futsal'||T==='multisport'||T==='handball'){
+        addGoal(0,-hl,T==='handball'?3:3,2);
+        addGoal(0,hl,T==='handball'?3:3,2,true);
+    }
+}
+
+function addHoop(x,z,flip=false){
+    const d=flip?-1:1;
+    const g=new THREE.Group();
+
+    // Main pole (round, tapered)
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.075,.09,3.05,16),STEEL());
+    pole.position.set(0,3.05/2,d*-1.2);pole.castShadow=true;g.add(pole);
+
+    // Pole base plate
+    const base=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.04,16),STEEL());
+    base.position.set(0,.02,d*-1.2);g.add(base);
+
+    // Support arm (angled from pole top to backboard)
+    const armLen=1.05;
+    const arm=new THREE.Mesh(new THREE.BoxGeometry(.06,.06,armLen),STEEL());
+    arm.position.set(0,3.0,d*(-.7));arm.castShadow=true;g.add(arm);
+
+    // Diagonal brace
+    const braceLen=1.5;
+    const brace=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,braceLen,8),STEEL());
+    brace.position.set(0,2.4,d*(-.9));
+    brace.rotation.x=d*-.45;brace.castShadow=true;g.add(brace);
+
+    // Backboard (glass-like)
+    const bb=new THREE.Mesh(
+        new THREE.BoxGeometry(1.8,1.05,.04),
+        new THREE.MeshPhysicalMaterial({color:0xffffff,transmission:.3,roughness:.1,metalness:0,thickness:.04,clearcoat:1,clearcoatRoughness:.1,transparent:true,opacity:.75})
+    );
+    bb.position.set(0,2.9,d*(-.18));bb.castShadow=true;g.add(bb);
+
+    // Backboard frame
+    const frame=new THREE.Mesh(new THREE.BoxGeometry(1.84,1.09,.02),STEEL());
+    frame.position.set(0,2.9,d*(-.2));g.add(frame);
+
+    // Inner rectangle on backboard
+    const inner=new THREE.Mesh(new THREE.BoxGeometry(.59,.45,.001),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.3}));
+    inner.position.set(0,2.98,d*(-.155));g.add(inner);
+    // Inner rect outline - using edges
+    const ire=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.59,.45,.001)),new THREE.LineBasicMaterial({color:0xffffff}));
+    ire.position.copy(inner.position);g.add(ire);
+
+    // Rim
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(.225,.015,12,32),new THREE.MeshStandardMaterial({color:0xff4400,metalness:.7,roughness:.35}));
+    rim.rotation.x=Math.PI/2;rim.position.set(0,3.05,d*.08);rim.castShadow=true;g.add(rim);
+
+    // Rim connector plate
+    const plate=new THREE.Mesh(new THREE.BoxGeometry(.15,.04,.12),STEEL());
+    plate.position.set(0,3.04,d*(-.06));g.add(plate);
+
+    // Net (simple cone)
+    const netGeo=new THREE.CylinderGeometry(.22,.12,.4,16,1,true);
+    const netMat=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.35,side:THREE.DoubleSide,wireframe:true});
+    const net=new THREE.Mesh(netGeo,netMat);
+    net.position.set(0,2.85,d*.08);g.add(net);
+
+    g.position.set(x,0,z);
+    equipG.add(g);
+}
+
+function addNet(x,z,width,height){
+    const g=new THREE.Group();
+    // Posts
+    const pH=height+.3;
+    const pGeo=new THREE.CylinderGeometry(.04,.04,pH,12);
+    const pL=new THREE.Mesh(pGeo,STEEL());pL.position.set(-width/2,pH/2,0);pL.castShadow=true;g.add(pL);
+    const pR=new THREE.Mesh(pGeo,STEEL());pR.position.set(width/2,pH/2,0);pR.castShadow=true;g.add(pR);
+
+    // Top cable
+    const cable=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,width,4),STEEL());
+    cable.rotation.z=Math.PI/2;cable.position.set(0,height,0);g.add(cable);
+
+    // Net mesh (grid of lines)
+    const netG=new THREE.Group();
+    const netMat=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.2});
+    const vLines=Math.ceil(width/.3);
+    const hLines=Math.ceil(height/.15);
+    for(let i=0;i<=vLines;i++){
+        const xp=-width/2+i*(width/vLines);
+        const pts=[new THREE.Vector3(xp,0,0),new THREE.Vector3(xp,height,0)];
+        netG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),netMat));
+    }
+    for(let i=0;i<=hLines;i++){
+        const yp=i*(height/hLines);
+        const pts=[new THREE.Vector3(-width/2,yp,0),new THREE.Vector3(width/2,yp,0)];
+        netG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),netMat));
+    }
+    g.add(netG);
+
+    g.position.set(x,0,z);
+    equipG.add(g);
+}
+
+function addGoal(x,z,goalW=3,goalH=2,flip=false){
+    const g=new THREE.Group();
+    const d=flip?-1:1;
+
+    // Posts
+    const pGeo=new THREE.CylinderGeometry(.04,.04,goalH,10);
+    const pL=new THREE.Mesh(pGeo,WHITE_M());pL.position.set(-goalW/2,goalH/2,0);pL.castShadow=true;g.add(pL);
+    const pR=new THREE.Mesh(pGeo,WHITE_M());pR.position.set(goalW/2,goalH/2,0);pR.castShadow=true;g.add(pR);
+
+    // Crossbar
+    const cb=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,goalW,10),WHITE_M());
+    cb.rotation.z=Math.PI/2;cb.position.set(0,goalH,0);cb.castShadow=true;g.add(cb);
+
+    // Depth bars
+    const depthL=1;
+    const db1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,depthL,6),WHITE_M());
+    db1.rotation.x=Math.PI/2;db1.position.set(-goalW/2,goalH,d*depthL/2);g.add(db1);
+    const db2=db1.clone();db2.position.x=goalW/2;g.add(db2);
+    const db3=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,depthL,6),WHITE_M());
+    db3.rotation.x=Math.PI/2;db3.position.set(-goalW/2,0,d*depthL/2);g.add(db3);
+    const db4=db3.clone();db4.position.x=goalW/2;g.add(db4);
+
+    // Back crossbar
+    const bcb=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,goalW,6),WHITE_M());
+    bcb.rotation.z=Math.PI/2;bcb.position.set(0,goalH,d*depthL);g.add(bcb);
+
+    // Net
+    const netMat=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.15,side:THREE.DoubleSide});
+    // Back
+    const back=new THREE.Mesh(new THREE.PlaneGeometry(goalW,goalH),netMat);
+    back.position.set(0,goalH/2,d*depthL);g.add(back);
+    // Top
+    const top=new THREE.Mesh(new THREE.PlaneGeometry(goalW,depthL),netMat);
+    top.rotation.x=Math.PI/2;top.position.set(0,goalH,d*depthL/2);g.add(top);
+
+    g.position.set(x,0,z);
+    equipG.add(g);
+}
+
+/* ========== CAMERA ========== */
+function fitCam(){
+    const mx=Math.max(S.w,S.l)+S.ro*2;
+    cam.position.set(0,mx*.8,mx*.65);
+    ctrl.target.set(0,0,0);ctrl.update();
+}
+
+/* ========== UI ========== */
+// Tabs
+document.querySelectorAll('.tab').forEach(t=>{
+    t.onclick=()=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+        document.querySelectorAll('.pnl').forEach(x=>x.classList.remove('on'));
+        t.classList.add('on');document.getElementById('p'+t.dataset.t).classList.add('on');
+        if(t.dataset.t==='5')updSum();
+    };
+});
+
+// Court type cards
+function bTypes(){
+    const g=document.getElementById('g-type');g.innerHTML='';
+    TYPES.forEach(ct=>{
+        const d=document.createElement('div');d.className='cd'+(S.type===ct.id?' on':'');
+        d.innerHTML=`<div class="ic">${ct.ic}</div><div class="tt">${ct.t}</div><div class="ds">${ct.d}</div>${ct.bg?`<div class="bg">${ct.bg}</div>`:''}`;
+        d.onclick=()=>{S.type=ct.id;S.w=ct.w;S.l=ct.l;updSliders();bTypes();bPre();build()};
+        g.appendChild(d);
+    });
+}
+
+// Presets
+function bPre(){
+    const g=document.getElementById('g-pre');g.innerHTML='';
+    (PRESETS[S.type]||[]).forEach(p=>{
+        const d=document.createElement('div');d.className='cd';
+        d.innerHTML=`<div class="tt">${p.n}</div><div class="ds">${p.w} x ${p.l} m</div>`;
+        d.onclick=()=>{S.w=p.w;S.l=p.l;updSliders();build()};
+        g.appendChild(d);
+    });
+}
+
+// Surfaces
+function bSurf(){
+    const g=document.getElementById('g-surf');g.innerHTML='';
+    SURFS.forEach(s=>{
+        const d=document.createElement('div');d.className='cd'+(S.surf===s.id?' on':'');
+        d.innerHTML=`<div class="tt">${s.t}</div><div class="ds">${s.d}</div>${s.bg?`<div class="bg">${s.bg}</div>`:''}`;
+        d.onclick=()=>{S.surf=s.id;bSurf()};
+        g.appendChild(d);
+    });
+}
+
+// Colors
+function bSw(cid,key){
+    const c=document.getElementById(cid);c.innerHTML='';
+    COLORS.forEach(cl=>{
+        const d=document.createElement('div');d.className='sw'+(S[key]===cl.c?' on':'');
+        d.style.background=cl.c;d.title=cl.n;
+        d.onclick=()=>{S[key]=cl.c;bSw(cid,key);build()};
+        c.appendChild(d);
+    });
+}
+function bSch(){
+    const g=document.getElementById('g-sch');g.innerHTML='';
+    SCHEMES.forEach(s=>{
+        const d=document.createElement('div');d.className='cd';
+        d.innerHTML=`<div class="tt">${s.n}</div><div class="sch"><div class="sch-dot" style="background:${s.m}"></div><div class="sch-dot" style="background:${s.k}"></div><div class="sch-dot" style="background:${s.b}"></div></div>`;
+        d.onclick=()=>{S.cM=s.m;S.cK=s.k;S.cB=s.b;bSw('cM','cM');bSw('cK','cK');bSw('cB','cB');build()};
+        g.appendChild(d);
+    });
+}
+
+// Sliders
+function updSliders(){
+    document.getElementById('sW').value=S.w;document.getElementById('sL').value=S.l;document.getElementById('sR').value=S.ro;
+    document.getElementById('vW').textContent=S.w+' m';document.getElementById('vL').textContent=S.l+' m';document.getElementById('vR').textContent=S.ro+' m';
+}
+['W','L','R'].forEach(k=>{
+    const sl=document.getElementById('s'+k);
+    sl.addEventListener('input',()=>{
+        const v=parseFloat(sl.value);
+        if(k==='W')S.w=v;else if(k==='L')S.l=v;else S.ro=v;
+        document.getElementById('v'+k).textContent=v+' m';
+        build();
+    });
+});
+
+// View buttons
+document.getElementById('b3d').onclick=()=>{
+    document.getElementById('b3d').classList.add('on');document.getElementById('b2d').classList.remove('on');
+    fitCam();
+};
+document.getElementById('b2d').onclick=()=>{
+    document.getElementById('b2d').classList.add('on');document.getElementById('b3d').classList.remove('on');
+    const mx=Math.max(S.w,S.l)+S.ro*2;
+    cam.position.set(0,mx*1.3,.01);ctrl.target.set(0,0,0);ctrl.update();
+};
+document.getElementById('brst').onclick=fitCam;
+
+// Screenshot
+document.getElementById('bSnap').onclick=()=>{
+    ren.render(scene,cam);
+    const a=document.createElement('a');a.download=`nspro-${S.type}-${S.w}x${S.l}m.png`;a.href=ren.domElement.toDataURL('image/png');a.click();
+};
+
+// Share
+document.getElementById('bShare').onclick=()=>{
+    const url=location.origin+location.pathname+'?c='+btoa(JSON.stringify(S));
+    navigator.clipboard.writeText(url).then(()=>{
+        const b=document.getElementById('bShare');b.textContent='Skopiowano!';setTimeout(()=>b.textContent='Udostepnij projekt',2000);
+    });
+};
+
+// Summary
+function updSum(){
+    const tw=S.w+S.ro*2,tl=S.l+S.ro*2,ta=(tw*tl).toFixed(1),ca=(S.w*S.l).toFixed(1);
+    const ct=TYPES.find(c=>c.id===S.type),sf=SURFS.find(s=>s.id===S.surf);
+    const cn=c=>COLORS.find(x=>x.c===c)?.n||'';
+    document.getElementById('totalA').textContent=ta+' m\u00B2';
+    document.getElementById('sumD').innerHTML=
+        `<div class="sr"><span class="l">Typ boiska</span><span class="v">${ct?.t||''}</span></div>`+
+        `<div class="sr"><span class="l">Wymiary boiska</span><span class="v">${S.w} x ${S.l} m</span></div>`+
+        `<div class="sr"><span class="l">Powierzchnia boiska</span><span class="v">${ca} m\u00B2</span></div>`+
+        `<div class="sr"><span class="l">Strefa bezpieczenstwa</span><span class="v">${S.ro} m</span></div>`+
+        `<div class="sr"><span class="l">Calkowite wymiary</span><span class="v">${tw.toFixed(1)} x ${tl.toFixed(1)} m</span></div>`+
+        `<div class="sr"><span class="l">Calkowita powierzchnia</span><span class="v">${ta} m\u00B2</span></div>`+
+        `<div class="sr"><span class="l">Nawierzchnia</span><span class="v">${sf?.t||''}</span></div>`+
+        `<div class="sr"><span class="l">Kolor glowny</span><span class="v"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${S.cM};vertical-align:middle;margin-right:4px"></span>${cn(S.cM)}</span></div>`+
+        `<div class="sr"><span class="l">Kolor strefy</span><span class="v"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${S.cK};vertical-align:middle;margin-right:4px"></span>${cn(S.cK)}</span></div>`+
+        `<div class="sr"><span class="l">Kolor obrzeza</span><span class="v"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${S.cB};vertical-align:middle;margin-right:4px"></span>${cn(S.cB)}</span></div>`+
+        `<div class="sr"><span class="l">Szac. ilosc plytek 30x30cm</span><span class="v">~${Math.ceil(parseFloat(ta)/.09)} szt.</span></div>`;
+    // CTA mailto
+    const subj=encodeURIComponent(`Wycena konfiguratora 3D - ${ct?.t} ${S.w}x${S.l}m`);
+    const body=encodeURIComponent(
+        `Dzien dobry,\n\nProsze o wycene nawierzchni sportowej:\n\n`+
+        `Typ: ${ct?.t}\nWymiary: ${S.w} x ${S.l} m\nStrefa bezp.: ${S.ro} m\n`+
+        `Powierzchnia calkowita: ${ta} m2\nNawierzchnia: ${sf?.t}\n`+
+        `Kolor glowny: ${cn(S.cM)}\nKolor strefy: ${cn(S.cK)}\nKolor obrzeza: ${cn(S.cB)}\n\nPozdrawiam`
+    );
+    document.getElementById('cta').href=`mailto:biuro@nawierzchniesportowe.pro?subject=${subj}&body=${body}`;
+}
+
+// Load URL config
+const prm=new URLSearchParams(location.search).get('c');
+if(prm)try{Object.assign(S,JSON.parse(atob(prm)))}catch(e){}
+
+/* ========== INIT ========== */
+init();bTypes();bPre();bSurf();bSw('cM','cM');bSw('cK','cK');bSw('cB','cB');bSch();updSliders();build();
+</script>
+</body>
+</html>

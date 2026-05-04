@@ -1,0 +1,11 @@
+# ========================================
+# ROBOTS.TXT — DODATKI DLA BLOGA
+# Dodaj poniższe linie do głównego robots.txt
+# ========================================
+
+# Blog
+Allow: /blog/
+Allow: /blog/*
+
+# Blog Sitemap
+Sitemap: https://gamak.eu/blog/sitemap-blog-fragment.xml
