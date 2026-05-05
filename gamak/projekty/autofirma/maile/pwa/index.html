@@ -3,169 +3,759 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1e40af">
-<title>📧 MAILE</title>
+<meta name="theme-color" content="#09090b">
+<title>Maile</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
-<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-* { -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #09090b;
+  --bg-elevated: #0f0f12;
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --text: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #52525b;
+  --accent: #f97316;
+  --accent-hover: #fb923c;
+  --accent-soft: rgba(249, 115, 22, 0.12);
+  --accent-border: rgba(249, 115, 22, 0.3);
+  --success: #22c55e;
+  --success-soft: rgba(34, 197, 94, 0.12);
+  --danger: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.12);
+  --info: #3b82f6;
+  --info-soft: rgba(59, 130, 246, 0.12);
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 4px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 16px 48px rgba(0, 0, 0, 0.7);
+  --transition: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html, body { margin: 0; padding: 0; }
+
 body {
-  font-family: -apple-system, 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-variant-numeric: tabular-nums;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(249, 115, 22, 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgba(59, 130, 246, 0.05), transparent 50%);
+  color: var(--text);
   min-height: 100vh;
-  padding-bottom: 80px;
+  padding-bottom: 96px;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
 }
-.tab-active { color: #60a5fa; border-top-color: #60a5fa; }
+
+/* ────────── Header ────────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(9, 9, 11, 0.72);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px env(safe-area-inset-right) 14px env(safe-area-inset-left);
+  padding-top: calc(16px + env(safe-area-inset-top));
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), #f59e0b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.logo-mark svg { width: 16px; height: 16px; color: white; }
+
+.refresh-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.refresh-btn:hover { background: var(--surface-hover); color: var(--text); }
+.refresh-btn:active { transform: scale(0.94); }
+.refresh-btn svg { width: 16px; height: 16px; }
+.refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+
+.status-row {
+  padding: 10px 20px 0;
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-soft);
+}
+
+/* ────────── Main ────────── */
+main {
+  padding: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.tab-content { animation: fadeIn 200ms ease-out; }
+.tab-content.hidden { display: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ────────── Cards ────────── */
 .card {
-  background: #1e293b; border: 1px solid #334155; border-radius: 12px;
-  padding: 14px; margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), transform var(--transition);
 }
+
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+
+.card-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.card-to {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-to svg { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.6; }
+
+.card-subject {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+.card-body {
+  font-size: 13px;
+  color: #d4d4d8;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  line-height: 1.55;
+  font-family: 'Inter', sans-serif;
+}
+
+.card-body::-webkit-scrollbar { width: 4px; }
+.card-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+.card-note {
+  font-size: 12px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.card-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card-meta {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0;
+}
+
+/* ────────── Badges ────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge-LEAD { color: #fbbf24; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); }
+.badge-KLIENT { color: #22c55e; background: var(--success-soft); border: 1px solid rgba(34, 197, 94, 0.2); }
+.badge-PERSONAL { color: #c084fc; background: rgba(192, 132, 252, 0.1); border: 1px solid rgba(192, 132, 252, 0.2); }
+.badge-DEFAULT { color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); }
+
+.badge-tone {
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 10.5px;
+  padding: 2px 6px;
+}
+
+.badge-issues {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ────────── Buttons ────────── */
 .btn {
-  padding: 10px 14px; border-radius: 8px; font-weight: 600; font-size: 14px;
-  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
-  border: none; transition: all 0.15s;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--transition);
+  font-family: inherit;
+  letter-spacing: -0.005em;
+  text-decoration: none;
 }
-.btn:active { transform: scale(0.96); }
-.btn-send { background: #16a34a; color: white; }
-.btn-send:hover { background: #15803d; }
-.btn-reject { background: #dc2626; color: white; }
-.btn-reject:hover { background: #b91c1c; }
-.btn-amend { background: #ea580c; color: white; }
-.btn-amend:hover { background: #c2410c; }
-.btn-open { background: #2563eb; color: white; }
-.btn-open:hover { background: #1d4ed8; }
-.btn-secondary { background: #334155; color: #e2e8f0; }
-.btn-secondary:hover { background: #475569; }
-.badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-.badge-LEAD { background: #fbbf24; color: #78350f; }
-.badge-KLIENT { background: #4ade80; color: #14532d; }
-.badge-PERSONAL { background: #c084fc; color: #4c1d95; }
-.modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50;
-  display: flex; align-items: center; justify-content: center; padding: 16px;
+
+.btn:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.btn:active { transform: scale(0.97); }
+.btn svg { width: 14px; height: 14px; }
+
+.btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 2px 8px rgba(0, 0, 0, 0.4);
 }
-.modal {
-  background: #1e293b; border-radius: 16px; padding: 20px; max-width: 480px; width: 100%;
-  border: 1px solid #475569;
+
+.btn-primary:hover { background: #ffffff; border-color: #ffffff; transform: translateY(-1px); }
+
+.btn-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-border);
 }
+
+.btn-accent:hover { background: rgba(249, 115, 22, 0.18); border-color: rgba(249, 115, 22, 0.4); }
+
+.btn-danger { color: #fca5a5; border-color: rgba(239, 68, 68, 0.2); }
+.btn-danger:hover { background: var(--danger-soft); border-color: rgba(239, 68, 68, 0.35); color: #fecaca; }
+
+.btn-info { color: #93c5fd; border-color: rgba(59, 130, 246, 0.2); }
+.btn-info:hover { background: var(--info-soft); border-color: rgba(59, 130, 246, 0.35); color: #bfdbfe; }
+
+.btn-block { width: 100%; }
+.btn-lg { padding: 12px 16px; font-size: 14px; }
+
+/* ────────── Empty state ────────── */
+.empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.empty-icon svg { width: 28px; height: 28px; }
+
+.empty-title {
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.empty-sub { font-size: 13px; }
+
+/* ────────── Spinner ────────── */
 .spinner {
-  width: 20px; height: 20px; border: 2px solid #475569; border-top-color: #60a5fa;
-  border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
 }
+
 @keyframes spin { to { transform: rotate(360deg); } }
-.toast {
-  position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%);
-  background: #064e3b; color: #6ee7b7; padding: 12px 20px; border-radius: 24px;
-  font-weight: 600; z-index: 100; max-width: 90%;
-  animation: toast-in 0.3s, toast-out 0.3s 2.7s forwards;
+
+.loading {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 13px;
 }
-.toast-err { background: #7f1d1d; color: #fecaca; }
-@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 20px); } }
-@keyframes toast-out { to { opacity: 0; transform: translate(-50%, 20px); } }
-.bottom-tabs {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: #0f172a; border-top: 1px solid #334155; display: flex;
+
+.loading .spinner { margin: 0 auto 12px; display: block; }
+
+/* ────────── Section heading ────────── */
+.section-h {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+.section-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: -12px 0 16px;
+}
+
+/* ────────── Form ────────── */
+.field { margin-bottom: 12px; }
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: -0.005em;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.textarea { resize: vertical; min-height: 96px; }
+
+/* ────────── Stat tiles ────────── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+
+.stat-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, var(--text) 0%, var(--text-secondary) 120%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label { font-size: 12px; color: var(--text-secondary); }
+
+.list-item {
+  font-size: 12px;
+  color: #d4d4d8;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-item::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ────────── Bottom tabs ────────── */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
   padding: 8px env(safe-area-inset-right) calc(8px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
   z-index: 40;
 }
+
 .tab-btn {
-  flex: 1; padding: 8px 4px; text-align: center; font-size: 11px; font-weight: 500;
-  color: #64748b; border-top: 2px solid transparent; cursor: pointer; user-select: none;
+  flex: 1;
+  padding: 10px 4px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border-radius: var(--radius);
+  margin: 0 2px;
+  transition: var(--transition);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
 }
-.tab-btn .icon { font-size: 22px; display: block; margin-bottom: 2px; }
-header {
-  position: sticky; top: 0; z-index: 30; background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(8px); padding: 14px env(safe-area-inset-right) 14px env(safe-area-inset-left);
-  border-bottom: 1px solid #334155;
-  padding-top: calc(14px + env(safe-area-inset-top));
+
+.tab-btn:hover { color: var(--text-secondary); background: var(--surface); }
+.tab-btn.active { color: var(--text); background: var(--surface); }
+.tab-btn.active svg { color: var(--accent); }
+.tab-btn svg { width: 20px; height: 20px; transition: var(--transition); }
+
+/* ────────── Modal ────────── */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 200ms ease-out;
+}
+
+.modal {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-h {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
+
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+/* ────────── Toast ────────── */
+.toast {
+  position: fixed;
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 100;
+  max-width: 92%;
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: toast-in 250ms cubic-bezier(0.16, 1, 0.3, 1), toast-out 250ms 2.7s forwards;
+}
+
+.toast svg { width: 14px; height: 14px; flex-shrink: 0; }
+.toast.success { color: #86efac; border-color: rgba(34, 197, 94, 0.3); }
+.toast.success svg { color: var(--success); }
+.toast.error { color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+.toast.error svg { color: var(--danger); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes toast-out {
+  to { opacity: 0; transform: translate(-50%, 12px); }
 }
 </style>
 </head>
 <body>
 
+<!-- Lucide icons inline (avoid CDN dependency) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16h8"/><path d="M7 11h12"/><path d="M7 6h3"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+  </defs>
+</svg>
+
 <header>
-<div class="px-4 flex items-center justify-between">
-<h1 class="text-xl font-bold text-white">📧 MAILE</h1>
-<button class="text-2xl text-slate-400 active:text-white" onclick="loadInbox()">↻</button>
-</div>
-<div class="px-4 mt-1 text-xs text-slate-400" id="status">tap ↻ żeby odświeżyć</div>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark"><svg><use href="#i-mail"/></svg></div>
+      <span>Maile</span>
+    </div>
+    <button class="refresh-btn" id="refresh" onclick="loadInbox(true)" aria-label="Odśwież">
+      <svg><use href="#i-refresh"/></svg>
+    </button>
+  </div>
+  <div class="status-row">
+    <span class="status-dot"></span>
+    <span id="status">Łączę…</span>
+  </div>
 </header>
 
-<main class="px-4 pt-4 max-w-2xl mx-auto">
+<main>
 
-<!-- TAB: INBOX -->
-<section id="tab-inbox" class="tab-content">
-<div id="inbox-list">
-<div class="text-center py-12 text-slate-500">
-<div class="spinner mx-auto mb-4"></div>
-<div>Ładuje drafty...</div>
-</div>
-</div>
-</section>
+  <!-- TAB: INBOX -->
+  <section id="tab-inbox" class="tab-content">
+    <div id="inbox-list">
+      <div class="loading"><span class="spinner"></span><div>Ładuję drafty…</div></div>
+    </div>
+  </section>
 
-<!-- TAB: PROPOSE -->
-<section id="tab-propose" class="tab-content hidden">
-<h2 class="text-lg font-semibold mb-3">Zapisz akcję do S3</h2>
-<form onsubmit="proposeSubmit(event)" class="space-y-3">
-<select id="prop-type" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
-<option value="task">📋 Task (do plan.md)</option>
-<option value="decision">🎯 Decision (do decyzje.md)</option>
-<option value="fact">💡 Fact (do mail_context_updates.md)</option>
-<option value="crm_note">👤 CRM note (do CRM kontaktu)</option>
-<option value="context">🌐 Context (rynek/branża)</option>
-</select>
-<input id="prop-title" placeholder="Tytuł" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
-<textarea id="prop-content" rows="4" placeholder="Treść..." class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600"></textarea>
-<select id="prop-priority" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
-<option value="normal">⚪ Normal</option>
-<option value="high">🔴 High</option>
-<option value="low">🟢 Low</option>
-</select>
-<input id="prop-target" placeholder="Target (email kontaktu, opcjonalne)" class="w-full p-3 bg-slate-800 rounded-lg border border-slate-600">
-<button type="submit" class="btn btn-send w-full justify-center text-base py-3">💾 Zapisz do S3</button>
-</form>
-</section>
+  <!-- TAB: PROPOSE -->
+  <section id="tab-propose" class="tab-content hidden">
+    <h2 class="section-h">Zapisz akcję</h2>
+    <p class="section-sub">Task, decyzja, fakt, notatka CRM lub kontekst rynkowy.</p>
+    <form onsubmit="proposeSubmit(event)">
+      <div class="field">
+        <label class="field-label">Typ</label>
+        <select id="prop-type" class="select">
+          <option value="task">Task — do plan.md</option>
+          <option value="decision">Decision — do decyzje.md</option>
+          <option value="fact">Fact — do mail_context_updates.md</option>
+          <option value="crm_note">CRM note — do kontaktu</option>
+          <option value="context">Context — rynek / branża</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Tytuł</label>
+        <input id="prop-title" class="input" placeholder="Krótki tytuł">
+      </div>
+      <div class="field">
+        <label class="field-label">Treść</label>
+        <textarea id="prop-content" class="textarea" rows="4" placeholder="Co dokładnie zapisać"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Priorytet</label>
+        <select id="prop-priority" class="select">
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Target (opcjonalnie)</label>
+        <input id="prop-target" class="input" placeholder="email kontaktu">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">
+        <svg><use href="#i-save"/></svg>
+        Zapisz do S3
+      </button>
+    </form>
+  </section>
 
-<!-- TAB: HISTORY -->
-<section id="tab-history" class="tab-content hidden">
-<h2 class="text-lg font-semibold mb-3">Ostatnie wysłane / zarchiwizowane</h2>
-<div id="history-list">
-<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Ładuje...</div>
-</div>
-</section>
+  <!-- TAB: HISTORY -->
+  <section id="tab-history" class="tab-content hidden">
+    <h2 class="section-h">Historia</h2>
+    <p class="section-sub">Ostatnie wysłane / zarchiwizowane.</p>
+    <div id="history-list">
+      <div class="loading"><span class="spinner"></span><div>Ładuję…</div></div>
+    </div>
+  </section>
 
-<!-- TAB: STATS -->
-<section id="tab-stats" class="tab-content hidden">
-<h2 class="text-lg font-semibold mb-3">📊 Statystyki</h2>
-<div id="stats-content">
-<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Liczy...</div>
-</div>
-</section>
+  <!-- TAB: STATS -->
+  <section id="tab-stats" class="tab-content hidden">
+    <h2 class="section-h">Statystyki</h2>
+    <div id="stats-content">
+      <div class="loading"><span class="spinner"></span><div>Liczę…</div></div>
+    </div>
+  </section>
 
 </main>
 
 <!-- BOTTOM TABS -->
-<nav class="bottom-tabs">
-<div class="tab-btn tab-active" data-tab="inbox" onclick="switchTab('inbox')"><span class="icon">📥</span>Inbox</div>
-<div class="tab-btn" data-tab="propose" onclick="switchTab('propose')"><span class="icon">✏️</span>Zapisz</div>
-<div class="tab-btn" data-tab="history" onclick="switchTab('history')"><span class="icon">📚</span>Historia</div>
-<div class="tab-btn" data-tab="stats" onclick="switchTab('stats')"><span class="icon">📊</span>Stats</div>
+<nav class="tab-bar" role="tablist">
+  <div class="tab-btn active" data-tab="inbox" onclick="switchTab('inbox')">
+    <svg><use href="#i-inbox"/></svg>
+    Inbox
+  </div>
+  <div class="tab-btn" data-tab="propose" onclick="switchTab('propose')">
+    <svg><use href="#i-edit"/></svg>
+    Zapisz
+  </div>
+  <div class="tab-btn" data-tab="history" onclick="switchTab('history')">
+    <svg><use href="#i-history"/></svg>
+    Historia
+  </div>
+  <div class="tab-btn" data-tab="stats" onclick="switchTab('stats')">
+    <svg><use href="#i-chart"/></svg>
+    Stats
+  </div>
 </nav>
 
 <!-- AMEND MODAL -->
 <div id="amend-modal" class="modal-bg hidden" onclick="if(event.target.id==='amend-modal')closeAmend()">
-<div class="modal">
-<h3 class="text-lg font-bold mb-3">✏️ Popraw draft</h3>
-<p class="text-sm text-slate-400 mb-3">Co poprawić? AI wygeneruje nowy draft uwzględniając Twój hint.</p>
-<textarea id="amend-hint" rows="4" placeholder="np. 'Krócej, dodaj że to pilne'" class="w-full p-3 bg-slate-700 rounded-lg border border-slate-500 mb-3"></textarea>
-<div class="flex gap-2 justify-end">
-<button class="btn btn-secondary" onclick="closeAmend()">Anuluj</button>
-<button class="btn btn-amend" onclick="amendSubmit()">Wygeneruj nowy draft</button>
-</div>
-</div>
+  <div class="modal" role="dialog">
+    <h3 class="modal-h"><svg style="width:18px;height:18px;color:var(--accent)"><use href="#i-edit"/></svg> Popraw draft</h3>
+    <p class="modal-sub">Co poprawić? AI wygeneruje nowy draft uwzględniając Twój hint.</p>
+    <textarea id="amend-hint" class="textarea" rows="4" placeholder="np. Krócej, dodaj że to pilne" style="margin-bottom:0"></textarea>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAmend()">Anuluj</button>
+      <button class="btn btn-accent" onclick="amendSubmit()">
+        <svg><use href="#i-edit"/></svg>
+        Wygeneruj
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -174,12 +764,14 @@ const API_BASE = 'https://jb69vusexb.execute-api.eu-central-1.amazonaws.com';
 let currentDrafts = [];
 let amendDraftId = null;
 
-function toast(msg, isErr = false) {
-  const t = document.createElement('div');
-  t.className = 'toast' + (isErr ? ' toast-err' : '');
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+function toast(msg, type = 'success') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icon = type === 'success' ? 'i-check' : type === 'error' ? 'i-alert' : 'i-info';
+  el.innerHTML = `<svg><use href="#${icon}"/></svg><span></span>`;
+  el.querySelector('span').textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
 }
 
 function setStatus(msg) {
@@ -188,76 +780,99 @@ function setStatus(msg) {
 
 function switchTab(name) {
   document.querySelectorAll('.tab-content').forEach(s => s.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.remove('hidden');
-  document.querySelector('[data-tab="' + name + '"]').classList.add('tab-active');
+  document.querySelector('.tab-btn[data-tab="' + name + '"]').classList.add('active');
   if (name === 'history') loadHistory();
   if (name === 'stats') loadStats();
 }
 
-async function loadInbox() {
-  setStatus('Pobieram drafty...');
+async function loadInbox(manual = false) {
+  const refreshBtn = document.getElementById('refresh');
+  refreshBtn.classList.add('spinning');
+  if (manual) setStatus('Pobieram drafty…');
   try {
     const r = await fetch(API_BASE + '/agent/inbox');
     const data = await r.json();
     currentDrafts = data.drafts || [];
     renderInbox(currentDrafts);
-    setStatus(`${currentDrafts.length} drafty czekają na decyzję`);
+    const n = currentDrafts.length;
+    setStatus(n === 0 ? 'Inbox czysty' : `${n} ${n === 1 ? 'draft czeka' : (n < 5 ? 'drafty czekają' : 'draftów czeka')} na decyzję`);
   } catch (e) {
-    setStatus('❌ Błąd ładowania: ' + e.message);
-    toast('Błąd ładowania', true);
+    setStatus('Błąd: ' + e.message);
+    toast('Błąd ładowania', 'error');
+  } finally {
+    refreshBtn.classList.remove('spinning');
   }
 }
 
 function renderInbox(drafts) {
   const list = document.getElementById('inbox-list');
   if (!drafts.length) {
-    list.innerHTML = '<div class="text-center py-12 text-slate-500"><div class="text-4xl mb-3">✅</div><div class="text-lg">Inbox czysty</div><div class="text-sm mt-2">Brak draftów do oceny</div></div>';
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><svg><use href="#i-check"/></svg></div>
+        <div class="empty-title">Inbox czysty</div>
+        <div class="empty-sub">Brak draftów do oceny.</div>
+      </div>`;
     return;
   }
-  list.innerHTML = drafts.map(d => `
-    <div class="card" id="card-${d.draft_id}">
-      <div class="flex items-start justify-between mb-2">
-        <div class="flex-1">
-          <span class="badge badge-${d.category_source || 'KLIENT'}">${d.category_source || 'KLIENT'}</span>
-          ${d.tone ? `<span class="text-xs text-slate-400 ml-2">${d.tone}</span>` : ''}
-          ${d.sanity_issues && d.sanity_issues.length ? `<span class="text-xs text-red-400 ml-2">⚠ ${d.sanity_issues.length} issues</span>` : ''}
+  list.innerHTML = drafts.map(d => {
+    const cat = d.category_source || 'KLIENT';
+    const badgeClass = ['LEAD', 'KLIENT', 'PERSONAL'].includes(cat) ? 'badge-' + cat : 'badge-DEFAULT';
+    const time = new Date(d.created_at).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+    const issues = d.sanity_issues && d.sanity_issues.length;
+    const replyTo = (d.reply_to || '').slice(0, 60);
+    return `
+      <div class="card" id="card-${d.draft_id}">
+        <div class="card-head">
+          <div class="card-head-left">
+            <span class="badge ${badgeClass}">${cat}</span>
+            ${d.tone ? `<span class="badge badge-tone">${escapeHtml(d.tone)}</span>` : ''}
+            ${issues ? `<span class="badge badge-issues">${issues} issues</span>` : ''}
+          </div>
+          <span class="card-time">${time}</span>
         </div>
-        <div class="text-xs text-slate-500">${new Date(d.created_at).toLocaleTimeString('pl-PL', {hour:'2-digit', minute:'2-digit'})}</div>
-      </div>
-      <div class="text-sm text-slate-400 mb-1">do: ${escapeHtml((d.reply_to || '').slice(0, 60))}</div>
-      <div class="font-semibold text-white mb-2">${escapeHtml(d.subject_reply || '?')}</div>
-      <div class="text-sm text-slate-300 whitespace-pre-wrap mb-3" style="max-height: 180px; overflow-y: auto;">${escapeHtml(d.body_preview || '')}</div>
-      ${d.notes ? `<div class="text-xs text-amber-300 bg-amber-900/30 p-2 rounded mb-3">💡 ${escapeHtml(d.notes)}</div>` : ''}
-      <div class="flex flex-wrap gap-2">
-        <button class="btn btn-send" onclick="actionSend('${d.draft_id}')">📤 Wyślij</button>
-        <button class="btn btn-amend" onclick="openAmend('${d.draft_id}')">✏️ Popraw</button>
-        <button class="btn btn-reject" onclick="actionReject('${d.draft_id}')">🗑️ Odrzuć</button>
-        ${d.gmail_draft_url ? `<a class="btn btn-open" href="${d.gmail_draft_url}" target="_blank" rel="noopener">📨 Gmail</a>` : ''}
-      </div>
-      <div class="text-xs text-slate-500 mt-2">tokens: ${d.tokens || '?'} | ${d.draft_id.slice(0, 8)}</div>
-    </div>
-  `).join('');
+        ${replyTo ? `<div class="card-to"><svg><use href="#i-user"/></svg>${escapeHtml(replyTo)}</div>` : ''}
+        <div class="card-subject">${escapeHtml(d.subject_reply || '(bez tematu)')}</div>
+        <div class="card-body">${escapeHtml(d.body_preview || '')}</div>
+        ${d.notes ? `<div class="card-note"><svg><use href="#i-info"/></svg><span>${escapeHtml(d.notes)}</span></div>` : ''}
+        <div class="card-actions">
+          <button class="btn btn-primary" onclick="actionSend('${d.draft_id}')">
+            <svg><use href="#i-send"/></svg>Wyślij
+          </button>
+          <button class="btn btn-accent" onclick="openAmend('${d.draft_id}')">
+            <svg><use href="#i-edit"/></svg>Popraw
+          </button>
+          <button class="btn btn-danger" onclick="actionReject('${d.draft_id}')">
+            <svg><use href="#i-x"/></svg>Odrzuć
+          </button>
+          ${d.gmail_draft_url ? `<a class="btn btn-info" href="${d.gmail_draft_url}" target="_blank" rel="noopener"><svg><use href="#i-external"/></svg>Gmail</a>` : ''}
+        </div>
+        <div class="card-meta">${d.tokens || '—'} · ${d.draft_id.slice(0, 8)}</div>
+      </div>`;
+  }).join('');
 }
 
 function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 async function actionSend(draftId) {
-  if (!confirm('Wysłać tego maila? (NIE dry-run, leci NA ŻYWO)')) return;
-  await callAction({action: 'send', draft_id: draftId}, 'Wysłano ✅');
+  if (!confirm('Wysłać tego maila? (NIE dry-run, leci na żywo)')) return;
+  await callAction({ action: 'send', draft_id: draftId }, 'Wysłano');
 }
 
 async function actionReject(draftId) {
   if (!confirm('Odrzucić draft?')) return;
-  await callAction({action: 'reject', draft_id: draftId}, 'Odrzucono');
+  await callAction({ action: 'reject', draft_id: draftId }, 'Odrzucono');
 }
 
 function openAmend(draftId) {
   amendDraftId = draftId;
   document.getElementById('amend-hint').value = '';
   document.getElementById('amend-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('amend-hint').focus(), 100);
 }
 
 function closeAmend() {
@@ -267,29 +882,30 @@ function closeAmend() {
 
 async function amendSubmit() {
   const hint = document.getElementById('amend-hint').value.trim();
-  if (!hint || hint.length < 3) { toast('Wpisz hint (min 3 znaki)', true); return; }
+  if (!hint || hint.length < 3) { toast('Wpisz hint (min 3 znaki)', 'error'); return; }
+  const did = amendDraftId;
   closeAmend();
-  await callAction({action: 'amend', draft_id: amendDraftId, hint: hint}, 'Generuję nowy draft (~10s)');
+  await callAction({ action: 'amend', draft_id: did, hint }, 'Generuję nowy draft…');
 }
 
 async function callAction(payload, successMsg) {
-  setStatus('Wysyłam akcję...');
+  setStatus('Wysyłam…');
   try {
     const r = await fetch(API_BASE + '/agent/action', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
     const data = await r.json();
     if (data.ok || data.statusCode === 200) {
-      toast(successMsg);
+      toast(successMsg, 'success');
       await loadInbox();
     } else {
-      toast('Błąd: ' + (data.error || 'unknown'), true);
-      setStatus('❌ ' + (data.error || 'błąd'));
+      toast('Błąd: ' + (data.error || 'unknown'), 'error');
+      setStatus(data.error || 'błąd');
     }
   } catch (e) {
-    toast('Błąd sieci: ' + e.message, true);
+    toast('Błąd sieci: ' + e.message, 'error');
   }
 }
 
@@ -303,80 +919,92 @@ async function proposeSubmit(e) {
     priority: document.getElementById('prop-priority').value,
     target_contact: document.getElementById('prop-target').value,
   };
-  if (!payload.content || payload.content.length < 3) { toast('Wpisz content', true); return; }
+  if (!payload.content || payload.content.length < 3) { toast('Wpisz treść', 'error'); return; }
   try {
     const r = await fetch(API_BASE + '/agent/action', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
     const data = await r.json();
     if (data.ok) {
-      toast('Zapisane do S3 ✅');
+      toast('Zapisane do S3', 'success');
       e.target.reset();
     } else {
-      toast('Błąd: ' + (data.error || 'unknown'), true);
+      toast('Błąd: ' + (data.error || 'unknown'), 'error');
     }
-  } catch (e) {
-    toast('Błąd: ' + e.message, true);
+  } catch (e2) {
+    toast('Błąd: ' + e2.message, 'error');
   }
 }
 
 async function loadHistory() {
-  // History tab pokazuje ostatnie SENT + REJECTED + ARCHIVED z DDB
   const div = document.getElementById('history-list');
-  div.innerHTML = '<div class="text-center py-8 text-slate-500"><div class="spinner mx-auto mb-3"></div>Pobieram...</div>';
-  // PWA nie ma osobnego endpointu na history, używamy inbox endpoint dla preview
-  // (szybko można dodać GET /agent/history endpoint, na razie placeholder)
-  setTimeout(() => {
-    div.innerHTML = `<div class="text-center py-8 text-slate-400">
-      <div class="text-4xl mb-3">📚</div>
-      <div>Historia w DDB mail-drafts (status=SENT/REJECTED/AMENDED)</div>
-      <div class="text-sm mt-2 text-slate-500">Endpoint /agent/history TODO — patrz przyciskiem CloudWatch dashboard z metrykami</div>
-      <a href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#table?name=mail-drafts" target="_blank" class="btn btn-secondary mt-4 inline-flex">📦 Otwórz DDB w AWS</a>
+  div.innerHTML = `
+    <div class="empty">
+      <div class="empty-icon"><svg><use href="#i-clock"/></svg></div>
+      <div class="empty-title">Endpoint /agent/history TODO</div>
+      <div class="empty-sub" style="margin-bottom:16px">Historia jest w DDB <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--surface);padding:2px 6px;border-radius:4px">mail-drafts</code> (status SENT / REJECTED / AMENDED).</div>
+      <a class="btn btn-info" href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#table?name=mail-drafts" target="_blank" rel="noopener">
+        <svg><use href="#i-external"/></svg>
+        Otwórz DynamoDB
+      </a>
     </div>`;
-  }, 300);
 }
 
 async function loadStats() {
   const div = document.getElementById('stats-content');
-  div.innerHTML = '<div class="spinner mx-auto"></div>';
-  // Statystyki - placeholder, real implementation pobiera z DDB scan
-  setTimeout(() => {
-    div.innerHTML = `<div class="space-y-3">
-      <div class="card">
-        <div class="text-3xl font-bold text-blue-400">${currentDrafts.length}</div>
-        <div class="text-sm text-slate-400">Drafty PENDING</div>
+  div.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <div class="stat-value">${currentDrafts.length}</div>
+        <div class="stat-label">Drafty PENDING</div>
       </div>
-      <div class="card">
-        <div class="text-sm text-slate-400 mb-2">System działa autonomicznie:</div>
-        <ul class="text-xs space-y-1 text-slate-300">
-          <li>• 06:00 UTC daily — Gmail watch renew</li>
-          <li>• 09:00 UTC daily — Extraction (facts → S3)</li>
-          <li>• Sob 07:00 UTC — Historical Miner biuro.gamak</li>
-          <li>• Niedz 20:00 UTC — Feedback Analyzer</li>
-        </ul>
+      <div class="stat-tile">
+        <div class="stat-value">${currentDrafts.reduce((s, d) => {
+          const t = (d.tokens || '').match(/(\d+)\s*in/);
+          return s + (t ? parseInt(t[1]) : 0);
+        }, 0)}</div>
+        <div class="stat-label">Tokens in (sum)</div>
       </div>
-      <div class="card">
-        <div class="text-sm text-slate-400 mb-2">Linki AWS Console:</div>
-        <div class="space-y-2">
-          <a href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#dashboards:name=gamak-mail-overview" target="_blank" class="btn btn-secondary block text-center">📊 CloudWatch Dashboard</a>
-          <a href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#tables" target="_blank" class="btn btn-secondary block text-center">📦 DynamoDB Tables</a>
-          <a href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=extracted-context%2Ffacts%2F" target="_blank" class="btn btn-secondary block text-center">💡 S3 facts</a>
-          <a href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=proposed-actions%2F" target="_blank" class="btn btn-secondary block text-center">✏️ S3 proposed actions</a>
-        </div>
-      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em;font-weight:600">Automatyzacje</div>
+      <div class="list-item">06:00 UTC daily — Gmail watch renew</div>
+      <div class="list-item">09:00 UTC daily — Extraction (facts → S3)</div>
+      <div class="list-item">Sob 07:00 UTC — Historical Miner biuro.gamak</div>
+      <div class="list-item">Niedz 20:00 UTC — Feedback Analyzer</div>
+      <div class="list-item">Co 30 min — Draft Janitor (zombie cleanup)</div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em;font-weight:600">AWS Console</div>
+      <a class="btn btn-block" href="https://eu-central-1.console.aws.amazon.com/cloudwatch/home?region=eu-central-1#dashboards:name=gamak-mail-overview" target="_blank" rel="noopener" style="margin-bottom:6px">
+        <svg><use href="#i-chart"/></svg>CloudWatch Dashboard
+      </a>
+      <a class="btn btn-block" href="https://eu-central-1.console.aws.amazon.com/dynamodbv2/home?region=eu-central-1#tables" target="_blank" rel="noopener" style="margin-bottom:6px">
+        <svg><use href="#i-external"/></svg>DynamoDB Tables
+      </a>
+      <a class="btn btn-block" href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=extracted-context%2Ffacts%2F" target="_blank" rel="noopener" style="margin-bottom:6px">
+        <svg><use href="#i-external"/></svg>S3 facts
+      </a>
+      <a class="btn btn-block" href="https://eu-central-1.console.aws.amazon.com/s3/buckets/gamak-mail-archive-098456445101-eu-central-1?region=eu-central-1&tab=objects&prefix=proposed-actions%2F" target="_blank" rel="noopener">
+        <svg><use href="#i-external"/></svg>S3 proposed actions
+      </a>
     </div>`;
-  }, 200);
 }
 
-// Service worker register (PWA)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(e => console.log('SW fail:', e));
   });
 }
 
-// Inicjalizacja
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeAmend();
+});
+
 loadInbox();
 </script>
 

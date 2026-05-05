@@ -4,8 +4,8 @@
   "description": "AI-assisted email management for Daniel Klimczak (GAMAK)",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e40af",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
   "orientation": "portrait-primary",
   "icons": [
     {

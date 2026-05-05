@@ -4,6 +4,93 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) lite.
 
 ---
 
+## [2026-05-05] — PWA redesign: Linear/Vercel/Anthropic 2026 style (CTO YOLO)
+
+Daniel: "popracujmy teraz nad lepszą grafiką najnowszych start upów z doliny krzemowej 2026". PWA dla skrzynki Gmail była w stylu 2022 dark dashboard (slate-900, emoji icons 📥📤📊, Tailwind CDN, kolorowe SaaS button greens/reds, system fonts). Redesign w stylu Linear / Vercel / Anthropic Claude UI / Stripe / Arc 2026.
+
+### Design system (zinc-950 + amber-500 accent)
+
+- **Typografia:** Inter Variable z Google Fonts + JetBrains Mono dla meta. `font-feature-settings: 'cv02','cv03','cv04','cv11'`, tabular-nums dla liczb, `letter-spacing: -0.011em` (premium SaaS feel).
+- **Color tokens** (`--bg`, `--surface`, `--text`, `--accent` w `:root`):
+  - `--bg: #09090b` (zinc-950) z subtle radial gradient u góry (orange + blue 5-8%)
+  - `--surface: rgba(255,255,255,0.03)` z border `rgba(255,255,255,0.07)` (very subtle)
+  - `--accent: #f97316` (orange-500) — Anthropic-inspired warm coral
+  - Text: zinc-50 / zinc-400 / zinc-600 hierarchy
+- **Border radius:** 6px badges, 8px buttons, 14px cards, 20px modal (large rounded corners 2026 style).
+- **Shadows:** soft inset highlights `0 1px 0 rgba(255,255,255,0.04) inset` + outer shadow `0 4px 24px rgba(0,0,0,0.6)`.
+- **Transitions:** `cubic-bezier(0.16, 1, 0.3, 1)` (Apple-style ease-out), 150ms.
+- **Glassmorphism:** header + tab-bar + modal mają `backdrop-filter: saturate(180%) blur(16-20px)`.
+
+### Komponenty
+
+- **Logo mark:** 28px gradient pill (orange → amber) z mail icon w środku. Soft inset highlight + glow shadow.
+- **Cards (drafty):** rounded-xl, hover `translateY(-1px)`, subtle border. Wewnątrz body draft scrollable z dark inset background. Subject: 15px font-weight 600.
+- **Badges:** monochromatyczne pills z 10% accent bg + 20% accent border (LEAD amber, KLIENT green, PERSONAL purple).
+- **Buttons:**
+  - **Primary "Wyślij":** white bg + black text + soft shadow (Linear-style attention action)
+  - **Accent "Popraw":** orange soft bg + orange text + orange border
+  - **Danger "Odrzuć":** red text + transparent bg, hover red soft bg
+  - **Info "Gmail":** blue text + transparent bg
+- **Bottom tabs:** floating glassmorphism bar z rounded pill aesthetic, active tab z subtle bg + accent icon color.
+- **Modal:** centered z modal-in animation (translateY 12 → 0 + opacity), backdrop blur 8px.
+- **Toast:** rounded-full pill (999px), bottom-floating, glassmorphism, ikona Lucide po lewej.
+- **Stat tiles:** gradient text dla dużych liczb (linear-gradient zinc-50 → zinc-400 background-clip:text).
+- **Empty state:** 56px rounded surface tile z ikoną + 2-line message + optional CTA.
+
+### Ikony
+
+Lucide icons (lucide.dev) — 14 SVG symbols zdefiniowane raz w `<defs>` i reużywane przez `<use>`:
+`mail / refresh / send / edit / x / external / inbox / save / clock / chart / user / info / check / alert / history`.
+
+Zero emoji w UI (📥📤📊🗑️ usunięte). Service Worker register zachowany.
+
+### Service Worker bumped
+
+`sw.js` cache name: `maile-v1` → `maile-2026-v1`. Dodano `skipWaiting()` + `clients.claim()` + cleanup starych cache'y w event `activate`. Plus network-first dla Google Fonts (offline fallback do cache).
+
+### Manifest
+
+`background_color` i `theme_color`: `#0f172a/#1e40af` → `#09090b/#09090b` (czysta czerń zamiast slate-blue).
+
+### Deploy
+
+| File | Bytes | Content-Type | Cache-Control |
+|---|---|---|---|
+| index.html | 35,034 | `text/html; charset=utf-8` | `public, max-age=300` |
+| sw.js | 882 | `application/javascript` | `public, max-age=0, must-revalidate` |
+| manifest.json | 710 | `application/json` | `public, max-age=600` |
+
+S3: `s3://gamak-mail-pwa-098456445101-eu-central-1/`
+CloudFront distribution: `E1KR3EB2LV9VEP` → `https://d1bdg0m4gbjeu1.cloudfront.net`
+Invalidation: `I5GNTFGG4G5EBLCXKIUU2H4E3N` (paths `/*`).
+
+curl HEAD https://d1bdg0m4gbjeu1.cloudfront.net/ → HTTP 200, Content-Type OK.
+
+### Backupy
+
+- `backup/pwa_index_pre-2026-redesign_20260505_1058.html` (17,174 B — pre-redesign)
+- `backup/pwa_sw_pre-2026-redesign_20260505_1058.js` (484 B)
+
+### Logika zachowana 1:1
+
+- API_BASE endpoint
+- 4 tabs (Inbox / Zapisz / Historia / Stats) + przejścia
+- loadInbox / renderInbox / actionSend / actionReject / openAmend / amendSubmit / proposeSubmit / loadHistory / loadStats
+- escapeHtml dla wszystkich user-supplied stringów
+- ESC zamyka modal
+- Confirm dialog przed Wyślij i Odrzuć
+- Service worker register
+
+### TODO / nice-to-have
+
+- Skeleton loading states zamiast spinner placeholder
+- Optimistic UI dla send/reject (znika z listy natychmiast, rollback przy błędzie)
+- /agent/history endpoint (currently placeholder)
+- Real stats z DDB scan (currently tylko PENDING count)
+- Custom maskable icons 192/512 PX (icon.svg jest, PNG TODO)
+
+---
+
 ## [2026-05-05] — mail-drafter v0.12 → v0.14: styl + stopki + em-dash (CTO YOLO)
 
 Daniel: "styl jest straszny, w ogóle nie podobny do moich poprzednich maili przez ghosta — pełnych i lepszych. Tak samo nie dodajesz stopek". 3 problemy w mail-drafter v0.10:
