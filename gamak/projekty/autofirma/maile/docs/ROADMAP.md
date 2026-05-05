@@ -85,7 +85,7 @@ Bedrock NIE potrzebuje sekretu — dostęp przez IAM role Lambdy z policy `bedro
 | 3 | Mail Processor v0.1 PULL only (Lambda + Gmail API token z Secrets Manager, trigger ręczny, start na d.klimczak.gamak) | ~2-3h | **[x] DONE 2026-04-27** |
 | 4 | Decision Engine v0.1 RULES only (klasyfikacja prostymi regułami if-else: noreply→INFO, znany kontakt z CRM→KLIENT, nowy adres→LEAD) | ~1-2h | **[x] DONE 2026-04-27** |
 | 5 | Decision Engine v0.2 z Bedrock Haiku 4.5 (AI fallback dla niejednoznacznych) | ~2-3h | **[x] DONE 2026-04-27** |
-| 6 | Gmail Pub/Sub push trigger (3 watchery + GCP topic + API Gateway endpoint + SQS) | ~3-4h | **[~] PARTIAL 2026-04-27** — AWS infra ready (API GW + SQS + receiver Lambda), GCP Pub/Sub TODO Daniel |
+| 6 | Gmail Pub/Sub push trigger (3 watchery + GCP topic + API Gateway endpoint + SQS) | ~3-4h | **[x] DONE 2026-05-05** — AWS infra LIVE (API GW `jb69vusexb`, SQS `email-inbox-queue`+DLQ, `mail-notify-receiver` z 5+ invocations dziennie), GCP Pub/Sub topic `gmail-watch-mailbox` w projekcie `mail-mcp-488118` real-time push potwierdzony (mail-emails recency: kilka maili na godzinę) |
 | 7 | Drafter Lambda z Bedrock Sonnet 4.6 (generator draftów + Judge QA na anty-AI frazy) | ~3-4h | **[x] DONE 2026-04-27** |
 | 8 | Sender + Approved Actions Router (wykonanie po @mail wyślij N) | ~2-3h | **[x] DONE 2026-04-27** (send testowany dry_run; realna wysyłka czeka na Daniela) |
 | 9 | Feedback writer (zapis pary decyzja AI / decyzja Daniela do `mail-feedback`) | ~1-2h | **[x] DONE 2026-04-27** (inline w kroku 8 + dedykowany Analyzer Lambda + cron) |
@@ -166,4 +166,31 @@ Bez tych liczb Faza 2 buduje "co popadnie". Z tymi liczbami Faza 2 buduje pod re
 
 ---
 
-*Ostatnia aktualizacja: 27.04.2026 (CTO — adaptacja wzorca Mirka do realiów GAMAK: Gmail-only, 3+1 skrzynki, AWS baseline gotowy, CRM v0.2.2 jako fundament Fazy 3, decyzje Daniela: Faza 1 = d.klimczak.gamak, Faza 2 = Sonnet 4.6 dla wszystkich, d.klimczak.ai opcjonalna)*
+## Stan na 2026-05-05 (gap analysis CTO YOLO)
+
+**Faza 1 LOCAL** — 🟡 ŚWIADOMIE POMINIĘTA. Lokalny Python skrypt + 7-dniowy pomiar wolumenu nie zrobione. PWA mobile (poza original ROADMAP) + bezpośredni przeskok na Cloud zastąpił krok local.
+
+**Faza 2 CLOUD** — ✅ 10/10 KROKÓW ZAMKNIĘTYCH (krok 6 Pub/Sub potwierdzony 2026-05-05).
+Bonus poza original ROADMAP:
+- `mail-draft-janitor` Lambda + cron 30 min (cleanup zombie drafts)
+- PWA mobile na CloudFront `https://d1bdg0m4gbjeu1.cloudfront.net` (zamiast CLI v0.2)
+- PWA redesign 2026 (Linear/Vercel/Anthropic style — zinc + amber + Inter + Lucide)
+- `mail-agent-api` v0.4 z `/agent/history` endpoint
+- `scripts/sync_context_to_s3.py` uruchomiony — drafter dostał świeżą `oferta.md` (13 KB) i `decyzje.md`
+
+**Faza 3 INTELIGENCJA** — 🟡 ~50% zrobione.
+- ✅ `mail-historical-miner` Lambda + cron sob 07:00 UTC
+- ✅ `mail-extraction-engine` Lambda + cron daily 09:00 UTC
+- ✅ `mail-feedback-analyzer` Lambda + cron niedz 20:00 UTC (output w S3 `feedback-reports/2026-W18/`)
+- ✅ Auto-archive 80% autonomous: `mail-processor` ma `AUTO_ARCHIVE_CATEGORIES=INFO,NEWSLETTER,TRANSACTIONAL` z confidence threshold; DDB pokazuje regularne `AUTO_ARCHIVED`
+- ✅ Feedback loop: 61 records w `mail-feedback` table (8 ACCEPTED + 22 REWRITE + 31 REJECTED)
+- ✅ Approved Actions Router — endpoint `/agent/action propose` zapisuje do S3 `proposed-actions/{decision,fact,task}/`
+- ❌ **Apply Engine** — proposed-actions zostają w S3, nie są aplikowane do `gamak/dane/plan.md` / `decyzje.md` / CRM. Wymaga decyzji Daniela: auto-apply czy z TAK?
+- ❌ **VIP whitelist** — brak. Wymaga: `gamak/dane/mail_routing.md` z listą VIP (e.g. wójtowie JST z którymi Daniel miał kontakt) + logic w mail-processor żeby nie auto-archive nawet INFO/NEWSLETTER od VIP
+- ❌ **KWOTA > 50k auto-detect (NER)** — brak. Wymaga: regex/NER w mail-processor + escalation ścieżka
+
+**Pomiary z Fazy 1** — niezebrane. Ale 7-dniowe okno z mail-emails (557 records, mailbox split, kategorie) DA się odzyskać post-hoc przez DDB scan + analiza w Pythonie. TODO: standalone script dla tego raportu.
+
+---
+
+*Ostatnia aktualizacja: 2026-05-05 (CTO YOLO — gap analysis: Pub/Sub LIVE, S3 context sync uruchomiony, /agent/history endpoint dodany, PWA history tab działa, Faza 3 ~50% zrobiona).*

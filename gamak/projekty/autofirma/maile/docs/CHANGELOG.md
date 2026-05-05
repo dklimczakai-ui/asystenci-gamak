@@ -4,6 +4,63 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) lite.
 
 ---
 
+## [2026-05-05] — Gap analysis ROADMAP: S3 sync + /agent/history (CTO YOLO)
+
+Daniel: "chce sprawdzic czy mamy wszystko z naszej roadmap". Pełen przegląd Fazy 1/2/3 vs realny stan AWS. Zamknięcie 3 luk znalezionych w analizie.
+
+### Stan po analizie
+
+- **Faza 1 LOCAL:** świadomie pominięta (PWA zastąpiło CLI). 7-dniowy pomiar wolumenu — niezebrany (do post-hoc analizy z DDB).
+- **Faza 2 CLOUD:** 10/10 kroków zamknięte (krok 6 Pub/Sub potwierdzony jako LIVE).
+- **Faza 3 INTELIGENCJA:** ~50% (miner + extraction + analyzer + auto-archive 80% działają; brak Apply Engine + VIP whitelist + KWOTA NER).
+
+### Krok 6 Pub/Sub: PARTIAL → DONE
+
+Weryfikacja CloudWatch Logs `mail-notify-receiver`: 5+ invocations dziś (kilka maili na godzinę). DDB `mail-emails` recency potwierdza real-time push (zamiast tylko cron pull). `mail-gmail-watch-renew` cron daily 06:00 UTC działa (3 invocations w ostatnich 3 dniach). GCP Pub/Sub topic w projekcie `mail-mcp-488118` — funkcjonalny.
+
+### S3 Context sync uruchomiony
+
+`scripts/sync_context_to_s3.py` (już istniał od 27.04, nikt nie odpalał od tygodnia). Drift wykryty:
+- `oferta.md`: lokalnie 13 KB (z 04.05) vs S3 4 KB (z 27.04) — drafter używał starej oferty!
+- `decyzje.md`: lokalnie 104 KB vs S3 50 KB (truncated do limitu) — zaktualizowane
+
+Sync uploaded `oferta.md` + `decyzje.md`, 5 plików unchanged (md5 match). Force drafter cold restart przez `update-function-configuration --description` — nowe inwokacje załadują świeży kontekst z S3.
+
+### /agent/history endpoint (mail-agent-api v0.3 → v0.4)
+
+Wcześniej PWA tab "Historia" był placeholderem (link do DDB Console). Dodano:
+
+**Backend** (`mail-agent-api/lambda_function.py`):
+- `handle_get_history(drafts_table, limit=30)` — paginowany scan z FilterExpression `#s IN (SENT, REJECTED, AMENDED, DISCARDED)`, sort by created_at DESC, lekka projection (draft_id / status / subject / mailbox / category / sent_at / rejected_at / amended_at / discarded_at)
+- Dispatch w `lambda_handler`: `GET /agent/history` → handle_get_history
+- Lambda CodeSha256: `s+FVeVA/nhmmoykIbw3V/VgY0H6KGIEJW/vbgXxw8+c=`
+
+**Frontend PWA** (`pwa/index.html`):
+- `loadHistory()` — fetch `/agent/history`, render history cards
+- `timeAgo(ms)` — relative timestamp (15s temu / 3 min temu / 2h temu / 5d temu / "12 mar")
+- `STATUS_META` — color/bg/border per status (SENT zielony / REJECTED czerwony / AMENDED orange / DISCARDED gray)
+- Badge label translations PL: Wysłane / Odrzucone / Poprawione / Zarchiwizowane
+
+Test live: `/agent/history` zwraca 30 items (count=30), pierwsze 5 to wczorajsze REJECTED + AMENDED z draftera v0.10-v0.14 cyklów.
+
+**sw.js cache:** `maile-2026-v2` → `maile-2026-v3`. CloudFront invalidation `IPI3GD2MWMZUS6PCAGGRSTNCB`.
+
+### Bonus
+
+- `mail-feedback` table: 61 records (8 DRAFT_ACCEPTED + 22 DRAFT_REWRITE + 31 DRAFT_REJECTED) — feedback-analyzer ma duży training set
+- `s3://gamak-mail-archive/feedback-reports/2026-W18/` — analyzer cron output istnieje (weryfikacja oddzielnie)
+- `s3://gamak-mail-archive/proposed-actions/{decision,fact,task}/` — Daniel używał Propose tab; zapisy są ale niezaplikowane do plików (Apply Engine TODO)
+
+### Otwarte (po tej sesji)
+
+- **Apply Engine** — proposed-actions w S3 → faktyczna mutacja `plan.md`/`decyzje.md`/CRM. Wymaga decyzji architecturalnej (auto vs z TAK)
+- **VIP whitelist** — `gamak/dane/mail_routing.md` z listą wójtów JST + logic w mail-processor (skip auto-archive od VIP)
+- **KWOTA > 50k auto-detect (NER)** — regex w mail-processor + escalation ścieżka
+- **Faza 2.5: 4. skrzynka `d.klimczak.ai`** — decyzja Daniela kiedy/nigdy
+- **Pomiary post-hoc Fazy 1** — standalone script: 7-dniowy raport z DDB (volume per skrzynka, top intencje, długość draftów)
+
+---
+
 ## [2026-05-05] — PWA redesign: Linear/Vercel/Anthropic 2026 style (CTO YOLO)
 
 Daniel: "popracujmy teraz nad lepszą grafiką najnowszych start upów z doliny krzemowej 2026". PWA dla skrzynki Gmail była w stylu 2022 dark dashboard (slate-900, emoji icons 📥📤📊, Tailwind CDN, kolorowe SaaS button greens/reds, system fonts). Redesign w stylu Linear / Vercel / Anthropic Claude UI / Stripe / Arc 2026.

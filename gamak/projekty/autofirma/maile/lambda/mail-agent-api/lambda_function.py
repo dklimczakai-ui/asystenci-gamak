@@ -219,6 +219,59 @@ def handle_get_inbox(emails_table, drafts_table):
 
 
 # ────────────────────────────────────────────────────────────────────
+# GET /agent/history — list SENT/REJECTED/AMENDED/DISCARDED (read-only)
+# ────────────────────────────────────────────────────────────────────
+
+def handle_get_history(drafts_table, limit=30):
+    """v0.4: lista zamkniętych draftów (już nie PENDING). Sort by created_at DESC.
+    Paginowany scan z FilterExpression — DDB Limit dotyczy items PRZED filterem."""
+    items = []
+    last_key = None
+    pages = 0
+    while True:
+        kwargs = {
+            "FilterExpression": "#s IN (:s1, :s2, :s3, :s4)",
+            "ExpressionAttributeNames": {"#s": "status"},
+            "ExpressionAttributeValues": {
+                ":s1": "SENT", ":s2": "REJECTED", ":s3": "AMENDED", ":s4": "DISCARDED",
+            },
+            "Limit": 500,
+        }
+        if last_key:
+            kwargs["ExclusiveStartKey"] = last_key
+        r = drafts_table.scan(**kwargs)
+        items.extend(r.get("Items", []))
+        last_key = r.get("LastEvaluatedKey")
+        pages += 1
+        if not last_key or len(items) >= limit * 4 or pages >= 8:
+            break
+
+    items.sort(key=lambda x: int(x.get("created_at", 0)), reverse=True)
+    out = []
+    for d in items[:limit]:
+        out.append({
+            "draft_id": d["draft_id"],
+            "created_at": int(d.get("created_at", 0)),
+            "status": d.get("status", "?"),
+            "subject_reply": d.get("subject_reply", ""),
+            "mailbox_email": d.get("mailbox_email", ""),
+            "reply_to": d.get("reply_to", ""),
+            "category_source": d.get("category_source", ""),
+            "tone": d.get("tone", ""),
+            "sent_at": int(d.get("sent_at", 0)) or None,
+            "rejected_at": int(d.get("rejected_at", 0)) or None,
+            "amended_at": int(d.get("amended_at", 0)) or None,
+            "discarded_at": int(d.get("discarded_at", 0)) or None,
+            "amended_into": d.get("amended_into", ""),
+        })
+    return {
+        "statusCode": 200,
+        "body": json.dumps({"count": len(out), "items": out}, ensure_ascii=False),
+        "headers": {"Content-Type": "application/json; charset=utf-8"},
+    }
+
+
+# ────────────────────────────────────────────────────────────────────
 # Actions
 # ────────────────────────────────────────────────────────────────────
 
@@ -614,6 +667,9 @@ def lambda_handler(event, context):
 
     if method == "GET" and path.endswith("/agent/inbox"):
         return handle_get_inbox(emails_table, drafts_table)
+
+    if method == "GET" and path.endswith("/agent/history"):
+        return handle_get_history(drafts_table)
 
     if method == "POST" and path.endswith("/agent/action"):
         try:
