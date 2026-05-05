@@ -64,13 +64,13 @@ W trakcie sesji lokalny `lambda_function.py` został cofnięty do v0.2 (przez li
 
 ## [2026-05-04] — Naprawa pipeline draftera (CTO YOLO, 30 min)
 
-Daniel zgłosił "nic nie działa" — dostał maile 01.05 (Tutu-Nexnovo LED do band, Wiesław przetargi, Peter <klient-zagraniczny-engo> oferta maszyn) i nie widział żadnych draftów. Diagnoza odkryła **4 osobne bugi**:
+Daniel zgłosił "nic nie działa" — dostał maile 01.05 (<dostawca-led-cn-1> LED do band, Wiesław przetargi, <klient-zagraniczny-engo> oferta maszyn) i nie widział żadnych draftów. Diagnoza odkryła **4 osobne bugi**:
 
 ### 🐛 Bug #1 — env var processor obciął KLIENT z AUTO_DRAFT_CATEGORIES
 
-**Co:** `mail-processor` env `AUTO_DRAFT_CATEGORIES=LEAD,PERSONAL` (kod ma poprawne defaulty `LEAD,KLIENT,PERSONAL`, ale env override z 29.04 sesji odebrał KLIENT). Wszystkie maile od Wiesława, Petera, klientów GAMAK klasyfikowane jako KLIENT NIGDY nie szły do draftera.
+**Co:** `mail-processor` env `AUTO_DRAFT_CATEGORIES=LEAD,PERSONAL` (kod ma poprawne defaulty `LEAD,KLIENT,PERSONAL`, ale env override z 29.04 sesji odebrał KLIENT). Wszystkie maile od Wiesława, <klient-zagraniczny-engo>, klientów GAMAK klasyfikowane jako KLIENT NIGDY nie szły do draftera.
 
-**Skala szkód:** ~25 maili KLIENT z 29.04-02.05 bez draftu (5× Wiesław, 1× Peter, 11× forwardy biuro, 8× Drawsko/Galisz/Branice/Cracovia itp.).
+**Skala szkód:** ~25 maili KLIENT z 29.04-02.05 bez draftu (5× Wiesław, 1× <klient-zagraniczny-engo>, 11× forwardy biuro, 8× Drawsko/Galisz/Branice/Cracovia itp.).
 
 **Fix:** `aws lambda update-function-configuration` → `AUTO_DRAFT_CATEGORIES=LEAD,KLIENT,PERSONAL`. Verified live.
 
@@ -78,9 +78,9 @@ Daniel zgłosił "nic nie działa" — dostał maile 01.05 (Tutu-Nexnovo LED do 
 
 **Co:** `mail-draft-janitor/lambda_function.py:68 count_newer_messages_in_thread` liczył **wszystkie** nowsze wiadomości w wątku, nie sprawdzając kto je napisał. CC od kogoś innego, auto-reply, Gmail-side draft → janitor uznawał "user replied" i kasował draft.
 
-**Skala szkód:** 3 drafty w 30.04-01.05 zabite jako CANCELLED_USER_REPLIED zanim Daniel zdążył otworzyć PWA: Tutu-Nexnovo (LED), Mds Display (LED), PlayStation (zły draft, OK że umarł).
+**Skala szkód:** 3 drafty w 30.04-01.05 zabite jako CANCELLED_USER_REPLIED zanim Daniel zdążył otworzyć PWA: <dostawca-led-cn-1> (LED), <dostawca-led-cn-2> (LED), PlayStation (zły draft, OK że umarł).
 
-**Fix:** Lambda mail-draft-janitor v0.2 — `count_user_replies_in_thread` sprawdza `From == mailbox_email`. Cancel TYLKO gdy faktycznie owner skrzynki odpisał. Deploy → test dry_run inspected=2 user_replied=0 kept_pending=2 (Tutu+Mds zachowane).
+**Fix:** Lambda mail-draft-janitor v0.2 — `count_user_replies_in_thread` sprawdza `From == mailbox_email`. Cancel TYLKO gdy faktycznie owner skrzynki odpisał. Deploy → test dry_run inspected=2 user_replied=0 kept_pending=2 (<dostawca-led-cn-1>+<dostawca-led-cn-2> zachowane).
 
 ### 🐛 Bug #3 — agent-api inbox: Limit=50 bez paginacji
 
@@ -94,15 +94,15 @@ Daniel zgłosił "nic nie działa" — dostał maile 01.05 (Tutu-Nexnovo LED do 
 
 **Co:** Pochodna #1 — drafter sam działa OK, ale processor go nie wołał dla KLIENT (najczęstszej kategorii). Po fix #1 nowe maile KLIENT auto-trigger drafter. Stare 19 maili z 29.04-02.05 wymusiłem manual.
 
-**Fix:** Bulk async invoke `mail-drafter` per message_id dla 19 pominiętych maili (5× Wiesław, 1× Peter, 11× forwardy biuro, 2× Decathlon-mis-classification). Wynik: 19/19 PENDING w DDB w ~25s.
+**Fix:** Bulk async invoke `mail-drafter` per message_id dla 19 pominiętych maili (5× Wiesław, 1× <klient-zagraniczny-engo>, 11× forwardy biuro, 2× Decathlon-mis-classification). Wynik: 19/19 PENDING w DDB w ~25s.
 
 ### 🟢 Stan po naprawie (04.05.2026 ~05:15 UTC)
 
-- **PENDING drafty: 21** (5× Wiesław, 1× Peter, 11× forwardy biuro, 2× Decathlon, Tutu, Mds)
+- **PENDING drafty: 21** (5× Wiesław, 1× <klient-zagraniczny-engo>, 11× forwardy biuro, 2× Decathlon, <dostawca-led-cn-1>, <dostawca-led-cn-2>)
 - **/agent/inbox:** count=21 ✅ (paginacja działa)
 - **Janitor cron co 30 min:** zostawia PENDING w spokoju (sender check)
 - **Pipeline klasyfikacji:** od teraz nowe KLIENT auto-draftowane
-- **Reaktywowane:** Tutu (`bbf1f5bd`) + Mds (`4e44c5d8`) PENDING
+- **Reaktywowane:** <dostawca-led-cn-1> (`bbf1f5bd`) + <dostawca-led-cn-2> (`4e44c5d8`) PENDING
 
 ### 📂 Backupy pre-fix
 - `backup/mail-draft-janitor_pre-sender-fix_20260504_0443/`
@@ -137,8 +137,8 @@ Zapobiega temu że Daniel forwarduje sobie z biuro.gamak na d.klimczak.gamak i d
 
 **4. Stan końcowy kolejki PENDING: 8 realnych draftów**
 - 5× Wiesław Klimczak (Przetargi 29.04, Przetargi 30.04, Wadium Chrzanów, Zawoja wynik, Branice padel)
-- 1× Peter <klient-zagraniczny-engo> (Oświęcim warranty extended 7 years)
-- 2× LED do band (Tutu-Nexnovo, Mds Display)
+- 1× <klient-zagraniczny-engo> (Oświęcim warranty extended 7 years)
+- 2× LED do band (<dostawca-led-cn-1>, <dostawca-led-cn-2>)
 
 **Backupy:**
 - `backup/mail-drafter_pre-self-fwd-fix_20260504_0521.zip`

@@ -1,5 +1,5 @@
 """
-Mail Drafter v0.8 — Faza 2 krok 7 + idempotency.
+Mail Drafter v0.13 — strip bare 'Daniel' sign-off + v0.12 base (2026-05-05).
 
 Generuje draft odpowiedzi w stylu Daniela Klimczaka używając Bedrock Sonnet 4.6.
 Wywoływany ręcznie z `message_id` (krok 8 doda DDB Stream trigger na status=CLASSIFIED).
@@ -9,13 +9,21 @@ Logika:
 2. Sprawdź category - drafty robimy tylko dla LEAD/KLIENT/PERSONAL
 3. Pobierz pełną treść maila przez Gmail API (format=full, decode body)
 4. Bedrock Sonnet 4.6 generuje draft w stylu Daniela
-5. Save do mail-drafts ze status=PENDING + TTL 7 dni
+5. Post-process body: usuń corp footer z modelu, doklej deterministyczną stopkę per mailbox+lang
+6. Save do mail-drafts ze status=PENDING + TTL 7 dni
 
 Event payload:
     {"message_id": "19dce472ab48bf98"}
 
 Response:
     {"draft_id": "...", "subject_reply": "...", "body_preview": "...", "tone": "...", "tokens": "X in / Y out"}
+
+v0.12 zmiany (2026-05-05, fix Daniela: "styl straszny, brak stopek"):
+- Stopka per mailbox/lang z env MAILBOX_SIGNATURES (zamiast model improvising max corp footer)
+- Em-dash NIE jest banned (Daniel realnie używa w mailach do dostawców)
+- Prompt: 3-8 zdań w zależności od kontekstu (zamiast sztywnego 6-8)
+- Prompt: instrukcja NIE WSTAWIAĆ stopki — system dokleja deterministycznie
+- Strip corp footer patterns (ul. Towarowa / Manager / tel. +48 / Best regards / Z poważaniem) z body przed dodaniem właściwej stopki
 """
 
 import os
@@ -64,6 +72,24 @@ SENT_SAMPLES_LIMIT = int(os.environ.get("SENT_SAMPLES_LIMIT", "8"))
 
 DRAFT_CATEGORIES = {"LEAD", "KLIENT", "PERSONAL"}
 TTL_DAYS = int(os.environ.get("DRAFT_TTL_DAYS", "7"))
+
+# v0.12: Deterministyczne stopki per mailbox + język
+# Format env: {"mailbox@gmail.com": {"pl": "...", "en": "..."}, ...}
+# Pusty string = bez stopki (np. dla osobistych)
+DEFAULT_SIGNATURES = {
+    "d.klimczak.gamak@gmail.com": {
+        "pl": "\n\nDaniel\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
+        "en": "\n\nDaniel\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
+    },
+    "klimczak.daniel86@gmail.com": {
+        "pl": "",  # osobiste — bez stopki
+        "en": "",
+    },
+}
+try:
+    MAILBOX_SIGNATURES = json.loads(os.environ.get("MAILBOX_SIGNATURES", "{}")) or DEFAULT_SIGNATURES
+except Exception:
+    MAILBOX_SIGNATURES = DEFAULT_SIGNATURES
 
 _secret_cache = {}  # secret_id -> parsed json (multi-mailbox)
 _bedrock = None
@@ -237,15 +263,20 @@ KONTEKST DANIELA (z gamak/dane/, sync z S3):
 ZASADY STYLISTYCZNE (NIENADPISYWALNE):
 ═══════════════════════════════════════════════════════════════════
 
-- Pisze WYŁĄCZNIE po polsku z pełnymi diakrytykami (ą, ę, ś, ć, ź, ż, ó, ł, ń)
+- Język: domyślnie polski z pełnymi diakrytykami (ą, ę, ś, ć, ź, ż, ó, ł, ń).
+  Wyjątek: jeśli oryginalny mail jest po angielsku (typowy dostawca zagraniczny np. Tutu, Georg) — odpisz po angielsku.
 - Bez "Z poważaniem", "Z wyrazami szacunku", "Niniejszym informuję"
-- Bez em-dash (—, –) — używaj kropki, przecinka, dwukropka
+- Bez "Best regards", "Kind regards", "Sincerely" (po angielsku też nie używasz tych zwrotów)
 - Bez "wykorzystaj potencjał", "kompleksowe rozwiązanie", "innowacyjny"
-- Pierwsza linia: od razu meritum, BEZ "Witam serdecznie", "Dzień dobry Panie..."
-- Konkretnie i krótko, max 6-8 zdań w treści
-- Drabiny tylko gdy faktycznie potrzebne (lista 3+ punktów)
-- WAŻNE: Czerp styl z `ghost.md` (powyżej) — to JEST instrukcja stylu Daniela.
-  Naśladuj typowe formy zwracania, długość zdań, ton
+- Em-dash (—) i en-dash (–): MOŻESZ używać oszczędnie tam gdzie naturalne (Daniel ich używa w listach pozycji, np. "1. Spare parts — supply only")
+- Pierwsza linia: zwrot do osoby ("Cześć Tutu,", "Tatuś,", "Hi Georg,") albo od razu meritum
+- Długość: 3-8 zdań w zależności od kontekstu. LEAD/biznes z konkretnym pytaniem = 4-7 zdań merytoryki. PERSONAL/krótkie potwierdzenie = 2-4 zdania. NIE skracaj na siłę gdy jest co powiedzieć.
+- Konkret: liczby, daty, nazwy własne, kolejne kroki. Bez ogólników "skontaktujemy się wkrótce".
+- Drabiny (1./2./3.) tylko gdy faktycznie 3+ pozycji do wyliczenia (zamówienia, oferty, kroki).
+- 🚫 NIE WSTAWIAJ STOPKI — system dokleja stopkę automatycznie po Twoim tekście.
+  Skończ ostatnią linią merytoryki. NIE pisz "Daniel Klimczak / GAMAK / tel. / adres".
+  Jedyne co możesz dopisać przed końcem to krótki podpis "Daniel" (jedna linia) — i to też NIE zawsze (omijaj w PERSONAL gdy "Tatuś," / krótki tekst).
+- WAŻNE: Czerp styl z `ghost.md` (powyżej) i z PRZYKŁADÓW WYSŁANYCH MAILI — naśladuj długość zdań, ton, formy zwracania, sposób kończenia.
 
 ═══════════════════════════════════════════════════════════════════
 KONTEKST DANEGO MAILA:
@@ -271,15 +302,17 @@ CATEGORY_RULES = {
 - Cel: zaproponować follow-up (rozmowa telefoniczna, oferta, wycena, spotkanie)
 - NIE walaj cenami w pierwszej odpowiedzi — najpierw zrozum potrzeby
 - Pytaj o szczegóły: lokalizacja, wymiary, termin, budżet (jeśli wprost zapytany)
-- 4-6 zdań, max 8""",
-    "KLIENT": """- To AKTUALNY klient (zamówienie w toku, support, follow-up po deal'u)
-- Cel: konkret, działanie, follow-up
-- Można czasem ciepły element personalny (rodzina, branża, ostatnie wydarzenie)
-- 3-6 zdań""",
+- Długość: 4-7 zdań merytoryki. Pełna odpowiedź, NIE jednozdaniówka. Ostatnia linia: "Daniel" (system doklei stopkę).""",
+    "KLIENT": """- To AKTUALNY klient lub stały kontakt (zamówienie w toku, support, follow-up po deal'u, branżowiec, dostawca)
+- Cel: konkret, działanie, follow-up. Konkretna informacja co dalej.
+- Liczby, daty, kolejne kroki — NIE ogólniki "skontaktujemy się"
+- Można ciepły element personalny (Tatuś, kumpel z branży)
+- Długość: 3-7 zdań. Dla zagranicznych dostawców (po angielsku, np. Engo, Nexnovo, Tutu) — pełna merytoryka 4-7 zdań z konkretami i potwierdzeniem co kiedy.
+- Ostatnia linia: "Daniel" lub bez podpisu (gdy "Tatuś," na początku) — system doklei stopkę.""",
     "PERSONAL": """- To prywatny mail (znajomy, rodzina, koleżeński kontakt)
 - Cel: lżej, bardziej osobiście, mniej "Daniel z GAMAKu"
 - Może być żartobliwie/ciepło
-- 2-5 zdań""",
+- Długość: 2-5 zdań. Bez stopki, bez podpisu (system NIE dokleja stopki dla skrzynki osobistej daniel86).""",
 }
 
 
@@ -344,7 +377,10 @@ BANNED_PHRASES = [
     "pragnę poinformować", "wykorzystaj potencjał", "kompleksowe rozwiązanie",
     "innowacyjny", "z poważaniem,",
 ]
-BANNED_DASHES = ["—", "–"]  # em-dash + en-dash
+# v0.12: em-dash NIE jest banned — Daniel realnie używa w mailach (Sample #2 do Engo:
+# "1. Spare parts per offer OF-2026-415 — arm + hydraulic cylinder"). Tylko sanity warn.
+BANNED_DASHES = []
+EM_DASH_CHARS = ["—", "–"]
 
 
 # v0.5.3: Słowotwórcze fixy — AI Sonnet generuje warianty których Daniel NIE używa
@@ -363,29 +399,129 @@ WORD_FIXES = [
 ]
 
 
-def post_process_body(body: str) -> tuple[str, list[str]]:
+# v0.12: Patterny CORP FOOTER które model wstawia mimo instrukcji "NIE wstawiaj stopki".
+# Przed dodaniem deterministycznej stopki — wycinamy te śmieci z końca body.
+# Każdy match (multiline) usuwa od pierwszego trafienia do końca body (zakładamy że
+# corporate footer to ostatnia rzecz w mailu).
+CORP_FOOTER_TRIGGERS = [
+    r"^Best regards,\s*$",
+    r"^Kind regards,\s*$",
+    r"^Sincerely,\s*$",
+    r"^Z poważaniem,?\s*$",
+    r"^Z wyrazami szacunku,?\s*$",
+    r"^Pozdrawiam,?\s*$",  # Daniel zwykle "Daniel" lub bez signoff, nie "Pozdrawiam"
+    r"^Manager\s*$",
+    r"^Director\s*$",
+    r"^CEO\s*$",
+    # Stopka GAMAK z adresem/tel/email — model wstawia gdy zechce
+    r"^GAMAK Sp\. z o\.o\.\s*$",  # zostawiamy gdy doklejamy w append_signature
+    r"^Gamak Sp\. z o\.o\.\s*$",
+    r"^ul\. .*$",
+    r"^[0-9]{2}-[0-9]{3} .*$",  # kod pocztowy + miasto
+    r"^tel\.[ \-]*\+?\d.*$",
+    r"^kom\.[ \-]*\+?\d.*$",
+    r"^[Ee]-?mail:.*$",
+    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\s*$",  # bare email
+    r"^www\.gamak\.eu\s*$",
+    r"^http.*gamak.*$",
+]
+
+
+def detect_language(body: str) -> str:
+    """Rough heuristic: jeśli body ma diakrytyki PL ALBO popularne słowa PL → "pl", inaczej "en"."""
+    if any(ch in body for ch in "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ"):
+        return "pl"
+    pl_words = ["dzień", "dobry", "cześć", "pozdrawiam", "dziękuję", "proszę", "tatuś"]
+    body_lower = body.lower()
+    if any(w in body_lower for w in pl_words):
+        return "pl"
+    en_signals = [" the ", " is ", " are ", " will ", " regarding", " thanks", " please", " hi "]
+    if any(s in body_lower for s in en_signals):
+        return "en"
+    return "pl"  # default PL
+
+
+def strip_corp_footer(body: str) -> tuple[str, int]:
+    """Usuń corporate footer z końca body. Zwraca (body_clean, lines_removed).
+    Strategia: skanujemy od końca; gdy pierwsza linia niekomentarzowa pasuje do dowolnego
+    CORP_FOOTER_TRIGGERS — usuwamy ją plus wszystko co po niej. Powtarzamy żeby zlikwidować
+    kaskadę (Best regards / Daniel Klimczak / Manager / Gamak / ul. / tel. / email / www).
     """
-    v0.5 fix: Sonnet 4.6 mimo instrukcji wstawia em-dashy + niewłaściwe słowotwórstwo.
-    Post-process zamienia em-dash, en-dash, banned phrases.
+    lines = body.split("\n")
+    # Trim trailing empty lines
+    while lines and lines[-1].strip() == "":
+        lines.pop()
+    if not lines:
+        return body, 0
+    removed = 0
+    # Iteruj od końca, usuwaj linie pasujące do triggers + bare "Daniel Klimczak"/"Daniel" w kontekście stopki
+    # Model wstawia: "\n\nDaniel Klimczak\nManager\nGamak Sp. z o.o.\nul. ...\ntel. ...\nemail ...\nwww. ..."
+    # Wiemy że PROPER signoff to maks "Daniel" jako ostatnia linia merytoryki.
+    while lines:
+        last = lines[-1].strip()
+        if last == "":
+            lines.pop()
+            continue
+        matched = False
+        for pattern in CORP_FOOTER_TRIGGERS:
+            if re.match(pattern, last):
+                matched = True
+                break
+        # "Daniel Klimczak" jako ostatnia linia → corp footer (Daniel sam podpisuje "Daniel" jednowyrazowo)
+        if not matched and re.match(r"^Daniel\s+Klimczak\s*$", last):
+            matched = True
+        # v0.13: bare "Daniel" sign-off przed deterministyczną stopką
+        if not matched and re.match(r"^Daniel\s*$", last):
+            matched = True
+        if matched:
+            lines.pop()
+            removed += 1
+        else:
+            break
+    return "\n".join(lines), removed
+
+
+def append_signature(body: str, mailbox_email: str, lang_hint: str = "") -> str:
+    """v0.12: Dokleja deterministyczną stopkę z MAILBOX_SIGNATURES."""
+    sigs = MAILBOX_SIGNATURES.get(mailbox_email or "", {})
+    if not isinstance(sigs, dict):
+        return body
+    lang = lang_hint or detect_language(body)
+    sig = sigs.get(lang) or sigs.get("pl") or ""
+    if not sig:
+        return body  # osobiste: bez stopki
+    # Trim trailing whitespace z body, doklej sig (sig sam zawiera \n\n na początku)
+    return body.rstrip() + sig
+
+
+def post_process_body(body: str, mailbox_email: str = "") -> tuple[str, list[str]]:
+    """
+    v0.12: post-process body z modelu.
+    1. Słowotwórcze fixy (Tatusiu→Tatuś itp.)
+    2. Strip corp footer ktory model wcisnal mimo instrukcji "NIE wstawiaj stopki"
+    3. Doklej deterministyczną stopkę per mailbox+lang z MAILBOX_SIGNATURES
     Zwraca (cleaned_body, applied_fixes).
     """
     fixes = []
     cleaned = body
 
-    # 1. Em-dash / en-dash
-    for dash in BANNED_DASHES:
-        if dash in cleaned:
-            count = cleaned.count(dash)
-            cleaned = cleaned.replace(f" {dash} ", ", ")
-            cleaned = cleaned.replace(dash, ", ")
-            fixes.append(f"{dash} x{count} -> przecinek")
-
-    # 2. Słowotwórcze fixy (regex z word boundaries)
+    # 1. Słowotwórcze fixy (regex z word boundaries)
     for pattern, replacement in WORD_FIXES:
         new_cleaned, n = re.subn(pattern, replacement, cleaned, flags=re.IGNORECASE)
         if n > 0:
             cleaned = new_cleaned
             fixes.append(f"{pattern} x{n} -> {replacement}")
+
+    # 2. Strip corp footer (model wciska mimo instrukcji)
+    cleaned, removed = strip_corp_footer(cleaned)
+    if removed > 0:
+        fixes.append(f"corp_footer_lines_stripped x{removed}")
+
+    # 3. Doklej deterministyczną stopkę
+    body_before_sig = cleaned
+    cleaned = append_signature(cleaned, mailbox_email)
+    if cleaned != body_before_sig:
+        fixes.append(f"signature_appended:{mailbox_email}")
 
     return cleaned, fixes
 
@@ -393,9 +529,10 @@ def post_process_body(body: str) -> tuple[str, list[str]]:
 def sanity_check(draft_body: str) -> list[str]:
     body_lower = draft_body.lower()
     found = [p for p in BANNED_PHRASES if p in body_lower]
-    for dash in BANNED_DASHES:
-        if dash in draft_body:
-            found.append(dash)
+    # v0.12: em-dashe nie są banned, ale sygnalizujemy gdy >3 (model przesadza)
+    em_count = sum(draft_body.count(d) for d in EM_DASH_CHARS)
+    if em_count > 3:
+        found.append(f"em_dash_excessive_x{em_count}")
     return found
 
 
@@ -509,10 +646,10 @@ def lambda_handler(event, context):
         logger.exception("Bedrock draft failed")
         return {"statusCode": 500, "error": f"bedrock failed: {e}"}
 
-    # Post-process: replace em-dash/en-dash przecinkami (Sonnet ignoruje "no em-dash" w prompcie)
-    cleaned_body, dash_fixes = post_process_body(draft_result["body"])
-    if dash_fixes:
-        logger.info(f"Dash fixes applied: {dash_fixes}")
+    # v0.12 Post-process: słowotwórcze fixy + strip corp footer + doklej stopkę per mailbox+lang
+    cleaned_body, post_fixes = post_process_body(draft_result["body"], item.get("mailbox_email", ""))
+    if post_fixes:
+        logger.info(f"Post-process fixes applied: {post_fixes}")
         draft_result["body"] = cleaned_body
 
     # Sanity check po post-processingu

@@ -4,6 +4,53 @@ Format: `## [YYYY-MM-DD] vX.Y — temat`. Krótko, "co i dlaczego". Pełniejsze 
 
 ---
 
+## [2026-05-05] v1.7 — R1 follow-up: R15-R18 zatwierdzone + A9 sanitize + RODO/A1/A2 walkthroughs
+
+**Co:**
+- ✅ **R15-R18 ZATWIERDZONE jako TWARDA ZASADA** — `ZASADY.md` § Część 4 § Kandydaci status zmieniony z "do decyzji właściciela" na "TWARDA ZASADA — obowiązuje" (trigger: Daniel `/yolo r15-r18` 2026-05-05). Aktywne:
+  - **R15** — `.claude/settings.local.json` + bash command history NIGDY tracked w repo
+  - **R16** — Test data dla systemów z PII = mock-from-day-0
+  - **R17** — Procedura kryzysowa GitHub: pre-flight checklist filter-repo (10-step)
+  - **R18** — Audit raporty incydentów: meta-protokół (sekrety strukturalnie, nie wartościowo)
+- ✅ **A9 closed** — sanitize PII zewnętrznych w `gamak/projekty/autofirma/maile/docs/CHANGELOG.md` (workdir):
+  - `Tutu-Nexnovo` → `<dostawca-led-cn-1>` (5 wystąpień)
+  - `Mds Display` → `<dostawca-led-cn-2>` (4 wystąpień)
+  - `Peter` standalone → `<klient-zagraniczny-engo>` (4 wystąpień)
+  - Łącznie ~13 wystąpień zewnętrznych PII zsanitizowanych
+  - **Wewnętrzne (Wiesław Klimczak, osobiste maile)** — zostawione, wymagają osobnej decyzji Daniela (publiczna funkcja PFU writer GAMAK vs prywatność rodzinna). Sygnalizowane.
+  - Filter-repo NIE wykonane — wymaga osobnego TAK Daniela (R17 destrukcyjny, ekspozycja PRIVATE niska)
+- ✅ **RODO Art. 33 decision support** — `costsec/audits/2026-05-05_RODO_decision.md`:
+  - Analiza 4-kryterialna ryzyka realnego
+  - Rekomendacja CTO: **NIE zgłaszać** (warunek: A2 czyste)
+  - Template formularza UODO (jeśli decyzja TAK)
+  - Szablony wpisów do `decyzje.md` (oba scenariusze)
+  - Deadline: 2026-05-07 22:00
+- ✅ **A1 + A2 walkthrough** — `costsec/audits/2026-05-05_A1_A2_walkthrough.md`:
+  - A1: step-by-step audyt logów FTP CyberFolks (~5 min)
+  - A2: step-by-step audyt OAuth GitHub (~3 min) + PAT + SSH keys
+  - Tabele werdyktów + macierz wpływu na decyzję RODO
+  - Szablony raportów A1/A2 + wpisów `decyzje.md`
+
+**Closures w pending_actions.md:** A9 + R15-R18 → WYKONANE. A1/A2/RODO → walkthroughs/memo gotowe, czekają na akcję Daniela (deadline 2026-05-07 22:00).
+
+**Wciąż otwarte (wymagają fizycznych akcji Daniela, deadline RODO 72h):**
+- 🔴 D1 (MFA root backup) — 5 min, recovery codes z AWS Console
+- 🟡 A1 — wykonanie według walkthrough (deadline 2026-05-07 22:00)
+- 🟡 A2 — wykonanie według walkthrough (deadline 2026-05-07 22:00)
+- 🟡 RODO Art. 33 — decyzja po A2 (deadline 2026-05-07 22:00)
+- 🟡 mail/CHANGELOG.md sanitize wewnętrznych Wiesława — osobna decyzja
+- 🟡 Filter-repo na mail/CHANGELOG.md (R17 destrukcyjny) — osobny TAK jeśli Daniel chce pełen scrub historii
+
+**Dlaczego:**
+- Daniel `/yolo "rób a1 a2 oraz a9 rodo r15-r18"` → odhaczyłem 2 (R15-R18 + A9), 3 pozostałe wymagają UI/decyzji ale dostały kompletne walkthroughs
+- A1+A2 walkthrough oszczędza Danielowi research — kopiuj-wklej do panelu CF/GitHub
+- RODO memo daje Daniel'owi gotową analizę + szablon `decyzje.md` do wpisu po A2
+- R15-R18 jako TWARDA = pre-commit hook v1.0 już je egzekwuje (R15+R16+R18), R17 w GITHUB.md § Krok 4
+
+**Status global:** R1 follow-up **75% complete** (6/8 closures CTO-side: A4, A6, A7, A8, A9, R15-R18). Pozostałe 2 to tylko wykonanie walkthroughs przez Daniela (~10-15 min UI work).
+
+---
+
 ## [2026-05-05] v1.6 — R1 follow-up: A4/A6/A7/A8 closed + pre-commit hook v1.0 + fewer-permission-prompts
 
 **Co:**
