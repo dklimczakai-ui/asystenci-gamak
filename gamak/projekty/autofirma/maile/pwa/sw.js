@@ -1,5 +1,5 @@
 // Service Worker - 2026 redesign cache bump
-const CACHE = 'maile-2026-v1';
+const CACHE = 'maile-2026-v2';
 const ASSETS = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', e => {
