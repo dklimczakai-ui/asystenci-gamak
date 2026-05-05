@@ -1,0 +1,47 @@
+{
+  "count": 2,
+  "drafts": [
+    {
+      "draft_id": "mock-uuid-0001-leadtest",
+      "created_at": 1777864310000,
+      "message_id": "mock-msg-0001",
+      "mailbox_email": "<owner-mailbox-1@example.com>",
+      "thread_id": "mock-thread-0001",
+      "reply_to": "<klient-firma-budowlana@example.com>",
+      "subject_reply": "Re: Zapytanie o ofertę — fikcyjny obiekt sportowy",
+      "body_preview": "Dzień dobry,\n\nDziękuję za zapytanie. Aby przygotować konkretną ofertę, potrzebuję kilku informacji:\n- jakiej miejscowości dotyczy inwestycja,\n- czy to inwestycja JST czy prywatna,\n- planowany termin realizacji.\n\nJak otrzymam odpowiedzi, wracam z ofertą.\n\nPozdrawiam,\n<Imię Nazwisko>\n<Firma Sp. z o.o.>",
+      "body_length": 280,
+      "tone": "professional",
+      "category_source": "LEAD",
+      "sanity_issues": [],
+      "model_used": "eu.anthropic.claude-sonnet-4-6",
+      "tokens": "20000 in / 300 out",
+      "notes": "Mock notatka AI dla testów: 1) Sprawdź zakres oferty przed wysłaniem. 2) Zweryfikuj typ inwestora. 3) Potwierdź termin z zespołem.",
+      "expires_at": 1778469000
+    },
+    {
+      "draft_id": "mock-uuid-0002-newslettertest",
+      "created_at": 1777864300000,
+      "message_id": "mock-msg-0002",
+      "mailbox_email": "<owner-mailbox-2@example.com>",
+      "thread_id": "mock-thread-0002",
+      "reply_to": "<newsletter@example.com>",
+      "subject_reply": "Re: Promocja produktowa — fikcyjny mailing",
+      "body_preview": "To masowy mailing marketingowy, nie wymaga odpowiedzi.",
+      "body_length": 55,
+      "tone": "casual",
+      "category_source": "INFO",
+      "sanity_issues": [],
+      "model_used": "eu.anthropic.claude-sonnet-4-6",
+      "tokens": "15000 in / 100 out",
+      "notes": "Mock: zarchiwizować bez akcji. Mass mailing = autonomous archive przy confidence >= 0.9.",
+      "expires_at": 1778469000
+    }
+  ],
+  "_meta": {
+    "purpose": "Mock testdata dla endpointu mail-agent-api § GET /agent/inbox. Plik tracked w repo z fikcyjnymi danymi — bez PII.",
+    "real_data_handling": "Realne dane testowe (z PII klientów) trzymaj POZA repo: w gamak/backup/ lub jako *_real.json (gitignored). NIGDY nie commituj plików z prawdziwymi treściami maili klientów (R5 z ZASADY.md, sekcja Część 1).",
+    "sanitized": "2026-05-04 — sanitized z 21 realnych draftów do 2 mock draftów. Cleanup naruszenia R5 wykrytego przy onboardingu procedury GitHub w COSTSEC. Backup oryginału: gamak/backup/inbox_test_REAL_DATA_20260504.json (poza repo, gitignored).",
+    "version": "v2.0-mock"
+  }
+}

@@ -90,6 +90,7 @@ decyzje.md
 # Backupy (mogą zawierać snapshoty z sekretami)
 **/backup/
 backup_*/
+_backup_*/
 *.backup
 
 # CRM dane (kontakty klientów, GDPR)
@@ -276,6 +277,36 @@ launchers/
 # Memory systemu Claude Code (auto-memory user)
 .claude/projects/
 .claude/settings.local.json
+
+# -----------------------------------------------------------------------------
+# 9) TEST DATA Z PII — REALNE DANE KLIENTÓW NIGDY DO REPO
+# -----------------------------------------------------------------------------
+# Konwencja: pliki testowe z prefix/sufix `_real` lub w folderze `_local/`
+# trzymaj poza repo. Mock test data (z fikcyjnymi danymi) może być tracked.
+# Powód: incydent 2026-05-04 — inbox_test.json zawierał 21 realnych draftów
+# z PII klientów (R5 violation). Po sanitize do mock data, blokujemy patterny
+# nazw, które najprawdopodobniej kryją realne dane.
+**/lambda/*/*_real.json
+**/lambda/*/*_real.txt
+**/lambda/*/*_real.md
+**/_local/
+**/_real/
+*_REAL_DATA_*
+
+# P1 #12 (skan COSTSEC 2026-05-04 wieczorem) — pliki testowe mail-drafter
+# wykryte jako wrażliwe biznesowo (drafty AI z body maili + AI notes
+# o decyzjach przetargowych GAMAK). Trzymamy lokalnie, NIE commitujemy.
+# Mock data fine-grained: jeśli plik test_payload/test_resp został świadomie
+# spreparowany jako mock, użyj sufix _mock (np. test_payload_mock.json).
+**/lambda/*/test_payload*.json
+**/lambda/*/test_resp*.json
+!**/lambda/*/test_payload_mock*.json
+!**/lambda/*/test_resp_mock*.json
+
+# Plik debugowy zombie drafts (jeśli wygenerowany lokalnie)
+# Warianty: zombie_drafts.json, zombie_drafts_inventory.json, zombie_drafts_*.json
+# Zawierają metadata draftów (gmail_id, subject, mailbox) — może mieć kontekst klienta
+**/zombie_drafts*.json
 
 # =============================================================================
 # WERYFIKACJA PRZED PIERWSZYM COMMITEM:
