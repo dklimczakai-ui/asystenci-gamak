@@ -4,6 +4,65 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) lite.
 
 ---
 
+## [2026-05-05] — mail-drafter v0.12 → v0.14: styl + stopki + em-dash (CTO YOLO)
+
+Daniel: "styl jest straszny, w ogóle nie podobny do moich poprzednich maili przez ghosta — pełnych i lepszych. Tak samo nie dodajesz stopek". 3 problemy w mail-drafter v0.10:
+
+**Problem 1 — corp footer 8 linii.** Model bez instrukcji wstawiał `Best regards / Daniel Klimczak / Manager / Gamak Sp. z o.o. / ul. Towarowa / tel / email / www`. Realny styl Daniela (Sample #1 z `extracted-context/sent-samples.json`): tylko 3 linie `Daniel Klimczak / GAMAK Sp. z o.o. / www.gamak.eu`.
+
+**Problem 2 — em-dash false-positive ban.** `BANNED_DASHES = ["—", "–"]` zamieniał em-dash na przecinek. Daniel realnie używa em-dash (Sample #2 do Engo: `1. Spare parts — arm + hydraulic cylinder`).
+
+**Problem 3 — limit 6-8 zdań.** Model wybierał 1 zdanie + długą stopkę zamiast 4-6 zdań merytoryki.
+
+### Fix v0.12 → v0.14 (3 iteracje)
+
+**v0.12:** `MAILBOX_SIGNATURES` env var + helpery `append_signature` / `strip_corp_footer` / `detect_language` (PL/EN). Em-dash usunięty z BANNED, sanity warn tylko gdy >3. Prompt: "3-8 zdań, NIE WSTAWIAJ STOPKI — system dokleja automatycznie". Strip corp footer wycina 17 patterns + bare "Daniel Klimczak".
+
+**v0.13:** `strip_corp_footer` dodatkowo wycina bare `Daniel\s*$` (sign-off). Model dodawał "Daniel" jako podpis przed stopką, Daniel realnie nie pisze "Daniel" przed "Daniel Klimczak" w stopce.
+
+**v0.14 (root cause):** AWS env `MAILBOX_SIGNATURES` zawiera real newlines zamiast `\\n` escape (bash heredoc + AWS CLI escaping konwersja) → invalid JSON → `json.loads` exception → fallback na `DEFAULT_SIGNATURES` w kodzie. Ale DEFAULT w v0.12-v0.13 wciąż miał stary `"\n\nDaniel\n\nDaniel Klimczak..."` (z "Daniel" prefix). Mimo prompt/post-process zmian, fallback'em zwracało "Daniel" sign-off. **Fix:** `DEFAULT_SIGNATURES` w kodzie zaktualizowany na clean `"\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu"`. Teraz fallback daje poprawną stopkę.
+
+### Test live (3 PENDING re-amended po v0.14)
+
+**Przed (corp footer 8 linii):**
+```
+Hi Tutu,
+I'll send you the project details shortly...
+Best regards,
+Daniel Klimczak
+Manager
+Gamak Sp. z o.o.
+ul. Towarowa 9, 44-337 Jastrzębie-Zdrój
+tel. +48 NNN NNN NNN
+d.klimczak.gamak@[masked]
+www.gamak.eu
+```
+
+**Po (3 linie, em-dash zachowany):**
+```
+Hi Tutu,
+Give me a day or two to go through the catalog properly — I want to have specific questions ready before we talk.
+Once I'm done, I'll send over the project details and we can set up a Zoom call to go through everything.
+
+Daniel Klimczak
+GAMAK Sp. z o.o.
+www.gamak.eu
+```
+
+Wszystkie 3 PENDING (Tutu LED, Tatuś przetargi, boisko SSM Rajcza) re-amended → czyste stopki, Gmail drafts starych skasowane przez mail-agent-api v0.3.
+
+### Deploy + backup
+
+- AWS Lambda CodeSha256: `RlA/4jBmmvtloFQQBZ3NVKc69Z1M5ql123fHLurCNHw=` (v0.14)
+- Backup: `backup/mail-drafter_lambda_function_pre-style-fix_20260505_0509.py`
+- MAILBOX_SIGNATURES env (z corruption — ale fallback działa)
+
+### Drift pattern (3x cykl naprawy via deploy.zip extract)
+
+Trzykrotnie w sesji lokalny `mail-drafter/lambda_function.py` cofał się do v0.8 (linter/edit konflikt) gdy AWS Lambda była już na świeższej wersji. Strategia naprawy: extract `lambda_function.py` z deployowanego `deploy.zip` → sync local + `_build/`. Końcowy stan: local = `_build/` = AWS deployed = v0.14.
+
+---
+
 ## [2026-05-05] — mail-agent-api v0.3: zombie Gmail drafts cleanup (CTO YOLO)
 
 Daniel zgłosił: "zapisuje drafty na gmailu i nie kasuje tych nieużytych — mam wysłaną odpowiedź zawierającą 3 wersje robocze". Diagnoza odkryła **bug strukturalny w mail-agent-api v0.2**: po SEND/REJECT/AMEND/ARCHIVE Gmail draft nie był usuwany, tylko DDB status leciał na SENT/REJECTED/AMENDED/DISCARDED. Janitor v0.3 usuwa Gmail drafty TYLKO dla DDB status=PENDING — drafty po SEND/REJECT/AMEND nigdy nie wracały pod jego radar i zostawały zombie w folderze "Wersje robocze" Gmaila.

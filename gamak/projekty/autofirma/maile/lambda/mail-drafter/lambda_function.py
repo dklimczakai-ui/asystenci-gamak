@@ -1,5 +1,5 @@
 """
-Mail Drafter v0.13 — strip bare 'Daniel' sign-off + v0.12 base (2026-05-05).
+Mail Drafter v0.14 — clean DEFAULT_SIGNATURES (env JSON literal-newline corruption fallback) (2026-05-05).
 
 Generuje draft odpowiedzi w stylu Daniela Klimczaka używając Bedrock Sonnet 4.6.
 Wywoływany ręcznie z `message_id` (krok 8 doda DDB Stream trigger na status=CLASSIFIED).
@@ -78,8 +78,8 @@ TTL_DAYS = int(os.environ.get("DRAFT_TTL_DAYS", "7"))
 # Pusty string = bez stopki (np. dla osobistych)
 DEFAULT_SIGNATURES = {
     "d.klimczak.gamak@gmail.com": {
-        "pl": "\n\nDaniel\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
-        "en": "\n\nDaniel\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
+        "pl": "\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
+        "en": "\n\nDaniel Klimczak\nGAMAK Sp. z o.o.\nwww.gamak.eu",
     },
     "klimczak.daniel86@gmail.com": {
         "pl": "",  # osobiste — bez stopki
