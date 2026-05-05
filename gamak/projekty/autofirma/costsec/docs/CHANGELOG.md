@@ -4,6 +4,34 @@ Format: `## [YYYY-MM-DD] vX.Y — temat`. Krótko, "co i dlaczego". Pełniejsze 
 
 ---
 
+## [2026-05-05] v1.5 — R1 incident audit (sanitized) + R15-R18 kandydaci
+
+**Co:**
+- **R1 incident response COMPLETE** — wyciek hasła FTP CyberFolks + 21 PII klientów do PRIVATE repo na ~18h, naprawione 2026-05-05 04:30 przez rotację + filter-repo + force push (`+ 2084412...dd8d287 main -> main`). Pełen audit: `costsec/audits/2026-05-04_R1_incident.md`.
+- **Meta-incident** — pierwsza wersja audytu R1 (commit `ae547ad`) zawierała literalne sekrety + PII w prozaicznej dokumentacji. Naprawione 2026-05-05 ~05:00 przez `git reset --hard dd8d287` + force push retreat (`+ ae547ad...dd8d287 main -> main`). Sekret hasła i Telegram token były martwe (zrotowane), ale PII klientów LIVE. Sanitized v2 audytu zachowuje strukturalny opis (typ/status/data/lokalizacja) bez literalnych wartości.
+
+- **`gamak/projekty/autofirma/costsec/docs/ZASADY.md` § Część 4 § Kandydaci** — 4 nowe kandydaci R15-R18, status "do decyzji właściciela":
+  - **R15** — `.claude/settings.local.json` + bash command history NIGDY tracked w repo (`.gitignore` od dnia 0 każdego repo). Powód: L5 z R1 incident.
+  - **R16** — Test data dla systemów z PII = mock-from-day-0 (`<example.com>`, `mock-` prefix, gitignored `_real.json`/`_local/`). Powód: L6 z R1 incident.
+  - **R17** — Procedura kryzysowa GitHub: pre-flight checklist filter-repo (10-krokowa: backup .git + bundle + workdir copy + plain-text replace.txt + verification BEFORE/AFTER R12 + re-add origin + force push tylko po PASS + audit raport). Powód: L7 z R1 incident.
+  - **R18** — Audit raporty incydentów: meta-protokół (sekrety strukturalnie, nie wartościowo; PII klas opisy, nie pełne wartości). Powód: L8 z meta-incident.
+
+- **`.gitignore` polish:** `*.zip.bak` + `**/lambda/*/*.zip.bak` (deploy package backups) + `_backup_*/` (osłona przed commitem backupów filter-repo) + sekcja 9 (TEST DATA Z PII): `**/lambda/*/test_payload*.json` + `**/lambda/*/test_resp*.json` + wyjątki dla `_mock` files + `**/zombie_drafts*.json`.
+
+- **`costsec/audits/2026-05-04_pending_actions.md`** — closures dla G4/G5/A4+A5/B3+B4 (DONE jako część R1 response) + dopis 7 nowych pozycji follow-up (A1 audyt logów CF, A2 OAuth tokens GH, A4 beauty/.claude skan, A6 GITHUB.md pre-flight, A7 pre-commit hook, A9 mail/docs/CHANGELOG sanitize decision, RODO Art. 33 decyzja, R15-R18 zatwierdzenie do twardych).
+
+**Dlaczego:**
+- Sesja YOLO @cto wykryła R1 violation w skanie G2 przed planowanym G4 commit (2026-05-04 ~22:00)
+- Daniel autoryzował 6-krokową ścieżkę naprawy z TAK na każdy krok destrukcyjny
+- Sesja YOLO + TAK Daniela na całą sekwencję pozwolił wykonać autonomicznie wszystkie kroki w ~30 min
+- Meta-incident wymagał drugiej iteracji sanitize — R18 reguła ma temu zapobiec w przyszłości
+
+**Status global:** R1 incident **CONTAINED**. Aktywne sekrety zrotowane (FTP), historia czysta na origin/main, 7 pozycji follow-up (A1-A9 + RODO + R15-R18 zatwierdzenie) w toku.
+
+**Następny aktualizujący ten changelog:** sesja po wykonaniu A1 (audyt logów CyberFolks) lub weekly secure check 2026-05-08 (rytuał #2).
+
+---
+
 ## [2026-05-04] v1.4 — Plan naprawczy + droga do autonomii + sesja YOLO P1 close
 
 **Co (faza dokumentacja, sesja popołudniowa):**

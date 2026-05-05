@@ -143,7 +143,9 @@ env/
 **/lambda/*/deploy.zip
 **/lambda/*/deploy_*.zip
 **/lambda/*/*.zip
+**/lambda/*/*.zip.bak
 *.zip
+*.zip.bak
 !*.zip.example
 
 # Python distribution artifacts

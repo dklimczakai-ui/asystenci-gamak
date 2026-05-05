@@ -15,14 +15,22 @@ Format pozycji: **Nr • Kategoria • Co • Dlaczego • Kto robi • Trigger 
 
 ---
 
-## 🟡 STRUKTURALNE — CTO ROBI PO TWOIM TAK
+## 🟡 STRUKTURALNE — wszystkie wykonane 2026-05-05 jako część R1 incident response
 
-| # | Co | Dlaczego | Wymaga TAK | Kategoria |
-|---|-----|----------|-------------|-----------|
-| **G4** | Commit lokalny dzisiejszych zmian (security cleanup + COSTSEC v1.2) | Praca dnia żyje tylko na laptopie. Awaria dysku = utrata. | TAK na commit (procedura G4) | Bezpieczeństwo pracy |
-| **G5** | Push do GitHub PRIVATE | Zabezpieczenie w sejfie historii firmy (chmura) | OSOBNY TAK na push (procedura G5) | Bezpieczeństwo pracy |
-| **A4+A5** | `git filter-repo --replace-text` (stary Telegram trading token) + `git push --force-with-lease` | Stary token w historii repo (commit 2084412). Token martwy (zrewokowany 2026-05-04), ale R6 dług w audycie. | TAK destrukcyjny (przepisuje historię) | Czyszczenie historii GitHub |
-| **B3+B4** | `git filter-repo --path inbox_test.json --invert-paths` (oryginalna wersja z 21 PII) + `git push --force-with-lease` | Stara wersja `inbox_test.json` z prawdziwymi mailami klientów wciąż w historii repo. R5 violation. | TAK destrukcyjny | Czyszczenie historii GitHub |
+| # | Co | Status | Wynik |
+|---|-----|--------|-------|
+| ~~**G4**~~ | ~~Commit lokalny dzisiejszych zmian~~ | ✅ **WYKONANE 2026-05-05 04:30** | commit `dd8d287` (14 plików, 4830 insertions) |
+| ~~**G5**~~ | ~~Push do GitHub PRIVATE~~ | ✅ **WYKONANE 2026-05-05 04:30** | `+ 2084412...dd8d287 main -> main (forced update)` |
+| ~~**A4+A5**~~ | ~~`git filter-repo --replace-text` (Telegram token) + force push~~ | ✅ **WYKONANE 2026-05-05 04:25** | Phase 2 replace-text, 5 wystąpień zastąpione `<REDACTED_TELEGRAM_TOKEN_INCIDENT_2026-05-04>` |
+| ~~**B3+B4**~~ | ~~`git filter-repo --invert-paths inbox_test.json` (oryginalna z 21 PII) + force push~~ | ✅ **WYKONANE 2026-05-05 04:20** | Phase 1 invert-paths, plik usunięty z całej historii |
+| **NEW: A1** | Audyt logów CyberFolks: FTP login attempts w okresie 2026-05-04 → 05-05 — czy w ekspozycji 18h ktoś nieautoryzowany próbował FTP | ⏳ TAK Daniela (panel CF lub support) | R1 incident follow-up |
+| **NEW: A2** | github.com/settings/applications: czy są nieoczekiwane OAuth tokens z scope `repo` | ⏳ TAK Daniela (manual) | R1 incident follow-up |
+| **NEW: A4** | Skan `beauty/.claude/settings.local.json` (TRACKED w repo, skan G2 zwrócił 0 dla wzorców R1, ale plik wciąż śledzi bash history) | ⏳ TAK Daniela (skan + decyzja `git rm --cached`) | R1 incident follow-up |
+| **NEW: A6** | Procedura GITHUB.md — rozszerzenie sekcji "Procedura kryzysowa" o pre-flight checklist filter-repo (10-krokowa, R17 kandydat) | ⏳ safe config (CTO action) | R1 incident lessons |
+| **NEW: A7** | Pre-commit hook (TruffleHog/git-secrets) — auto-blokowanie commitów z sekretami | ⏳ TAK Daniela (instalacja + konfig) | R1 incident follow-up |
+| **NEW: A9** | `mail/docs/CHANGELOG.md` (Daniel'a doc) ma 2 wystąpienia "<klient-zagraniczny-engo>" (PII zewnętrzny klient w prozaicznej dokumentacji debugowania pipeline). Decyzja: zostawić jak jest LUB sanitize + filter-repo | ⏳ Daniel (niski risk, repo PRIVATE) | R1 incident follow-up |
+| **NEW: RODO Art. 33** | Decyzja czy notyfikacja UODO 72h | ⏳ Daniel (lub doradca prawny, wstępna ocena CTO: prawdopodobnie nie wymaga — PRIVATE, brak dowodów dostępu, dane usunięte) | R1 incident follow-up |
+| **NEW: R15-R18** | Zatwierdzenie kandydatów R15+R16+R17+R18 do twardych zasad | ⏳ Daniel (osobny TAK lub monthly sync 2026-06-05) | R1 incident lessons |
 
 ---
 
