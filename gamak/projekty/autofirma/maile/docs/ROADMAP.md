@@ -185,9 +185,9 @@ Bonus poza original ROADMAP:
 - ✅ Auto-archive 80% autonomous: `mail-processor` ma `AUTO_ARCHIVE_CATEGORIES=INFO,NEWSLETTER,TRANSACTIONAL` z confidence threshold; DDB pokazuje regularne `AUTO_ARCHIVED`
 - ✅ Feedback loop: 61 records w `mail-feedback` table (8 ACCEPTED + 22 REWRITE + 31 REJECTED)
 - ✅ Approved Actions Router — endpoint `/agent/action propose` zapisuje do S3 `proposed-actions/{decision,fact,task}/`
-- ❌ **Apply Engine** — proposed-actions zostają w S3, nie są aplikowane do `gamak/dane/plan.md` / `decyzje.md` / CRM. Wymaga decyzji Daniela: auto-apply czy z TAK?
-- ❌ **VIP whitelist** — brak. Wymaga: `gamak/dane/mail_routing.md` z listą VIP (e.g. wójtowie JST z którymi Daniel miał kontakt) + logic w mail-processor żeby nie auto-archive nawet INFO/NEWSLETTER od VIP
-- ❌ **KWOTA > 50k auto-detect (NER)** — brak. Wymaga: regex/NER w mail-processor + escalation ścieżka
+- ✅ **Apply Engine** — `scripts/apply_proposed_actions.py` (local) aplikuje proposed-actions z S3 do `gamak/dane/` (decyzje/plan/mail_context_updates) z `--dry-run` + audit trail w `applied-actions/<date>/`. Test live 2026-05-05: 3/3 applied. Trigger: manual run (raz/tydzień). Future: Lambda + cron jeśli Daniel chce automatyzację.
+- ✅ **VIP whitelist** — `gamak/dane/mail_routing.md` z 10 emailami baseline (Wiesław × 2 skrzynki / Paweł / Basia / Peter Lercher / Georg Engl / Tutu Nexnovo / Mds Display / SportIce / NS Pro). `mail-processor` v0.12 ma R-1 rule: VIP → KLIENT conf 1.0, skip auto-archive (defensywny guard). Daniel uzupełnia listę w `mail_routing.md` + uruchamia update env zgodnie z instrukcją w pliku.
+- ✅ **KWOTA > 50k auto-detect (NER)** — regex w `mail-processor` v0.12 (`extract_high_amount(text)`): łapie zł/zl/PLN/EUR/USD/netto/brutto/tys/k z konwersją EUR/USD ×4.5 i tys/k ×1000. Tag w DDB `high_amount_flag: True`, `high_amount_value: int`. SNS alert TODO.
 
 **Pomiary z Fazy 1** — niezebrane. Ale 7-dniowe okno z mail-emails (557 records, mailbox split, kategorie) DA się odzyskać post-hoc przez DDB scan + analiza w Pythonie. TODO: standalone script dla tego raportu.
 

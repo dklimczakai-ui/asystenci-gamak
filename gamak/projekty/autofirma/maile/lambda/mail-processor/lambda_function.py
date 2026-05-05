@@ -47,7 +47,16 @@ AUTO_DRAFT_CATEGORIES = set(os.environ.get("AUTO_DRAFT_CATEGORIES", "LEAD,KLIENT
 DRAFTER_FUNCTION = os.environ.get("DRAFTER_FUNCTION", "mail-drafter")
 # v0.11: read-only mailboxes — skipuj SQS push z tych skrzynek (defensywne; biuro.gamak)
 READONLY_MAILBOXES = set(s.strip() for s in os.environ.get("READONLY_MAILBOXES", "").split(",") if s.strip())
-CLASSIFIER_VERSION = "hybrid_v0.11"  # readonly guard + idempotency + auto-draft + multi-mailbox + rules + bedrock
+CLASSIFIER_VERSION = "hybrid_v0.12"  # +VIP whitelist (R-1) + HIGH_AMOUNT regex (2026-05-05)
+
+# v0.12: VIP whitelist — kontakty których maile NIGDY nie idą do auto-archive.
+# Format env var: comma-separated lowercase emails. Patrz `gamak/dane/mail_routing.md`.
+VIP_WHITELIST = set(
+    s.strip().lower()
+    for s in os.environ.get("VIP_WHITELIST", "").split(",")
+    if s.strip()
+)
+HIGH_AMOUNT_THRESHOLD = int(os.environ.get("HIGH_AMOUNT_THRESHOLD", "50000"))
 
 # Multi-mailbox: env var MAILBOXES = JSON list [{"email":"...","secret":"..."}, ...]
 # Resolve email -> secret_name dla SQS-triggered invoke (push z konkretnej skrzynki)
@@ -144,10 +153,51 @@ def extract_email(from_header: str) -> str:
     return from_header.lower().strip()
 
 
+def is_vip(from_email: str) -> bool:
+    """v0.12: czy nadawca jest na VIP_WHITELIST?"""
+    return (from_email or "").lower() in VIP_WHITELIST
+
+
+# v0.12: HIGH_AMOUNT regex — kwoty PLN/EUR/USD w body
+# Łapie: "50 000 zł", "150.000 PLN", "75 tys", "120k EUR", "85000 brutto", "8000 zł"
+# Pattern: liczba (z opt. separatorami tysięcy) + unit (zł/PLN/EUR/USD/tys/k/etc)
+HIGH_AMOUNT_REGEX = re.compile(
+    r"\b(\d{1,3}(?:[\s.,]\d{3})+|\d+)\s*(zł|zl|pln|eur|usd|netto|brutto|tys\.?|tyś\.?|tysięcy|tysiące|k(?=\b|\s|$))",
+    re.IGNORECASE,
+)
+
+
+def extract_high_amount(text: str) -> tuple[bool, int]:
+    """Zwraca (flag, max_amount_in_pln). Konwertuje EUR/USD na PLN (×4.5) i tys/k (×1000)."""
+    if not text:
+        return (False, 0)
+    max_amount = 0
+    for m in HIGH_AMOUNT_REGEX.finditer(text):
+        raw = m.group(1).replace(" ", "").replace(",", "").replace(".", "")
+        unit = m.group(2).lower().rstrip(".")
+        try:
+            value = int(raw)
+        except ValueError:
+            continue
+        # Multipliers
+        if unit in ("tys", "tyś", "tysięcy", "tysiące", "k"):
+            value *= 1000
+        # EUR/USD ~4.5x kursu PLN
+        if unit in ("eur", "usd"):
+            value = int(value * 4.5)
+        if value > max_amount:
+            max_amount = value
+    return (max_amount >= HIGH_AMOUNT_THRESHOLD, max_amount)
+
+
 def classify_rules(from_email: str, subject: str, contacts_table) -> tuple[str, float, str]:
-    """RULES v0.2 (z R0 mass mailer). Returns (category, confidence, reason)."""
+    """RULES v0.2 + R-1 VIP whitelist. Returns (category, confidence, reason)."""
     from_lower = (from_email or "").lower()
     subj_lower = (subject or "").lower()
+
+    # R-1: VIP whitelist (najwyższy priorytet, nadpisuje WSZYSTKIE inne reguły)
+    if is_vip(from_lower):
+        return (CAT_KLIENT, 1.0, "R-1 VIP whitelist")
 
     # R0: deterministic match domeny mass mailerów (system przetargi, raporty)
     if "@" in from_lower:
@@ -474,9 +524,24 @@ def lambda_handler(event, context):
                     "classified_at": fetched_at,
                 }
 
+                # v0.12: VIP guard — VIP NIGDY nie idą do auto-archive (defensywnie)
+                vip_flag = is_vip(from_email)
+                item["vip_flag"] = vip_flag
+
+                # v0.12: HIGH_AMOUNT detection (kwota >= threshold w snippet/subject)
+                ha_flag, ha_value = extract_high_amount(f"{subject} {snippet}")
+                if ha_flag:
+                    item["high_amount_flag"] = True
+                    item["high_amount_value"] = ha_value
+
                 # Autonomous mode: auto-archive INFO/NEWSLETTER/TRANSACTIONAL przy confidence >= próg
+                # VIP NIGDY nie auto-archive (R-1 i tak by ich już zaklasyfikował jako KLIENT, ale
+                # defensywnie — jakby ktoś dodał email do VIP a category zostałaby INFO przez race).
                 auto_archived = False
-                if AUTONOMOUS_MODE and category in AUTO_ARCHIVE_CATEGORIES and confidence >= AUTO_ARCHIVE_THRESHOLD:
+                if (AUTONOMOUS_MODE
+                        and category in AUTO_ARCHIVE_CATEGORIES
+                        and confidence >= AUTO_ARCHIVE_THRESHOLD
+                        and not vip_flag):
                     try:
                         service.users().messages().modify(
                             userId="me", id=msg_id, body={"removeLabelIds": ["INBOX"]}

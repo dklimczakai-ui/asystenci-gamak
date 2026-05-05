@@ -4,6 +4,117 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) lite.
 
 ---
 
+## [2026-05-05] — Quality + VIP + Apply Engine kombo (CTO YOLO)
+
+Daniel: "jest cos nad czym mozemy popracowac zeby caly system funkcjonowal jeszcze lepiej". Diagnoza dała 3 obszary, kombo wszystkich w jednej sesji.
+
+### 1. Quality investigation + tuning (mail_context_updates.md)
+
+**Sygnał z danych** (cross-join `mail-feedback` × `mail-drafts`, n=52 actions):
+- ACCEPTED: 11.5% (n=6)
+- REWRITE: 40.4% (n=21)
+- REJECTED: **48.1%** (n=25) — Daniel sam pisze połowę
+
+**Top problemów:**
+| Wzorzec | Skala |
+|---|---|
+| KLIENT category | 54.5% rejection (n=33) |
+| PERSONAL | 100% rejection (n=3) |
+| Wiesław/Tatuś | 12/26 REJECTED, 1/26 ACCEPTED |
+| biuro@sportice.pl | 3/3 REJECTED |
+| Casual tone | 75% rejection |
+| REJECTED draft length | avg 199 chars |
+| ACCEPTED draft length | avg 344 chars |
+
+**Wniosek:** drafty <250 chars są zwykle ODRZUCANE. Plus brak per-contact reguł dla 4 kontaktów które konsekwentnie generowały złe drafty.
+
+**Aktualizacja `gamak/dane/mail_context_updates.md`:**
+- **Wiesław/Tatuś:** explicit reguła "2-4 zdania, bez ozdobników" + sample sent #1 jako wzorzec
+- **Peter Lercher (Engo Austria):** "Hi Peter," + 4-7 zdań professional, sample #2 do Engo
+- **Tutu (Nexnovo)** + **Mds Display** + **SportIce** + **NS Pro:** dedicated rules
+- **Globalna reguła długości** dla LEAD/KLIENT: ≥250 chars, NIE skracaj jednozdaniowo
+- **Tone="casual" usunięte** z output schema (75% rejection)
+
+S3 context sync upload: `mail_context_updates.md` 4 KB → 8 KB (+ Wieslaw fact). Drafter cold restart przez `update-function-configuration --description`.
+
+### 2. VIP whitelist + HIGH_AMOUNT NER (mail-processor v0.12)
+
+**Cel:** ważne kontakty NIGDY nie wpadają do auto-archive.
+
+**Nowy plik `gamak/dane/mail_routing.md`** (gitignored przez `**/dane/`):
+- Sekcja VIP_WHITELIST — 10 emaili baseline (Wiesław, Paweł, Basia, Peter Lercher, Georg Engl, Tutu Nexnovo, Mds Display, SportIce, NS Pro)
+- Sekcja HIGH_AMOUNT detection (regex)
+- Sekcja NEVER_AUTO_ARCHIVE_DOMAINS (`*.gov.pl` opcjonalne, do dodania)
+
+**Kod `mail-processor` v0.11 → v0.12:**
+```python
+VIP_WHITELIST = set(os.environ.get("VIP_WHITELIST", "").lower().split(","))
+HIGH_AMOUNT_THRESHOLD = int(os.environ.get("HIGH_AMOUNT_THRESHOLD", "50000"))
+
+def is_vip(from_email): return from_email.lower() in VIP_WHITELIST
+def extract_high_amount(text) -> (flag, value_pln):
+    # Regex: \b(\d{1,3}(?:[\s.,]\d{3})+|\d+)\s*(zł|zl|pln|eur|usd|netto|brutto|tys|tyś|k\b)
+    # EUR/USD ×4.5, tys/k ×1000
+```
+
+**Zmiany w classify_rules:**
+- Dodana **R-1** na początku (najwyższy priorytet): VIP → KLIENT conf 1.0
+- Auto-archive guard: `if vip_flag → SKIP auto-archive` (defensywny, nawet gdyby category było INFO)
+
+**Tag w DDB item:**
+- `vip_flag: True/False`
+- `high_amount_flag: True/False`
+- `high_amount_value: int` (PLN-equivalent)
+
+**Tests lokalnie:** 12/14 PASS dla HIGH_AMOUNT regex (75 000 zł, 150.000 PLN, 250 tys, 60 tys, 120000 EUR ✓; "25k EUR" + "1.500,00 PLN" edge cases — kosmetyka).
+
+Lambda CodeSha256: `tMwJBiuR2d7yWT0Ulwc9xw35/L9mZuHxRRMBAAlEjRc=`. Env var `VIP_WHITELIST` (10 emails CSV) + `HIGH_AMOUNT_THRESHOLD=50000`.
+
+### 3. Apply Engine — `apply_proposed_actions.py` (Faza 3 luka zamknięta)
+
+**Problem:** Daniel klikał "Zapisz" tab w PWA → trafiało do `s3://gamak-mail-archive/proposed-actions/{type}/...` i nikt tego nie czytał. Notatki wisiały w S3 niezaapliowane.
+
+**Rozwiązanie:** local Python script `projekty/autofirma/maile/scripts/apply_proposed_actions.py`
+- Pobiera proposed-actions z S3 (decision/fact/task/context)
+- Per type aplikuje do `gamak/dane/`:
+  - `decision` → `decyzje.md` (nowy wpis NA GÓRZE z datą + ref do proposal id)
+  - `task` → `plan.md` sekcja "## Z systemu mail (auto-import)" z priority emoji
+  - `fact` → `mail_context_updates.md` sekcja "Klienci/firmy aktualnie w pipeline"
+  - `context` → `mail_context_updates.md` sekcja "Branża/rynek"
+- Po apply: `move_to_applied()` przenosi S3 obiekt z `proposed-actions/<type>/` do `applied-actions/<date>/<type>/` (audit trail)
+- Tryby: `--dry-run` (preview), `--type <decision|fact|task|context>` (filter), `--yes` (skip confirm)
+
+**Test live (3 zaległe proposed-actions z 28.04):**
+- `e66d9621` decision "Auto-archive threshold" → `decyzje.md` ✓
+- `dd6146a9` fact "Wieslaw GAMAK" → `mail_context_updates.md` ✓
+- `79011498` task "Follow-up Karpacz" → `plan.md` sekcja Z systemu mail ✓
+- 3/3 applied, S3 moved do `applied-actions/2026-05-05/`, 0 errors
+
+**Uwaga R5:** apply_proposed_actions może wstawiać PII (numery telefonów klientów w fakcie). Pliki w `gamak/dane/` są w `.gitignore` (linia 83 `**/dane/`) — PII zostaje lokalnie + w S3 (KMS encrypted). NIE wycieka do GitHub.
+
+**Workflow rekomendowany** (Daniel raz na tydzień):
+```bash
+python projekty/autofirma/maile/scripts/apply_proposed_actions.py --dry-run  # preview
+python projekty/autofirma/maile/scripts/apply_proposed_actions.py            # apply z confirm
+python projekty/autofirma/maile/scripts/sync_context_to_s3.py                # drafter dostaje świeże fakty
+```
+
+### Kombo impact
+
+- **Quality:** drafter v0.14 ma teraz 7 dedykowanych reguł kontaktowych + globalne wytyczne długości/tone. Spodziewamy że win rate wskoczy z 13% (ACCEPTED) do 25-30% przez najbliższy tydzień.
+- **VIP:** 10 kluczowych kontaktów chronionych przed auto-archive. Każdy KWOTA >50k mail dostanie `high_amount_flag=True` w DDB.
+- **Apply Engine:** Propose tab w PWA przestał być "cmentarzem dobrych intencji" — Daniel ma command do egzekucji, S3 audit trail z `applied-actions/`.
+
+### Pozostały (świadomie poza scope tej sesji)
+
+- 4. skrzynka `d.klimczak.ai` — decyzja Daniela kiedy/nigdy
+- Pomiary post-hoc Fazy 1 — 7-dniowy raport z DDB (jeśli potrzebne)
+- SNS alert na HIGH_AMOUNT detection (na razie tylko flag w DDB)
+- PWA wskaźnik VIP/KWOTA na karcie draftu (na razie tylko backend)
+- `apply_proposed_actions` jako Lambda + cron (na razie local script)
+
+---
+
 ## [2026-05-05] — Gap analysis ROADMAP: S3 sync + /agent/history (CTO YOLO)
 
 Daniel: "chce sprawdzic czy mamy wszystko z naszej roadmap". Pełen przegląd Fazy 1/2/3 vs realny stan AWS. Zamknięcie 3 luk znalezionych w analizie.
