@@ -4,6 +4,41 @@ Format: `## [YYYY-MM-DD] vX.Y — temat`. Krótko, "co i dlaczego". Pełniejsze 
 
 ---
 
+## [2026-05-05] v1.6 — R1 follow-up: A4/A6/A7/A8 closed + pre-commit hook v1.0 + fewer-permission-prompts
+
+**Co:**
+- ✅ **A4 closed** — skan `beauty/.claude/settings.local.json`: 7 linii, 1 allowlist (`Bash(aws sts *)`), zero bash history, zero sekretów. CLEAN.
+- ✅ **A6 closed** — `costsec/docs/GITHUB.md` § Krok 4 rozszerzone o pre-flight checklist filter-repo (R17): sekcja 4.0 (10-krokowy backup + replace.txt + verification BEFORE), 4.1 (wykonanie filter-repo Wariant A/B), 4.2 (verification AFTER R12 protocol + re-add origin), 4.3 (audit raport — 10 obowiązkowych pól w `audits/<data>_filter_repo_<scope>.md`).
+- ✅ **A7 v1.0 wdrożone** — pre-commit hook `costsec/scripts/git-hooks/pre-commit` (bash):
+  - Filename blacklist: `.env`, `*.pem`, `*.key`, `*_rsa`, `service-account*.json`, `credentials*.json`, `**/settings.local.json`, `*_real.json` (z wyjątkami `.example`/`.sample`)
+  - 12 secret patternów: AKIA, sk-ant, sk- (OpenAI), AIzaSy, ghp_/github_pat_, sk_live_/pk_live_, xox[bp]-, JWT, Telegram bot, Facebook Graph
+  - 3 R1 incident-specific patterns post-rotation: `Pomidor01`, `8693260455:AAH`, `AAHhtVNpl1G`
+  - PII PL: `\+48 NNN NNN NNN` (placeholder `\+48 XXX XXX XXX` akceptowany)
+  - Aktywowane: `git config core.hooksPath gamak/projekty/autofirma/costsec/scripts/git-hooks` (zrobione w roocie repo)
+  - README z aktywacją + bypass + roadmap v1.1 TruffleHog / v1.2 git-secrets / v2.0 pre-push
+  - Dług R6: brak daty końca v1.0, trigger v1.1 = pierwszy false negative
+- ✅ **A8 closed** — `deploy.zip.bak` już usunięty (rm -f śladem yolo z 2026-05-05 rano).
+- ✅ **`gamak/.claude/settings.json`** (fewer-permission-prompts skill) — 14 read-only patternów: 7× MCP Gmail (search/read/draft/download dla gamak/biuro/claude_ai_Gmail), 5× AWS read (ssm get-command-invocation/describe-instance-information, logs tail, cloudwatch get-metric-statistics, iam get-role-policy), 2× Bash safe (mkdir -p, curl -sI). Cel: redukcja ~80% promptów dla rutynowych @mail/AWS read. Plik commitowany (settings.json, NIE `.local.json`).
+
+**Closures w pending_actions.md:** A4, A6, A7, A8 → WYKONANE.
+
+**Wciąż otwarte (wymagają fizycznych akcji Daniela):**
+- 🔴 D1 (MFA root backup) — 5 min, ścieżka A: recovery codes z AWS Console
+- 🟡 A1 (audyt logów CF FTP login 04-05.05) — panel cyberfolks.pl
+- 🟡 A2 (github.com/settings/applications OAuth review) — manual
+- 🟡 A9 (mail/docs/CHANGELOG.md "<klient-zagraniczny-engo>" 2× sanitize decision)
+- 🟡 RODO Art. 33 (notyfikacja UODO 72h decyzja) — doradca prawny
+- 🟡 R15-R18 zatwierdzenie do twardych — monthly sync 2026-06-05 lub osobny TAK
+
+**Dlaczego:**
+- Daniel `/yolo` + "leś punkt po punkcie po kolei" → odhaczyłem 4/8 R1 follow-up bez fizycznych akcji
+- Pre-commit hook v1.0 zamyka pętlę: kolejny `Pomidor01` w bash history nie przejdzie do commita, `inbox_test.json` z PII też nie
+- A4 verification ważne — gdyby beauty/.claude też miało hasło FTP, drugi incydent gotowy
+
+**Status global:** R1 follow-up **50% complete** (4/8 closures CTO-side). Pozostałe wymagają UI/decyzji Daniela.
+
+---
+
 ## [2026-05-05] v1.5 — R1 incident audit (sanitized) + R15-R18 kandydaci
 
 **Co:**

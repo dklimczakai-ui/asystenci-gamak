@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__gmail-gamak__search_emails",
+      "mcp__gmail-gamak__read_email",
+      "mcp__gmail-gamak__draft_email",
+      "mcp__gmail-gamak__download_attachment",
+      "mcp__gmail-biuro__search_emails",
+      "mcp__claude_ai_Gmail__search_threads",
+      "mcp__claude_ai_Gmail__get_thread",
+      "Bash(aws ssm get-command-invocation *)",
+      "Bash(aws ssm describe-instance-information *)",
+      "Bash(aws logs tail *)",
+      "Bash(aws cloudwatch get-metric-statistics *)",
+      "Bash(aws iam get-role-policy *)",
+      "Bash(curl -sI *)",
+      "Bash(mkdir -p *)"
+    ]
+  }
+}

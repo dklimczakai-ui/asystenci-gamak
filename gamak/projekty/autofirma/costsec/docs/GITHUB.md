@@ -305,17 +305,88 @@ W repo (lokalnie):
 
 ### Krok 4 — HISTORIA GIT (15 min, **wymaga OSOBNEGO TAK właściciela**)
 
-```bash
-# Usuń sekret z całej historii repo (przepisuje commity):
-pip install git-filter-repo
-git filter-repo --replace-text expressions.txt
-# expressions.txt zawiera: 8693260455:AAH...sa​E==><wstaw-token>
+#### 4.0 — PRE-FLIGHT CHECKLIST filter-repo (R17, z R1 incident 2026-05-05)
 
-# LUB jeśli usuwamy cały plik z historii:
-git filter-repo --path <ścieżka> --invert-paths
+**OBOWIĄZKOWE 10 kroków PRZED `git filter-repo`. Bez kompletnej checklisty = STOP, nie wykonujemy.**
+
+```bash
+DATA=$(date +%Y%m%d_%H%M)
+
+# (1) Backup .git → instant rollback (nieskompresowany, pełna kopia)
+cp -r .git ../_backup_git_pre_filter_repo_${DATA}/
+
+# (2) Git bundle → alternatywny stan repo (pojedynczy plik, ~30% mniejszy)
+mkdir -p ../_backup_filter_repo_${DATA}
+git bundle create ../_backup_filter_repo_${DATA}/repo_pre_filter.bundle --all
+
+# (3) Backup workdir — skopiuj niezacommitowane zmiany, ZANIM filter-repo
+#     zresetuje workdir do nowego HEAD (uwaga: zmiany .gitignore / unstaged
+#     mogą zostać "wymazane")
+git status --short
+# → manualnie skopiuj każdy zmodyfikowany plik do _backup_filter_repo_${DATA}/
+
+# (4) Wzorce do redact → replace.txt (plain text, jeden wzorzec/linia)
+cat > /tmp/filter_repo_replace.txt <<'EOF'
+<literalna-wartość-1>==><REDACTED_<TYP>_INCIDENT_<DATA>>
+<literalna-wartość-2>==><REDACTED_<TYP>_INCIDENT_<DATA>>
+EOF
+# UWAGA: replace.txt z literalnymi sekretami → trzymać tylko w /tmp,
+# NIGDY nie commitować, kasować po użyciu (`shred -u /tmp/filter_repo_replace.txt`)
+
+# (5) Verification BEFORE — baseline count dla każdego wzorca
+for pat in '<wzorzec1>' '<wzorzec2>'; do
+  echo "BEFORE [$pat]: $(git log --all -p -S "$pat" 2>/dev/null | grep -c "$pat")"
+done
+# → zapisz wynik w audit raport, sekcja "BEFORE"
 ```
 
+#### 4.1 — WYKONANIE filter-repo
+
+```bash
+# Wariant A: usunięcie plików z historii (np. settings.local.json, inbox_test.json)
+python -m git_filter_repo --force --invert-paths \
+  --path <ścieżka1> \
+  --path <ścieżka2>
+
+# Wariant B: redact wartości w treści (np. martwy token Telegram)
+python -m git_filter_repo --force --replace-text /tmp/filter_repo_replace.txt
+
+# Można łączyć: najpierw A (Phase 1), potem B (Phase 2) na pozostałe wystąpienia
+```
+
+#### 4.2 — VERIFICATION AFTER (R12 protocol — wymagane!)
+
+```bash
+# (7) Verification AFTER — count MUSI być 0 dla każdego wzorca
+for pat in '<wzorzec1>' '<wzorzec2>'; do
+  echo "AFTER  [$pat]: $(git log --all -p -S "$pat" 2>/dev/null | grep -c "$pat")"
+done
+# → wszystkie 0 = PASS. Jakikolwiek > 0 = FAIL, NIE force push, ponów filter-repo.
+
+# (8) Re-add origin remote (filter-repo auto-removes jako safety)
+git remote -v   # sprawdź czy origin zniknął
+git remote add origin git@github.com:<owner>/<repo>.git
+```
+
+#### 4.3 — AUDIT RAPORT (10) — `costsec/audits/<data>_filter_repo_<scope>.md`
+
+Obowiązkowe sekcje:
+1. **Co wyciekło** (typ + lokalizacja + status pre-filter)
+2. **Co wykonano** (lista plików / wzorców)
+3. **Backup** (ścieżka `_backup_git_pre_filter_repo_*`)
+4. **Verification BEFORE** (count per wzorzec)
+5. **Verification AFTER** (count per wzorzec = 0)
+6. **Hash przed / po** (`git rev-parse HEAD` BEFORE i AFTER)
+7. **Origin remote re-added** (TAK/NIE)
+8. **Force push wykonany** (TAK/NIE + timestamp)
+9. **Verification origin/main** (`git log origin/main -p -S '<wzorzec>'` = 0)
+10. **Lekcje** (kandydaci R<N>+ do `ZASADY.md`)
+
+**Bez kompletnego raportu = filter-repo nie jest "zamknięty" — dług R6 do nadrobienia.**
+
 ⚠️ **To przepisuje historię.** Wszystkie commit ID się zmieniają. Wymaga **force push** (krok 5) — destrukcyjna operacja.
+
+⚠️ **Backup `_backup_git_pre_filter_repo_*/` zawiera oryginalne sekrety** — gitignored przez `_backup_*/`, NIE commitować, NIE synchronizować przez Drive/Dropbox. Trzymać lokalnie jako forensics na wypadek audytu UODO.
 
 ### Krok 5 — FORCE PUSH (1 min, **wymaga OSOBNEGO TAK właściciela**)
 
