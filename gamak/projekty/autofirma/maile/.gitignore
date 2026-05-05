@@ -11,6 +11,13 @@ config/config.local.yaml
 # === Logi sesji (zawierają id_maila, adresat, timestamp — bez treści, ale ostrożnie) ===
 logs/
 
+# === Audyty operacyjne (zawierają subject_reply / mailbox / gmail_id — R5 dane klientów) ===
+audits/
+
+# === Lokalne pliki testowe payload/response (R5: mogą zawierać body maili) ===
+**/test_payload*.json
+**/test_resp*.json
+
 # === Wzorce na pliki z poświadczeniami (gdziekolwiek się pojawią) ===
 gmail_token*
 gmail_oauth_keys*

@@ -1,5 +1,5 @@
 """
-Mail Agent API — Faza 2 krok 8 (Sender + Approved Actions Router).
+Mail Agent API v0.3 — Faza 2 krok 8 (Sender + Approved Actions Router) + zombie Gmail draft cleanup.
 
 API GW HTTP API routes:
 - GET  /agent/inbox        → lista PENDING drafts
@@ -14,10 +14,14 @@ Body POST /agent/action:
 }
 
 Action flow:
-- send:    Gmail send_reply → DDB drafts SENT → DDB emails REPLIED → Gmail archive original → DDB feedback DRAFT_ACCEPTED
-- reject:  DDB drafts REJECTED → DDB feedback DRAFT_REJECTED
-- archive: Gmail archive original (removeLabel INBOX) → DDB emails ARCHIVED → DDB drafts DISCARDED
-- amend:   501 NOT_IMPLEMENTED (krok 9 doda re-draft z hint)
+- send:    Gmail send_reply → DDB drafts SENT → DDB emails REPLIED → Gmail archive original → Gmail draft delete → feedback
+- reject:  DDB drafts REJECTED → Gmail draft delete → DDB feedback DRAFT_REJECTED
+- archive: Gmail archive original → DDB emails ARCHIVED → DDB drafts DISCARDED → Gmail draft delete
+- amend:   Drafter invoke → DDB stary AMENDED → Gmail draft delete (stary) → nowy PENDING → feedback DRAFT_REWRITE
+
+v0.3 (2026-05-05): Po SEND/REJECT/AMEND/ARCHIVE Gmail draft jest kasowany best-effort,
+żeby nie zostawiać zombies w folderze "Wersje robocze". Multi-mailbox routing przez
+MAILBOXES env (zgodnie z mail-drafter v0.7 i mail-draft-janitor v0.1+).
 """
 
 import os
@@ -40,7 +44,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 REGION = os.environ.get("AWS_REGION", "eu-central-1")
-SECRET_ID = os.environ["GMAIL_SECRET_ID"]
+SECRET_ID = os.environ["GMAIL_SECRET_ID"]  # default mailbox (backward compat)
 EMAILS_TABLE = os.environ["EMAILS_TABLE"]
 DRAFTS_TABLE = os.environ["DRAFTS_TABLE"]
 FEEDBACK_TABLE = os.environ["FEEDBACK_TABLE"]
@@ -48,21 +52,30 @@ DRAFTER_FUNCTION = os.environ.get("DRAFTER_FUNCTION", "mail-drafter")
 ARCHIVE_BUCKET = os.environ.get("ARCHIVE_BUCKET", "gamak-mail-archive-098456445101-eu-central-1")
 PROPOSALS_PREFIX = os.environ.get("PROPOSALS_PREFIX", "proposed-actions")
 
-_secret_cache = None
+# v0.3: multi-mailbox routing dla delete_gmail_draft (spójne z drafter v0.7 + janitor)
+MAILBOXES = json.loads(os.environ.get("MAILBOXES", "[]"))
+EMAIL_TO_SECRET = {m["email"]: m["secret"] for m in MAILBOXES}
+
+_secret_cache = {}
+_service_cache = {}
 
 
-def get_secret():
-    global _secret_cache
-    if _secret_cache is None:
-        sm = boto3.client("secretsmanager", region_name=REGION)
-        _secret_cache = json.loads(
-            sm.get_secret_value(SecretId=SECRET_ID)["SecretString"]
-        )
-    return _secret_cache
+def get_secret(secret_id=None):
+    sid = secret_id or SECRET_ID
+    if sid in _secret_cache:
+        return _secret_cache[sid]
+    sm = boto3.client("secretsmanager", region_name=REGION)
+    _secret_cache[sid] = json.loads(
+        sm.get_secret_value(SecretId=sid)["SecretString"]
+    )
+    return _secret_cache[sid]
 
 
-def gmail_service():
-    secret = get_secret()
+def gmail_service(secret_id=None):
+    sid = secret_id or SECRET_ID
+    if sid in _service_cache:
+        return _service_cache[sid]
+    secret = get_secret(sid)
     creds = Credentials(
         token=None,
         refresh_token=secret["refresh_token"],
@@ -71,7 +84,31 @@ def gmail_service():
         client_secret=secret["client_secret"],
         scopes=secret["scopes"],
     )
-    return build("gmail", "v1", credentials=creds, cache_discovery=False)
+    _service_cache[sid] = build("gmail", "v1", credentials=creds, cache_discovery=False)
+    return _service_cache[sid]
+
+
+def secret_for_mailbox(mailbox_email):
+    """Wybiera secret per mailbox z mapy MAILBOXES, fallback na default SECRET_ID."""
+    return EMAIL_TO_SECRET.get(mailbox_email, SECRET_ID)
+
+
+def delete_gmail_draft(gmail_draft_id, mailbox_email, draft_id_log=""):
+    """v0.3: Best-effort delete Gmail draft po SEND/REJECT/AMEND/ARCHIVE.
+    Eliminuje zombie w folderze 'Wersje robocze' Gmaila.
+    NIE wyrzuca exception — log warning i continue, żeby nie blokować akcji właściwej.
+    """
+    if not gmail_draft_id:
+        return False
+    try:
+        sid = secret_for_mailbox(mailbox_email)
+        svc = gmail_service(sid)
+        svc.users().drafts().delete(userId="me", id=gmail_draft_id).execute()
+        logger.info(f"  Gmail draft deleted: gid={gmail_draft_id} mailbox={mailbox_email} draft_id={draft_id_log}")
+        return True
+    except Exception as e:
+        logger.warning(f"  Gmail draft delete failed (non-fatal): gid={gmail_draft_id} mailbox={mailbox_email} err={e}")
+        return False
 
 
 def parse_body(event):
@@ -236,7 +273,10 @@ def action_send(emails_table, drafts_table, feedback_table, draft_id, dry_run=Fa
     if thread_id:
         body_payload["threadId"] = thread_id
 
-    svc = gmail_service()
+    # v0.3: multi-mailbox routing — wybierz service per skrzynka draftu
+    draft_mailbox = draft.get("mailbox_email", "")
+    secret_id_for_send = secret_for_mailbox(draft_mailbox)
+    svc = gmail_service(secret_id_for_send)
     try:
         sent = svc.users().messages().send(userId="me", body=body_payload).execute()
     except Exception as e:
@@ -256,6 +296,10 @@ def action_send(emails_table, drafts_table, feedback_table, draft_id, dry_run=Fa
             ":g": sent.get("id", ""),
         },
     )
+
+    # v0.3: skasuj Gmail draft (eliminuje zombie w "Wersje robocze")
+    gmail_draft_id_to_kill = draft.get("gmail_draft_id", "")
+    gmail_draft_deleted = delete_gmail_draft(gmail_draft_id_to_kill, draft_mailbox, draft_id)
 
     # Update email → REPLIED
     if email_item:
@@ -296,6 +340,7 @@ def action_send(emails_table, drafts_table, feedback_table, draft_id, dry_run=Fa
         "thread_id": sent.get("threadId", ""),
         "feedback_id": feedback_id,
         "archived_original": archived_ok,
+        "gmail_draft_deleted": gmail_draft_deleted,
     })
 
 
@@ -313,8 +358,19 @@ def action_reject(drafts_table, feedback_table, draft_id):
         ExpressionAttributeValues={":s": "REJECTED", ":t": int(time.time() * 1000)},
     )
 
+    # v0.3: skasuj Gmail draft (eliminuje zombie po REJECT)
+    gmail_draft_deleted = delete_gmail_draft(
+        draft.get("gmail_draft_id", ""),
+        draft.get("mailbox_email", ""),
+        draft_id,
+    )
+
     feedback_id = write_feedback(feedback_table, draft, "reject", "DRAFT_REJECTED")
-    return resp(200, {"ok": True, "draft_id": draft_id, "status": "REJECTED", "feedback_id": feedback_id})
+    return resp(200, {
+        "ok": True, "draft_id": draft_id, "status": "REJECTED",
+        "feedback_id": feedback_id,
+        "gmail_draft_deleted": gmail_draft_deleted,
+    })
 
 
 def action_archive(emails_table, drafts_table, feedback_table, draft_id):
@@ -327,7 +383,9 @@ def action_archive(emails_table, drafts_table, feedback_table, draft_id):
     if not message_id:
         return resp(400, {"error": "draft has no message_id"})
 
-    svc = gmail_service()
+    # v0.3: multi-mailbox routing — archive z odpowiedniej skrzynki
+    draft_mailbox = draft.get("mailbox_email", "")
+    svc = gmail_service(secret_for_mailbox(draft_mailbox))
     try:
         svc.users().messages().modify(
             userId="me", id=message_id, body={"removeLabelIds": ["INBOX"]}
@@ -359,6 +417,13 @@ def action_archive(emails_table, drafts_table, feedback_table, draft_id):
         ExpressionAttributeValues={":s": "DISCARDED", ":t": now_ms},
     )
 
+    # v0.3: skasuj Gmail draft (eliminuje zombie po ARCHIVE)
+    gmail_draft_deleted = delete_gmail_draft(
+        draft.get("gmail_draft_id", ""),
+        draft_mailbox,
+        draft_id,
+    )
+
     feedback_id = write_feedback(feedback_table, draft, "archive", "DRAFT_DISCARDED")
     return resp(200, {
         "ok": True,
@@ -366,6 +431,7 @@ def action_archive(emails_table, drafts_table, feedback_table, draft_id):
         "message_id": message_id,
         "archived_in_gmail": True,
         "feedback_id": feedback_id,
+        "gmail_draft_deleted": gmail_draft_deleted,
     })
 
 
@@ -419,10 +485,19 @@ def action_amend(emails_table, drafts_table, feedback_table, draft_id, hint=""):
         },
     )
 
+    # v0.3: skasuj STARY Gmail draft (nowy już został utworzony przez drafter invoke).
+    # Bez tego po amend zostają zombies w "Wersje robocze" — Daniel widział 3 wersje robocze
+    # w jednym wątku po cyklu amend→amend→send (incydent 2026-05-04).
+    old_gmail_draft_deleted = delete_gmail_draft(
+        draft.get("gmail_draft_id", ""),
+        draft.get("mailbox_email", ""),
+        draft_id,
+    )
+
     # Feedback: DRAFT_REWRITE
     feedback_id = write_feedback(
         feedback_table, draft, "amend", "DRAFT_REWRITE",
-        extra={"hint": hint[:500], "new_draft_id": new_draft_id},
+        extra={"hint": hint[:500], "new_draft_id": new_draft_id, "old_gmail_draft_deleted": old_gmail_draft_deleted},
     )
 
     return resp(200, {
@@ -434,6 +509,7 @@ def action_amend(emails_table, drafts_table, feedback_table, draft_id, hint=""):
         "tone": new_draft_resp.get("tone"),
         "tokens": new_draft_resp.get("tokens"),
         "feedback_id": feedback_id,
+        "old_gmail_draft_deleted": old_gmail_draft_deleted,
     })
 
 

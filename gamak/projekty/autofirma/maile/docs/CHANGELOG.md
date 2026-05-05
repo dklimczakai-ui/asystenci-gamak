@@ -4,6 +4,64 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) lite.
 
 ---
 
+## [2026-05-05] — mail-agent-api v0.3: zombie Gmail drafts cleanup (CTO YOLO)
+
+Daniel zgłosił: "zapisuje drafty na gmailu i nie kasuje tych nieużytych — mam wysłaną odpowiedź zawierającą 3 wersje robocze". Diagnoza odkryła **bug strukturalny w mail-agent-api v0.2**: po SEND/REJECT/AMEND/ARCHIVE Gmail draft nie był usuwany, tylko DDB status leciał na SENT/REJECTED/AMENDED/DISCARDED. Janitor v0.3 usuwa Gmail drafty TYLKO dla DDB status=PENDING — drafty po SEND/REJECT/AMEND nigdy nie wracały pod jego radar i zostawały zombie w folderze "Wersje robocze" Gmaila.
+
+### 🐛 Bug #8 — mail-agent-api nie kasuje Gmail draftu po akcji
+
+**Skala:** Skan DDB `mail-drafts` znalazł **55 zombies** (37 REJECTED + 11 AMENDED + 7 SENT, 49 w `d.klimczak.gamak`, 6 w `klimczak.daniel86`). Wczorajszy incydent Daniela (wątek "Re: boisko SSM Rajcza" 04.05) zawierał 4 zombies w jednym wątku — pełen cykl amend→amend→send powtórzony 2× generował 2× SENT + 2× AMENDED Gmail draftów, wszystkie widoczne w wątku Gmail webview obok wysłanej wiadomości.
+
+**Root cause:** `action_send` używał `users().messages().send(...)` (NIE `drafts().send()`) — wysyłał osobną wiadomość, Gmail draft `gmail_draft_id` zostawał. `action_reject`, `action_archive`, `action_amend` też nie kasowały Gmail draftu. Brak helpera `delete_gmail_draft` w mail-agent-api.
+
+### ✅ Fix — mail-agent-api v0.3
+
+**1. Helper `delete_gmail_draft(gmail_draft_id, mailbox_email, draft_id_log)`:**
+Best-effort `users().drafts().delete(userId="me", id=gmail_draft_id)`, log warning na błąd, NIE wyrzuca exception (nie blokuje akcji właściwej). Wzorowany na janitor v0.3 cancel_draft fragment.
+
+**2. Multi-mailbox routing (zgodnie z drafter v0.7 i janitor):**
+Dodano `MAILBOXES` env var (3 skrzynki: gamak + daniel86 + biuro). Refaktor `get_secret(secret_id=None)` i `gmail_service(secret_id=None)` z singleton na dict per secret. Helper `secret_for_mailbox(mailbox_email)` z fallbackiem na `SECRET_ID` (backward-compat). Plus: action_send/action_archive teraz używają service per draft.mailbox_email (wcześniej zawsze d.klimczak.gamak — milczący bug który by się ujawnił przy włączeniu daniel86 w PWA).
+
+**3. Callsity:**
+- `action_send`: po `messages.send` → `delete_gmail_draft(draft.gmail_draft_id, draft.mailbox_email, draft_id)` + zwrot `gmail_draft_deleted` w response
+- `action_reject`: po update DDB → delete + zwrot
+- `action_archive`: po update DDB → delete + zwrot
+- `action_amend`: po update STAREGO draftu → delete starego (nowy już utworzony przez drafter invoke) + zwrot
+
+### 🧹 Cleanup historycznych zombies (jednorazowy)
+
+Standalone Python script (lokalnie, boto3 + Gmail API per mailbox) skasował 55 zombie kandydatów z DDB:
+- **11 deleted** (Gmail draft realnie istniał, w tym wszystkie 4 zombies z wczorajszego wątku "boisko SSM Rajcza")
+- **44 NOT_FOUND_404** (Gmail draft już nie istniał — DDB miało gmail_draft_id, Gmail GC usunął wcześniej)
+- **0 errors**
+
+Audit log: `projekty/autofirma/maile/audits/2026-05-05_zombie_cleanup_results.json` (gitignored, R5 — zawiera subject_reply z tematami klientów).
+
+### 📂 Backupy + deploy
+
+- `backup/mail-agent-api_lambda_function_pre-zombie-fix_20260505_0432.py` (pre-edit source)
+- `deploy.zip` repakowany (21 MB, slim — bez `__pycache__`, vs poprzednie 25 MB) — 1568 plików, lambda_function.py top-level
+- AWS Lambda CodeSha256 `R4auiQHOPl7MW...`, LastModified `2026-05-05 02:43:36 UTC`
+- MAILBOXES env var dodany (3 skrzynki, JSON)
+
+### ⚠️ Drift incident (zsynchronizowany)
+
+W trakcie sesji lokalny `lambda_function.py` został cofnięty do v0.2 (przez linter/edit konflikt) gdy AWS Lambda była już deployed v0.3. Drift naprawiony przez extract `lambda_function.py` z `deploy.zip` (deployed truth) → sync do `lambda_function.py` + `_build/lambda_function.py`. Teraz local source = `_build/` = AWS deployed code = v0.3.
+
+### 🟢 Stan po fixie
+
+- Bug #8 zamknięty: PWA klik Popraw/Wyślij/Odrzuć → Gmail draft kasowany automatycznie
+- Multi-mailbox routing: gotowy (gamak + daniel86 + biuro), wcześniejszy milczący bug "wszystko z gamak" wyeliminowany
+- 11 starych zombies skasowanych z folderu Gmail "Wersje robocze"
+- `.gitignore` rozszerzony: `audits/`, `**/test_payload*.json`, `**/test_resp*.json` (R5: dane klientów)
+
+### 🔮 Dług techniczny po tej sesji
+
+- Janitor v0.4 — opcjonalny "zombie sweeper" mode (skan DDB status IN SENT/REJECTED/AMENDED z gmail_draft_id, weekly cron). Backup gdy delete w mail-agent-api zawiedzie best-effort. Niepilne — fix w v0.3 eliminuje *generowanie* nowych zombies, bug naprawia się u źródła.
+- Test end-to-end realnej wysyłki maili z systemu — wciąż nietestowane na produkcji (czeka na pierwszy realny wysłany draft po fixie).
+
+---
+
 ## [2026-05-04] — Naprawa pipeline draftera (CTO YOLO, 30 min)
 
 Daniel zgłosił "nic nie działa" — dostał maile 01.05 (Tutu-Nexnovo LED do band, Wiesław przetargi, Peter <klient-zagraniczny-engo> oferta maszyn) i nie widział żadnych draftów. Diagnoza odkryła **4 osobne bugi**:
